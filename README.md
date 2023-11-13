@@ -46,7 +46,8 @@ If you use CrossAI in a scientific publication, we would appreciate citations, u
 
 ```text
 @misc{,
-    author = "{Tzamalis, Pantelis and Kapetanidis Panagiotis, and Kalioras, Fotios and Kontogiannis, George}",
+    author = "{Tzamalis, Pantelis and Kapetanidis Panagiotis, and Kalioras, Fotios and Kontogiannis, George and 
+    Bardoutos, Andreas}",
     title = "CrossAI: The Open Source library for Time Series Analysis",
     year = "2023",
     url = "https://github.com/tzamalisp/crossai",
@@ -56,12 +57,20 @@ If you use CrossAI in a scientific publication, we would appreciate citations, u
 
 ## Team
 
+#### Authors
+
+The following individuals are currently core contributors to the development and maintenance of the library:
+
 * [Pantelis Tzamalis](https://www.linkedin.com/in/pantelis-tzamalis/)
 * [Panagiotis Kapetanidis](https://www.linkedin.com/in/kapetanidispanagiotis)
 * [Fotios Kalioras](https://www.linkedin.com/in/fotis-kalioras)
 * [George Kontogiannis](https://www.linkedin.com/in/georgios-kontogiannis)
 
-Emeritus Contributor Experience Team:
+#### Emeritus Contributor Experience Team:
+
+The following people have been active in the contribution of previous versions of the library but no longer are engaging
+in its development.
+
 * [Andreas Bardoutsos](https://www.linkedin.com/in/andreasbardoutsos/)
 
 The main design and idea have been created by Pantelis Tzamalis, as well as Andreas Bardoutsos in the early versions of
