@@ -26,15 +26,12 @@ def XceptionTime(input_shape,
                  drp_high=0,
                  spatial=False,
                  mc_inference=None):
-    """A novel deep learning model referred to as the XceptionTime
-    architecture. The proposed innovative XceptionTime is designed by the
-    integration of depthwise separable convolutions, adaptive average pooling,
-    and a novel non-linear normalization technique.  By utilizing the
-    depthwise separable convolutions, the XceptionTime network has far fewer
-    parameters resulting in a less complex network. The updated architecture in
-    this CrossAI topology is extended in such a way as to achieve higher
-    confidence in the model’s predictions, it can be adapted to any window size
-    , and its upgraded functionalities can avoid overfitting and achieve better
+    """A novel deep learning model referred to as the XceptionTime architecture. The proposed innovative
+    XceptionTime is designed by the integration of depthwise separable convolutions, adaptive average pooling,
+    and a novel non-linear normalization technique.  By utilizing the depthwise separable convolutions, the
+    XceptionTime network has far fewer parameters resulting in a less complex network. The updated architecture in
+    this CrossAI topology is extended in such a way as to achieve higher confidence in the model’s predictions, it
+    can be adapted to any window size, and its upgraded functionalities can avoid overfitting and achieve better
     model generalization.
 
     Args:
@@ -64,7 +61,7 @@ def XceptionTime(input_shape,
             SpatialDropout1D else Monte Carlo Dropout. Default: False.
         mc_inference (bool, optional):
             -If true, Dropout is enabled even during inference.
-            -If False, Dropout is Dropout is neither enabled on training nor
+            -If False, Dropout is neither enabled on training nor
                 during inference.
             -If None, Dropout is enabled during training but not during
                 inference. Defaults to None.
@@ -124,13 +121,13 @@ def XceptionTime(input_shape,
 
     # stack 3 Conv1x1 Convolutions to reduce the time-series
     # to the number of the classes
-    x = conv1d_block(x, nf=head_nf / 2, drp_on=False, drp_rate=0.5,
+    x = conv1d_block(x, nf=head_nf/2, drp_on=False, drp_rate=0.5,
                      spatial=True,
                      kernel_initialize=kernel_initialize,
                      kernel_regularize=kernel_regularize,
                      kernel_constraint=kernel_constraint)
 
-    x = conv1d_block(x, nf=head_nf / 4, drp_on=False, drp_rate=0.5,
+    x = conv1d_block(x, nf=head_nf/4, drp_on=False, drp_rate=0.5,
                      spatial=True,
                      kernel_initialize=kernel_initialize,
                      kernel_regularize=kernel_regularize,
