@@ -1,14 +1,9 @@
 import logging
-from keras.layers import Input, Dense, Conv1D, Add
-from keras.layers import SeparableConv1D
-from keras.layers import BatchNormalization
-from keras.layers import MaxPooling1D
-from keras import Model
-from keras.layers import Concatenate
-from keras.layers import Activation
-from keras.layers import Flatten
-from keras.regularizers import l2
-from keras.constraints import MaxNorm
+from tensorflow.keras.layers import Input, Dense, Conv1D, MaxPooling1D, SeparableConv1D, Flatten, Add, Concatenate
+from tensorflow.keras.layers import BatchNormalization, Activation
+from tensorflow.keras import Model
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.constraints import MaxNorm
 from .._layers_dropout import dropout_layer_1d
 import tensorflow_addons as tfa
 

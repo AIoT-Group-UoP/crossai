@@ -1,9 +1,8 @@
-from keras.models import Model
-from keras.layers import Dense, Flatten, Input, Conv1D
-from keras.layers import BatchNormalization, Concatenate, Add, \
-    GlobalAveragePooling1D, Activation
-from keras.regularizers import l2
-from keras.constraints import MaxNorm
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Flatten, Input, Conv1D, GlobalAveragePooling1D
+from tensorflow.keras.layers import BatchNormalization, Concatenate, Add, Activation
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.constraints import MaxNorm
 from .._layers_dropout import dropout_layer_1d
 
 
