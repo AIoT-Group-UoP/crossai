@@ -69,7 +69,7 @@ The following individuals are currently core contributors to the development and
 #### Emeritus Contributor Experience Team:
 
 The following people have been active in the contribution of previous versions of the library but no longer are engaging
-in its development.
+in its development:
 
 * [Andreas Bardoutsos](https://www.linkedin.com/in/andreasbardoutsos/)
 
