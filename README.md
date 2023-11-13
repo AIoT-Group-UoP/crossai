@@ -29,6 +29,17 @@ The CrossAI library comprises the following components:
 > It offers a collection of State-of-the-Art Neural Network architectures, built on top of `TensorFlow`. These model 
 > topologies are designed to analyze Time Series data within both the 1D and 2D domains.
 
+### Explainable AI (XAI)
+> It delivers Explainable AI (XAI) mechanisms for interpreting the AI models' exports to actual exports of interest, 
+> as well as functionalities and algorithms for measuring the models' Trustworthiness and Robustness.
+> The implementation is based on the following study:
+> Tzamalis, Pantelis, Andreas Bardoutsos, Dimitris Markantonatos, Christoforos Raptopoulos, Sotiris Nikoletseas, 
+> Xenophon Aggelides, and Nikos Papadopoulos. "End-to-end Gesture Recognition Framework for the Identification of 
+> Allergic Rhinitis Symptoms." In 2022 18th International Conference on Distributed Computing in Sensor 
+> Systems (DCOSS), pp. 25-34. IEEE, 2022.
+
+Next steps: Add Generative AI State-of-the-Art Neural Network Topologies.
+
 ## Citing CrossAI
 
 If you use CrossAI in a scientific publication, we would appreciate citations, using the following Bibtex entry:
@@ -36,7 +47,7 @@ If you use CrossAI in a scientific publication, we would appreciate citations, u
 ```text
 @misc{,
     author = "{Tzamalis, Pantelis and Kapetanidis Panagiotis, and Kalioras, Fotios and Kontogiannis, George}",
-    title = "CrossAI: The Open Source library for Time Series analysis",
+    title = "CrossAI: The Open Source library for Time Series Analysis",
     year = "2023",
     url = "https://github.com/tzamalisp/crossai",
     note = "[Online; accessed 14-November-2023]"
