@@ -2,7 +2,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Flatten
 from tensorflow.keras.layers import Dense, Conv1D, MaxPooling1D, \
     GlobalAveragePooling1D
-from .._layers_dropout import dropout_layer_1d
+from crossai.ai import dropout_layer_1d
 
 
 def CNN1D(input_shape,

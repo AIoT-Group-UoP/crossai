@@ -1,6 +1,6 @@
 from tensorflow.keras.layers import Input, Bidirectional, LSTM, Dense
 from tensorflow.keras.models import Model
-from .._layers_dropout import dropout_layer_1d
+from crossai.ai import dropout_layer_1d
 
 
 # Implementation of NN model for 1D based on:
