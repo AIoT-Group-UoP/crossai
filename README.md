@@ -9,7 +9,7 @@ incorporates components in the likes of:
 3. Explainable AI (XAI) modeling for evaluating the AI time series pilot data
 4. Support of scikit-learn pipelines for the data processing, as well as the pilot evaluation components
 
-The components have been built on top of `TensorFlow`, `scikit-learn`, `NumPy`, and `SciPy`, while the library focuses 
+The components have been built on top of `TensorFlow`, `scikit-learn`, `pandas`, `NumPy`, and `SciPy`, while the library focuses 
 on state-of-the-art techniques for Time Series tasks, in both the data engineering and Neural Network models.
 
 > With the term "end-to-end AI pipelines", we mean actually, the development of a series of steps which has the 
