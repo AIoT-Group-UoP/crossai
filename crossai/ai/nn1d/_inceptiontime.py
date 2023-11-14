@@ -1,6 +1,7 @@
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, Flatten, Input, Conv1D, GlobalAveragePooling1D
-from tensorflow.keras.layers import BatchNormalization, Concatenate, Add, Activation
+from tensorflow.keras.layers import Dense, Flatten, Input, Conv1D
+from tensorflow.keras.layers import GlobalAveragePooling1D, BatchNormalization
+from tensorflow.keras.layers import Concatenate, Add, Activation
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.constraints import MaxNorm
 from .._layers_dropout import dropout_layer_1d
@@ -46,15 +47,15 @@ def InceptionTime(input_shape,
         drp_high (float): Range 0-1.
         kernel_initialize (str): The variance scaling initializer.
             Default: "he_uniform".
-        kernel_regularize (Union([float, str])): Can be float or str in 1e-5 format.
-            Regularizer to apply a penalty on the layer's kernel.
+        kernel_regularize (Union([float, None])): Regularizer to apply a
+            penalty on the layer's kernel.Default: 4e-5.
         kernel_constraint (int): The constraint of the value of the incoming
             weights. Default 3.
         spatial (bool): Determines the type of Dropout. If True, it applies
             SpatialDropout1D else Monte Carlo Dropout. Default False.
         mc_inference (bool, optional):
             -If true, Dropout is enabled even during inference.
-            -If False, Dropout is Dropout is neither enabled on training nor
+            -If False, Dropout is neither enabled on training nor
                 during inference.
             -If None, Dropout is enabled during training but not during
                 inference. Defaults to None.

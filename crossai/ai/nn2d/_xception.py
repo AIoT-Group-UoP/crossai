@@ -1,6 +1,6 @@
 from tensorflow.keras import Input, Model
-from tensorflow.keras.layers import Conv2D, BatchNormalization, ReLU, Dense, \
-    GlobalAveragePooling2D
+from tensorflow.keras.layers import Conv2D, BatchNormalization, ReLU, Dense
+from tensorflow.keras.layers import GlobalAveragePooling2D
 from tensorflow.keras.layers import SeparableConv2D, MaxPooling2D, Add, Flatten
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.constraints import MaxNorm
@@ -24,10 +24,10 @@ def Xception(input_shape,
              spatial=False,
              mc_inference=None
              ):
-    """Xception Model
+    """Xception Model.
 
     Args:
-        input_shape (tuple)): The shape of a single instance of the dataset.
+        input_shape (tuple): The shape of a single instance of the dataset.
         include_top (bool, optional): whether to include a fully-connected
             layer at the top of the network.
         num_classes (int, optional): number of classes to predict. Default 1.
@@ -122,14 +122,33 @@ def Xception(input_shape,
     return model
 
 
-def entry_flow(inputs, kernel_initialize, kernel_regularize, kernel_constraint):
-    """ Create the entry flow section
-        inputs (tensor): input tensor to neural network
+def entry_flow(inputs,
+               kernel_initialize,
+               kernel_regularize,
+               kernel_constraint):
+    """Creates the entry flow section.
+
+    Args:
+        inputs: Input tensor to neural network.
+        kernel_initialize:
+        kernel_regularize:
+        kernel_constraint:
+
+    Returns:
+
     """
 
     def stem(inputs, kernel_initialize, kernel_regularize, kernel_constraint):
-        """ Create the stem entry into the neural network
-            inputs (tensor): input tensor to neural network
+        """Creates the stem entry into the neural network.
+
+        Args:
+            inputs: Input tensor to neural network.
+            kernel_initialize:
+            kernel_regularize:
+            kernel_constraint:
+
+        Returns:
+
         """
         # Strided convolution - dimensionality reduction
         # Reduce feature maps by 75%
@@ -165,8 +184,16 @@ def entry_flow(inputs, kernel_initialize, kernel_regularize, kernel_constraint):
 
 
 def middle_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
-    """ Create the middle flow section
-        x (tensor): nput tensor into section
+    """Creates the middle flow section
+
+    Args:
+        x: Input tensor into section.
+        kernel_initialize:
+        kernel_regularize:
+        kernel_constraint:
+
+    Returns:
+
     """
     # Create 8 residual blocks
     for _ in range(8):
@@ -176,9 +203,16 @@ def middle_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
 
 
 def exit_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
-    """ Create the exit flow section
-        x (tensor): input to the exit flow section
-        output (tensor): output of exit flow section
+    """Creates the exit flow section.
+
+    Args:
+        x: Input to the exit flow section.
+        kernel_initialize:
+        kernel_regularize:
+        kernel_constraint:
+
+    Returns:
+        Output tensor of exit flow section.
     """
 
     # 1x1 strided convolution to increase number and reduce size of
@@ -256,10 +290,18 @@ def exit_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
 
 def projection_block(x, n_filters, kernel_initialize, kernel_regularize,
                      kernel_constraint):
-    """ Create a residual block using Depthwise Separable Convolutions
-    with Projection shortcut
-        x (tensor): input into residual block
-        n_filters (int): number of filters
+    """Creates a residual block using Depth-wise Separable Convolutions
+    with Projection shortcut.
+
+    Args:
+        x: Input tensor into residual block.
+        n_filters: An integer that indicates the number of filters.
+        kernel_initialize:
+        kernel_regularize:
+        kernel_constraint:
+
+    Returns:
+
     """
     # Remember the input
     shortcut = x
@@ -313,9 +355,17 @@ def projection_block(x, n_filters, kernel_initialize, kernel_regularize,
 
 def residual_block(x, n_filters, kernel_initialize, kernel_regularize,
                    kernel_constraint):
-    """ Create a residual block using Depthwise Separable Convolutions
-        x        : input into residual block
-        n_filters: number of filters
+    """Creates a residual block using Depth-wise Separable Convolutions.
+
+    Args:
+        x: Input into residual block.
+        n_filters: An integer that indicates the number of filters.
+        kernel_initialize:
+        kernel_regularize:
+        kernel_constraint:
+
+    Returns:
+
     """
     # Remember the input
     shortcut = x

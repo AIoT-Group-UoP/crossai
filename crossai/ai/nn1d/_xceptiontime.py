@@ -1,5 +1,6 @@
 import logging
-from tensorflow.keras.layers import Input, Dense, Conv1D, MaxPooling1D, SeparableConv1D, Flatten, Add, Concatenate
+from tensorflow.keras.layers import Input, Dense, Conv1D, MaxPooling1D
+from tensorflow.keras.layers import SeparableConv1D, Flatten, Add, Concatenate
 from tensorflow.keras.layers import BatchNormalization, Activation
 from tensorflow.keras import Model
 from tensorflow.keras.regularizers import l2
@@ -26,13 +27,16 @@ def XceptionTime(input_shape,
                  drp_high=0,
                  spatial=False,
                  mc_inference=None):
-    """A novel deep learning model referred to as the XceptionTime architecture. The proposed innovative
-    XceptionTime is designed by the integration of depthwise separable convolutions, adaptive average pooling,
-    and a novel non-linear normalization technique.  By utilizing the depthwise separable convolutions, the
-    XceptionTime network has far fewer parameters resulting in a less complex network. The updated architecture in
-    this CrossAI topology is extended in such a way as to achieve higher confidence in the model’s predictions, it
-    can be adapted to any window size, and its upgraded functionalities can avoid overfitting and achieve better
-    model generalization.
+    """A novel deep learning model referred to as the XceptionTime
+    architecture. The proposed innovative XceptionTime is designed by the
+    integration of depthwise separable convolutions, adaptive average pooling,
+    and a novel non-linear normalization technique. By utilizing the depthwise
+    separable convolutions, the XceptionTime network has far fewer parameters
+    resulting in a less complex network. The updated architecture in this
+    CrossAI topology is extended in such a way as to achieve higher confidence
+    in the model’s predictions, it can be adapted to any window size, and its
+    upgraded functionalities can avoid overfitting and achieve better model
+    generalization.
 
     Args:
         input_shape (tuple): The shape of a single instance of the dataset.
@@ -303,7 +307,8 @@ def xception_module(inputs, n_filters, use_bottleneck=True, kernel_size=41,
                    use_bias=False,
                    kernel_initializer=kernel_initialize,
                    kernel_regularizer=kernel_regularize,
-                   kernel_constraint=kernel_constraint)(inputs)
+                   kernel_constraint=kernel_constraint
+                   )(inputs)
     else:
         x = inputs
 
@@ -317,7 +322,8 @@ def xception_module(inputs, n_filters, use_bottleneck=True, kernel_size=41,
                                          padding="same", use_bias=False,
                                          kernel_initializer=kernel_initialize,
                                          kernel_regularizer=kernel_regularize,
-                                         kernel_constraint=kernel_constraint)(x)
+                                         kernel_constraint=kernel_constraint
+                                         )(x)
         separable_conv_list.append(separable_conv)
 
     x2 = MaxPooling1D(pool_size=3, strides=stride, padding="same")(inputs)
