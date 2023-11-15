@@ -1,26 +1,49 @@
-import pandas as pd
-import numpy as np
-import multiprocessing as mp
 import os
 import glob
 import copy
-from tqdm import tqdm
+import multiprocessing as mp
+import pandas as pd
+import numpy as np
 from scipy.io import wavfile
+from tqdm import tqdm
+from crossai.processing import resample_sig
+from crossai.loader._utils import get_sub_dirs
 
 
-# wavfile reader function needed for loading the audio data
-def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4)):
+def wavfile_reader(filename):
+    """Reads a wav file and returns the data as numpy array.
+
+    Args:
+        filename (str): Path to the wav file.
+
+    Returns:
+        numpy array: Data from the wav file.
     """
-    Loads the audio data from a directory and returns the data
-    as a pandas dataframe
 
-    The directory should :
+    sr, signal = wavfile.read(filename)
+    signal = signal.astype(np.float32)
+
+    # resample the signal if the sampling rate is not 44100
+    if sampling_rate != sr:
+        signal = resample_sig(signal, original_sr=sr, target_sr=sampling_rate)
+
+    # normalize the signal
+    signal = (signal - np.min(signal)) / (np.max(signal) - np.min(signal))
+
+    return signal
+
+
+def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4)):
+    """Loads the audio data from a directory and returns the data
+    as a pandas Dataframe.
+
+    The directory should:
         - contain subdirectories containing the wav files
             - the name of the subdirectories should be the label
-            of the wav files
+            of the wav files.
         or
         - contain wav files itself
-            - the name of the directory will be the label of the wav files
+            - the name of the directory will be the label of the wav files.
 
     Args:
         path (str): path to the directory
@@ -29,7 +52,7 @@ def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4)):
                                     Defaults to mp.cpu_count().
 
     Returns:
-        pandas dataframe: data from the wav files in a pandas dataframe
+        pandas Dataframe: data from the wav files in a pandas Dataframe.
      """
 
     data = []  # sound data

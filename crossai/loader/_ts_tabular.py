@@ -1,23 +1,23 @@
+import os
 import csv
 import pandas as pd
 import numpy as np
-import os
+from crossai.loader._utils import get_sub_dirs
 
 
 def csv_loader(path, delimiter=',', header=0):
-    """
-    Function to load multi-axis data from csv files. The csv files must be
+    """Loads multi-axis data from csv files. The csv files must be
     organized in subdirectories, each subdirectory containing the csv files
     of a class. The csv files must have the same headers. If not, a warning
     will be displayed and the files with different headers will be ignored.
 
     Args:
-        path (str): path to the directory containing the csv files
-        delimiter (str, optional): delimiter of the csv files. Defaults to ','.
-        header (int, optional): row of the header. Defaults to 0.
+        path (str): Path to the directory containing the csv files
+        delimiter (str, optional): Delimiter of the csv files. Defaults to ','.
+        header (int, optional): Row of the header. Defaults to 0.
 
     Returns:
-        df: dataframe containing the data
+        df: pandas Dataframe containing the data.
     """
 
     warning_flag = 0
