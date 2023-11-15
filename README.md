@@ -1,7 +1,7 @@
 # CrossAI
 
 This repository contains the open-source `crossai` library, which includes functionalities capable of developing 
-end-to-end Artificial Intelligence (AI) pipelines for uni- or multi-axis Time Series analysis. The library specifically 
+*end-to-end Artificial Intelligence (AI) pipelines* for *uni- or multi-axis Time Series* analysis. The library specifically 
 incorporates components in the likes of:
 
 1. Signal engineering: signal transformation, feature engineering, data augmentation
@@ -34,8 +34,8 @@ topologies are designed to analyze Time Series data within both the 1D and 2D do
 > It delivers Explainable AI (XAI) mechanisms for interpreting the AI models' exports to actual exports of interest, 
 as well as functionalities and algorithms for measuring the models' Trustworthiness and Robustness.
 
-> The implementation is based on the following study:
-> 
+The implementation is based on the following study:
+
 > Tzamalis, Pantelis, Andreas Bardoutsos, Dimitris Markantonatos, Christoforos Raptopoulos, Sotiris Nikoletseas, 
 Xenophon Aggelides, and Nikos Papadopoulos. "End-to-end Gesture Recognition Framework for the Identification of 
 Allergic Rhinitis Symptoms." In 2022 18th International Conference on Distributed Computing in Sensor 
