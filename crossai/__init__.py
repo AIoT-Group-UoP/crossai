@@ -2,7 +2,7 @@
 CrossAI.
 
 An open-source library that consists of functionalities capable of processing
-and developing ML pipelines for Time Series Analysis.
+and developing end-to-end Machine Learning pipelines for Time Series Analysis.
 """
 
 __version__ = "0.1.1.0"
