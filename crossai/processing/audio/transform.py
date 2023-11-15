@@ -319,3 +319,27 @@ def chroma_stft(sig, sr, n_chroma=12, hop_length=512, win_length=None,
             chroma_stft, dsize=dsize, interpolation=cv2.INTER_CUBIC)
 
     return chroma_stft
+
+
+def mfcc(sig, sr=22050, S=None, n_mfcc=20, dct_type=2, norm='ortho', lifter=0):
+    """
+    Compute the MFCCs (Mel-frequency cepstral coefficients) from an audio signal.
+
+    Args:
+        sig (numpy array): Input signal
+        sr (int): Sampling rate of the input signal
+        S (numpy array): Pre-computed spectrogram
+        n_mfcc (int): Number of MFCCs to return
+        dct_type (int): Type of DCT (discrete cosine transform) to use
+        norm (str): Type of norm to use
+        lifter (int): Parameter for inversion of MFCCs
+
+
+    Returns:
+        mfcc (numpy array): Mel-frequency cepstral coefficients
+    """
+
+    mfcc = librosa.feature.mfcc(
+        y=sig, sr=sr, S=S, n_mfcc=n_mfcc, dct_type=dct_type, norm=norm, lifter=lifter)
+
+    return mfcc
