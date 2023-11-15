@@ -37,3 +37,30 @@ class Augmenter(BaseEstimator, TransformerMixin):
                     data.append([x[0][i], x[1]])
 
         return data
+
+
+def augment_signal_data(crossai_object, augs):
+    """
+    Augment the data using the augmenters
+
+    Args:
+        crossai_object (CrossAI_Audio): CrossAI_Audio object
+        augs (list): List of augmenters
+
+    Returns:
+        crossai_object (CrossAI_Audio): CrossAI_Audio object with augmented
+                                            data
+    """
+
+    df_aug = pd.DataFrame(columns=['data', 'label'])
+    df_aug['data'] = crossai_object.data
+    df_aug['label'] = crossai_object.labels
+
+    for i in range(len(augs)):
+        x = augs[i].fit_transform(crossai_object)
+        df_aug = pd.concat([df_aug, pd.DataFrame(
+            x, columns=['data', 'label'])], ignore_index=True)
+
+    crossai_object = TimeSeries(df_aug)
+
+    return crossai_object
