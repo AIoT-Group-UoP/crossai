@@ -63,3 +63,34 @@ def augment_signal_data(crossai_object, augs):
     crossai_object = TimeSeries(df_aug)
 
     return crossai_object
+
+
+class Scaler(BaseEstimator, TransformerMixin):
+    """
+    Create a transformer class for the pipeline using a custom function
+
+    Args:
+        func (function): Function to be used in the pipeline
+        **kwargs: Keyword arguments to be passed to the function
+    """
+
+    def __init__(self, scaler):
+        """
+        Initialize the Transformer class
+        """
+        self.scaler = scaler
+
+    def fit(self, X, y=None):
+        """
+        Fit the transformer
+        """
+        return self
+
+    def transform(self, X):
+        """
+        Transform the data using the custom function
+        """
+
+        X.data = self.scaler.fit_transform(X.data)
+
+        return X
