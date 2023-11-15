@@ -8,7 +8,7 @@ def axis_to_model_shape(*args):
     (window_size,features).
 
     Args:
-        *kwargs: Each axis data/ feature.
+        *args: Each axis data/ feature.
 
     Returns:
         data (numpy array): Data in model shape.
@@ -18,8 +18,7 @@ def axis_to_model_shape(*args):
     data = np.expand_dims(data, axis=0)
     data = data.T
     for feature in args[1:]:
-        # concatenate so that the data will be in the shape
-        # (window_size,features)
+        # concatenate so that the data will be in the required shape
         feature = np.expand_dims(feature, axis=0)
         data = np.concatenate((data, feature.T), axis=1)
     data = np.array(data.tolist())
