@@ -21,6 +21,7 @@ def roll_signal(sig, augment_times, n_roll=randint(10000, 50000)):
         n_roll = randint(20000, 50000)
     return rolled_sig
 
+
 def spec_augment(spectrogram, augment_times=1, masks=2, freq_masking=0.15, time_masking=0.15):
     """
     Implementation of SpecAugment using numpy.
@@ -62,3 +63,23 @@ def spec_augment(spectrogram, augment_times=1, masks=2, freq_masking=0.15, time_
         augmented_spectrograms.append(augmented)
 
     return augmented_spectrograms
+
+
+def add_noise(signal, augment_times, noise_factor=0.005):
+    """
+    Add random noise to the signal
+
+    Args:
+        signal (numpy array): Input signal
+        sr (int): Sampling rate of the input signal
+        noise_factor (float): Noise factor
+
+    Returns:
+        noisy_signal (numpy array): Returns the noisy signal
+    """
+
+    noisy_signal = []
+    for i in range(augment_times):
+        noise = np.random.randn(len(signal))
+        noisy_signal.append(signal + noise_factor*noise)
+    return noisy_signal
