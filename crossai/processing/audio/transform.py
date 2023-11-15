@@ -239,3 +239,43 @@ def chroma(sig, sr, hop_length=512, fmin=None, norm=1, threshold=0.0,
             chroma, dsize=dsize, interpolation=cv2.INTER_CUBIC)
 
     return chroma
+
+
+def chroma_cens(sig, sr, n_chroma=12, hop_length=512, fmin=None, norm=1,
+                tuning=None, n_octaves=7, bins_per_octave=36, cqt_mode='full',
+                dsize=None):
+    """
+    Compute the chroma variant “Chroma Energy Normalized” (CENS),
+    following [R6745b8c9f2a0-1].
+
+    Args:
+        sig (numpy array): Input signal
+        sr (int): Sampling rate of the input signal
+        n_chroma (int): Number of chroma bins to produce
+        hop_length (int): Number of samples between successive frames
+        fmin (float): Minimum frequency
+        norm (int): Normalization factor
+        tuning (float): Deviation from A440 tuning in fractional bins
+        n_octaves (int): Number of octaves to analyze above fmin
+        bins_per_octave (int): Number of bins per octave
+        cqt_mode (string): Constant-Q transform mode
+        dsize (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram 
+
+    Returns:
+        chroma_cens (numpy array): Returns the chroma variant
+                                    “Chroma Energy Normalized” (CENS),
+                                            following [R6745b8c9f2a0-1]
+    """
+
+    chroma_cens = librosa.feature.chroma_cens(y=sig, sr=sr, n_chroma=n_chroma,
+                                              hop_length=hop_length, fmin=fmin,
+                                              norm=norm, tuning=tuning,
+                                              n_octaves=n_octaves,
+                                              bins_per_octave=bins_per_octave,
+                                              cqt_mode=cqt_mode)
+
+    if dsize is not None:
+        chroma_cens = cv2.resize(
+            chroma_cens, dsize=dsize, interpolation=cv2.INTER_CUBIC)
+
+    return chroma_cens
