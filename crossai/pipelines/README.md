@@ -10,4 +10,3 @@ generic time series data:
 * Transformer: Creates a scikit-learn Transformer class for the pipeline. 
 * PadOrTrim: Pipeline class to pad or trim the data in order for it to have the same dimensions. 
 * labelEncoder: Pipeline class to encode the labels.
-* 
