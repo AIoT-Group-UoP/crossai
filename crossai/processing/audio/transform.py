@@ -75,7 +75,7 @@ def spectrum_calibration(target: str,
 
 def q_transform(sig, sr=44100, n_bins=84, hop_length=512, fmin=55, norm=1,
                 bins_per_octave=12, tuning=None, filter_scale=1, sparsity=0.01,
-                window='hann', scale=True, pad_mode='reflect', to_dB=True,
+                window='hann', scale=True, pad_mode='reflect', to_db=True,
                 dsize=None):
     """Computes the constant-Q transform of an audio signal.
 
@@ -96,7 +96,7 @@ def q_transform(sig, sr=44100, n_bins=84, hop_length=512, fmin=55, norm=1,
         pad_mode (string): If center=True, the padding mode to use at the
                             edges of the signal. 
                                 By default, STFT uses reflection padding.
-        to_dB (bool): Convert the spectrogram to dB scale.
+        to_db (bool): Convert the spectrogram to dB scale.
         dsize (tuple): Size of the output spectrogram : if None, the output is
             the raw spectrogram.
 
@@ -112,7 +112,7 @@ def q_transform(sig, sr=44100, n_bins=84, hop_length=512, fmin=55, norm=1,
                                    sparsity=sparsity, window=window,
                                    scale=scale, pad_mode=pad_mode)
 
-    if to_dB is True:
+    if to_db is True:
         q_transform = librosa.amplitude_to_db(q_transform, ref=np.max)
 
     if dsize is not None:
@@ -123,7 +123,7 @@ def q_transform(sig, sr=44100, n_bins=84, hop_length=512, fmin=55, norm=1,
 
 
 def melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512, n_mels=128,
-                   fmin=0.0, fmax=8000, power=2, to_dB=True, dsize=None):
+                   fmin=0.0, fmax=8000, power=2, to_db=True, dsize=None):
     """Computes a mel-scaled spectrogram.
 
     Args:
@@ -135,8 +135,9 @@ def melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512, n_mels=128,
         fmin (float): Minimum frequency
         fmax (float): Maximum frequency
         power (int): Power of the spectrogram
-        to_dB (bool): Convert the spectrogram to dB scale
-        dsize (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram              
+        to_db (bool): Convert the spectrogram to dB scale
+        dsize (tuple): Size of the output spectrogram : if None, the output is
+            the raw spectrogram
 
     Returns:
         mel_spectrogram (numpy array): Returns a mel-scaled spectrogram
@@ -146,7 +147,7 @@ def melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512, n_mels=128,
         y=sig, sr=sr, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels,
         fmin=fmin, fmax=fmax, power=power)
 
-    if to_dB is True:
+    if to_db is True:
         mel_spectrogram = librosa.power_to_db(mel_spectrogram, ref=np.max)
 
     if dsize is not None:
@@ -156,34 +157,31 @@ def melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512, n_mels=128,
     return mel_spectrogram
 
 
-def inverse_melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512,
+def inverse_melspectrogram(sig, n_fft=2048, hop_length=512,
                            win_length=None, window='hann', center=True,
                            pad_mode='reflect', power=2.0, n_iter=32,
                            length=None):
     """Computes the inverse of a mel-scaled spectrogram.
 
     Args:
-        sig (numpy array): Input signal
-        sr (int): Sampling rate of the input signal
-        n_fft (int): Length of the FFT window
-        hop_length (int): Number of samples between successive frames
+        sig (numpy array): Input signal.
+        n_fft (int): Length of the FFT window.
+        hop_length (int): Number of samples between successive frames.
         win_length (int): Each frame of audio is windowed by window of length
-                            win_length and then padded with zeroes to match
-                                n_fft
-        window (string): Type of window to use
+            win_length and then padded with zeroes to match n_fft.
+        window (string): Type of window to use.
         center (bool): If True, the signal y is padded so that frame D[:, t]
-                        is centered at y[t * hop_length]
+            is centered at y[t * hop_length].
         pad_mode (string): If center=True, the padding mode to use at the
-                            edges of the signal. 
-                                By default, STFT uses reflection padding.
-        power (int): Power of the spectrogram
-        n_iter (int): Number of inversion iterations
+            edges of the signal. By default, STFT uses reflection padding.
+        power (int): Power of the spectrogram.
+        n_iter (int): Number of inversion iterations.
         length (int): If provided, the output y is zero-padded or clipped to
-                        exactly length samples
+            exactly length samples.
 
     Returns:
         inverse_mel_spectrogram (numpy array): Returns the inverse of a
-                                                mel-scaled spectrogram
+            mel-scaled spectrogram.
     """
 
     inverse_mel_spectrogram = librosa.feature.inverse.mel_to_audio(
@@ -200,21 +198,21 @@ def chroma(sig, sr, hop_length=512, fmin=None, norm=1, threshold=0.0,
     """Computes a chromagram from a waveform or power spectrogram.
 
     Args:
-        sig (numpy array): Input signal
-        sr (int): Sampling rate of the input signal
-        hop_length (int): Number of samples between successive frames
-        fmin (float): Minimum frequency
-        norm (int): Normalization factor
-        threshold (float): Pre-normalization energy threshold.
-                            Values below the threshold are discarded,
-                                        resulting in a sparse chromagram.
-        tuning (float): Deviation from A440 tuning in fractional bins
-        n_chroma (int): Number of chroma bins to produce
-        n_octaves (int): Number of octaves to analyze above fmin
-        window (string): Type of window to use
-        bins_per_octave (int): Number of bins per octave
-        cqt_mode (string): Constant-Q transform mode
-        dsize   (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram 
+        sig (numpy array): Input signal.
+        sr (int): Sampling rate of the input signal.
+        hop_length (int): Number of samples between successive frames.
+        fmin (float): Minimum frequency.
+        norm (int): Normalization factor.
+        threshold (float): Pre-normalization energy threshold. Values below
+            the threshold are discarded, resulting in a sparse chromagram.
+        tuning (float): Deviation from A440 tuning in fractional bins.
+        n_chroma (int): Number of chroma bins to produce.
+        n_octaves (int): Number of octaves to analyze above fmin.
+        window (string): Type of window to use.
+        bins_per_octave (int): Number of bins per octave.
+        cqt_mode (string): Constant-Q transform mode.
+        dsize   (tuple): Size of the output spectrogram : if None, the output
+            is the raw spectrogram.
 
     Returns:
         chroma (numpy array): Returns the chromagram for an audio signal
@@ -242,22 +240,22 @@ def chroma_cens(sig, sr, n_chroma=12, hop_length=512, fmin=None, norm=1,
         following [R6745b8c9f2a0-1].
 
     Args:
-        sig (numpy array): Input signal
-        sr (int): Sampling rate of the input signal
-        n_chroma (int): Number of chroma bins to produce
-        hop_length (int): Number of samples between successive frames
-        fmin (float): Minimum frequency
-        norm (int): Normalization factor
-        tuning (float): Deviation from A440 tuning in fractional bins
-        n_octaves (int): Number of octaves to analyze above fmin
-        bins_per_octave (int): Number of bins per octave
-        cqt_mode (string): Constant-Q transform mode
-        dsize (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram 
+        sig (numpy array): Input signal.
+        sr (int): Sampling rate of the input signal.
+        n_chroma (int): Number of chroma bins to produce.
+        hop_length (int): Number of samples between successive frames.
+        fmin (float): Minimum frequency.
+        norm (int): Normalization factor.
+        tuning (float): Deviation from A440 tuning in fractional bins.
+        n_octaves (int): Number of octaves to analyze above fmin.
+        bins_per_octave (int): Number of bins per octave.
+        cqt_mode (string): Constant-Q transform mode.
+        dsize (tuple): Size of the output spectrogram : if None, the output is
+            the raw spectrogram.
 
     Returns:
-        chroma_cens (numpy array): Returns the chroma variant
-                                    “Chroma Energy Normalized” (CENS),
-                                            following [R6745b8c9f2a0-1]
+        chroma_cens (numpy array): Returns the chroma variant “Chroma Energy
+            Normalized” (CENS), following [R6745b8c9f2a0-1].
     """
 
     chroma_cens = librosa.feature.chroma_cens(y=sig, sr=sr, n_chroma=n_chroma,
@@ -314,25 +312,27 @@ def chroma_stft(sig, sr, n_chroma=12, hop_length=512, win_length=None,
     return chroma_stft
 
 
-def mfcc(sig, sr=22050, S=None, n_mfcc=20, dct_type=2, norm='ortho', lifter=0):
+def mfcc(sig, sr=22050, spec=None, n_mfcc=20, dct_type=2, norm='ortho',
+         lifter=0):
     """
-    Compute the MFCCs (Mel-frequency cepstral coefficients) from an audio signal.
+    Compute the MFCCs (Mel-frequency cepstral coefficients) from an audio
+        signal.
 
     Args:
         sig (numpy array): Input signal
-        sr (int): Sampling rate of the input signal
-        S (numpy array): Pre-computed spectrogram
-        n_mfcc (int): Number of MFCCs to return
-        dct_type (int): Type of DCT (discrete cosine transform) to use
-        norm (str): Type of norm to use
-        lifter (int): Parameter for inversion of MFCCs
-
+        sr (int): Sampling rate of the input signal.
+        spec (numpy array): Pre-computed spectrogram.
+        n_mfcc (int): Number of MFCCs to return.
+        dct_type (int): Type of DCT (discrete cosine transform) to use.
+        norm (str): Type of norm to use.
+        lifter (int): Parameter for inversion of MFCCs.
 
     Returns:
-        mfcc (numpy array): Mel-frequency cepstral coefficients
+        mfcc (numpy array): Mel-frequency cepstral coefficients.
     """
 
     mfcc = librosa.feature.mfcc(
-        y=sig, sr=sr, S=S, n_mfcc=n_mfcc, dct_type=dct_type, norm=norm, lifter=lifter)
+        y=sig, sr=sr, S=spec, n_mfcc=n_mfcc, dct_type=dct_type, norm=norm,
+        lifter=lifter)
 
     return mfcc
