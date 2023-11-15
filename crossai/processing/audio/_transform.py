@@ -1,7 +1,7 @@
 import numpy as np
 import librosa
 import cv2
-from matchering import Config, Result
+from matchering import Config
 from matchering.stages import main
 from matchering.saver import save
 from matchering.utils import get_temp_folder

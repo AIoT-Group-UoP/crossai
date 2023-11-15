@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from crossai.processing.multiaxis._features import magnitude
-from crossai.processing.signal._windowing import sliding_window_cpu
-from crossai.processing.multiaxis._utils import axis_to_model_shape
+from crossai.processing.tabular._features import magnitude
+from crossai.processing.transform import sliding_window_cpu
+from crossai.processing.tabular._utils import axis_to_model_shape
 
 
 class Tabular():
