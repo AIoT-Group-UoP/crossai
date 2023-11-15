@@ -4,6 +4,7 @@ from scipy import signal
 import librosa
 import cv2
 
+
 def resample_sig(sig, original_sr, target_sr):
     """ 
     Resample signal from its original sampling rate to a target sampling rate.
@@ -21,3 +22,18 @@ def resample_sig(sig, original_sr, target_sr):
     samps = secs*target_sr     # num of samples to resample to
     rsmp_sig = scipy.signal.resample(sig, samps)
     return rsmp_sig
+
+
+def amplify(sig, factor):
+    """
+    Amplify the signal by a factor.
+
+    Args:
+        sig (numpy array): Input signal
+        factor (int): Factor to amplify the signal
+
+    Returns:
+        amp_sig (numpy array): Returns the amplified signal
+    """
+    amp_sig = sig * factor
+    return amp_sig
