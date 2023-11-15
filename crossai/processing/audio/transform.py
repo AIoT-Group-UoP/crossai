@@ -279,3 +279,43 @@ def chroma_cens(sig, sr, n_chroma=12, hop_length=512, fmin=None, norm=1,
             chroma_cens, dsize=dsize, interpolation=cv2.INTER_CUBIC)
 
     return chroma_cens
+
+
+def chroma_stft(sig, sr, n_chroma=12, hop_length=512, win_length=None,
+                window='hann', center=True, pad_mode='reflect', tuning=None,
+                dsize=None):
+    """
+    Compute a  stft chromagram from a waveform or power spectrogram.
+
+    Args:
+        sig (numpy array): Input
+        sr (int): Sampling rate of the input signal
+        n_chroma (int): Number of chroma bins to produce
+        hop_length (int): Number of samples between successive frames
+        win_length (int): Each frame of audio is windowed by window().
+                            The window will be of length win_length and then
+                                padded with zeros to match n_fft.
+        window (string): Type of window to use
+        center (bool): If True, the signal y is padded so that frame D[:, t]
+                        is centered at y[t * hop_length]
+        pad_mode (string): If center=True, the padding mode to use at the
+                            edges of the signal. By default,
+                                STFT uses reflection padding.
+        tuning (float): Deviation from A440 tuning in fractional bins
+        dsize   (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram 
+
+    Returns:
+        chroma_stft (numpy array): Returns the chromagram for an audio signal
+    """
+
+    chroma_stft = librosa.feature.chroma_stft(y=sig, sr=sr, n_chroma=n_chroma,
+                                              hop_length=hop_length,
+                                              win_length=win_length,
+                                              window=window, center=center,
+                                              pad_mode=pad_mode, tuning=tuning)
+
+    if dsize is not None:
+        chroma_stft = cv2.resize(
+            chroma_stft, dsize=dsize, interpolation=cv2.INTER_CUBIC)
+
+    return chroma_stft
