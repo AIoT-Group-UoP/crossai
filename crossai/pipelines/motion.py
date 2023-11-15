@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-from crossai.processing.motion._features import pure_acceleration
+from crossai.processing.motion import pure_acceleration
 
 
 class PureAccExtractor(BaseEstimator, TransformerMixin):

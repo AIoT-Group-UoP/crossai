@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from scipy.io import wavfile
 from tqdm import tqdm
-from crossai.processing._transform import resample_sig
+from crossai.processing import resample_sig
 from crossai.loader._utils import get_sub_dirs
 
 
