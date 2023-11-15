@@ -1,37 +1,34 @@
 import numpy as np
 import librosa
 import cv2
-from matchering.log import Code, info, debug, debug_line, ModuleError
 from matchering import Config, Result
-from matchering.loader import load
 from matchering.stages import main
 from matchering.saver import save
-from matchering.preview_creator import create_preview
 from matchering.utils import get_temp_folder
-from matchering.checker import check, check_equality
-from matchering.dsp import channel_count, size
 from matchering import pcm24
 
 
-def spectrum_calibration(target: str, reference: str, sr: float, config: Config = Config(), save_to_wav=False, to_mono=True):
-    """
-    Processes the target audio to match the reference audio.
+def spectrum_calibration(target: str,
+                         reference: str,
+                         config: Config = Config(),
+                         save_to_wav=False,
+                         to_mono=True):
+    """Processes the target audio to match the reference audio.
 
     Parameters
-        target: target audio
-        reference: reference audio
-        sr: sample rate of the audio
-        config: configuration for the processing
-        save_to_wav: whether to save the processed audio to a wav file
-        to_mono: whether to convert the processed audio to mono
+        target: Target audio.
+        reference: Reference audio.
+        config: Configuration for the processing.
+        save_to_wav: Whether to save the processed audio to a wav file.
+        to_mono: Whether to convert the processed audio to mono.
 
     Returns
-        correct_result: processed audio
+        correct_result: Processed audio.
     """
     results = [pcm24("result.wav")]
     # Get a temporary folder for converting mp3's
-    temp_folder = config.temp_folder if config.temp_folder else get_temp_folder(
-        results)
+    temp_folder = config.temp_folder if config.temp_folder \
+        else get_temp_folder(results)
 
     target = np.vstack((target, target)).T
     reference = np.vstack((reference, reference)).T
@@ -80,32 +77,32 @@ def q_transform(sig, sr=44100, n_bins=84, hop_length=512, fmin=55, norm=1,
                 bins_per_octave=12, tuning=None, filter_scale=1, sparsity=0.01,
                 window='hann', scale=True, pad_mode='reflect', to_dB=True,
                 dsize=None):
-    """
-    Compute the constant-Q transform of an audio signal.
+    """Computes the constant-Q transform of an audio signal.
 
     Args:
-        sig (numpy array): Input signal
-        sr (int): Sampling rate of the input signal
-        n_bins (int): Number of frequency bins
-        hop_length (int): Number of samples between successive frames
-        fmin (float): Minimum frequency
-        norm (int): Normalization factor
-        bins_per_octave (int): Number of bins per octave
-        tuning (float): Deviation from A440 tuning in fractional bins
+        sig (numpy array): Input signal.
+        sr (int): Sampling rate of the input signal.
+        n_bins (int): Number of frequency bins.
+        hop_length (int): Number of samples between successive frames.
+        fmin (float): Minimum frequency.
+        norm (int): Normalization factor.
+        bins_per_octave (int): Number of bins per octave.
+        tuning (float): Deviation from A440 tuning in fractional bins.
         filter_scale (float): Filter scale factor. Small values (<1) use
                                 shorter windows for improved time resolution.
-        sparsity (float): Sparsity of the CQT basis
-        window (string): Type of window to use
+        sparsity (float): Sparsity of the CQT basis.
+        window (string): Type of window to use.
         scale (bool): If True, scale the magnitude of the CQT by n_bins
         pad_mode (string): If center=True, the padding mode to use at the
                             edges of the signal. 
                                 By default, STFT uses reflection padding.
-        to_dB (bool): Convert the spectrogram to dB scale
-        dsize (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram 
+        to_dB (bool): Convert the spectrogram to dB scale.
+        dsize (tuple): Size of the output spectrogram : if None, the output is
+            the raw spectrogram.
 
     Returns:
         q_transform (numpy array): Returns the constant-Q transform of an
-                                    audio signal
+                                    audio signal.
     """
 
     q_transform = librosa.core.cqt(sig, sr=sr, n_bins=n_bins,
@@ -127,8 +124,7 @@ def q_transform(sig, sr=44100, n_bins=84, hop_length=512, fmin=55, norm=1,
 
 def melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512, n_mels=128,
                    fmin=0.0, fmax=8000, power=2, to_dB=True, dsize=None):
-    """
-    Compute a mel-scaled spectrogram.
+    """Computes a mel-scaled spectrogram.
 
     Args:
         sig (numpy array): Input signal
@@ -164,8 +160,7 @@ def inverse_melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512,
                            win_length=None, window='hann', center=True,
                            pad_mode='reflect', power=2.0, n_iter=32,
                            length=None):
-    """
-    Compute the inverse of a mel-scaled spectrogram.
+    """Computes the inverse of a mel-scaled spectrogram.
 
     Args:
         sig (numpy array): Input signal
@@ -202,8 +197,7 @@ def inverse_melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512,
 def chroma(sig, sr, hop_length=512, fmin=None, norm=1, threshold=0.0,
            tuning=None, n_chroma=12, n_octaves=7, window=None,
            bins_per_octave=36, cqt_mode='full', dsize=None):
-    """
-    Compute a chromagram from a waveform or power spectrogram.
+    """Computes a chromagram from a waveform or power spectrogram.
 
     Args:
         sig (numpy array): Input signal
@@ -244,9 +238,8 @@ def chroma(sig, sr, hop_length=512, fmin=None, norm=1, threshold=0.0,
 def chroma_cens(sig, sr, n_chroma=12, hop_length=512, fmin=None, norm=1,
                 tuning=None, n_octaves=7, bins_per_octave=36, cqt_mode='full',
                 dsize=None):
-    """
-    Compute the chroma variant “Chroma Energy Normalized” (CENS),
-    following [R6745b8c9f2a0-1].
+    """Computes the chroma variant “Chroma Energy Normalized” (CENS),
+        following [R6745b8c9f2a0-1].
 
     Args:
         sig (numpy array): Input signal
@@ -284,8 +277,7 @@ def chroma_cens(sig, sr, n_chroma=12, hop_length=512, fmin=None, norm=1,
 def chroma_stft(sig, sr, n_chroma=12, hop_length=512, win_length=None,
                 window='hann', center=True, pad_mode='reflect', tuning=None,
                 dsize=None):
-    """
-    Compute a  stft chromagram from a waveform or power spectrogram.
+    """Computes a  stft chromagram from a waveform or power spectrogram.
 
     Args:
         sig (numpy array): Input
@@ -301,8 +293,9 @@ def chroma_stft(sig, sr, n_chroma=12, hop_length=512, win_length=None,
         pad_mode (string): If center=True, the padding mode to use at the
                             edges of the signal. By default,
                                 STFT uses reflection padding.
-        tuning (float): Deviation from A440 tuning in fractional bins
-        dsize   (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram 
+        tuning (float): Deviation from A440 tuning in fractional bins.
+        dsize (tuple): Size of the output spectrogram : if None, the output is
+            the raw spectrogram.
 
     Returns:
         chroma_stft (numpy array): Returns the chromagram for an audio signal

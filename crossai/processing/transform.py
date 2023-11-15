@@ -1,13 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy import signal
-import librosa
+import scipy
 import cv2
 
 
 def resample_sig(sig, original_sr, target_sr):
-    """ 
-    Resample signal from its original sampling rate to a target sampling rate.
+    """Resamples signal from its original sampling rate to a target sampling
+        rate.
 
     Args: 
         sig: signal to resample
@@ -21,12 +20,12 @@ def resample_sig(sig, original_sr, target_sr):
     secs = int(np.ceil(len(sig)/original_sr))  # seconds in signal
     samps = secs*target_sr     # num of samples to resample to
     rsmp_sig = scipy.signal.resample(sig, samps)
+
     return rsmp_sig
 
 
 def amplify(sig, factor):
-    """
-    Amplify the signal by a factor.
+    """Amplifies the signal by a factor.
 
     Args:
         sig (numpy array): Input signal
@@ -36,12 +35,12 @@ def amplify(sig, factor):
         amp_sig (numpy array): Returns the amplified signal
     """
     amp_sig = sig * factor
+
     return amp_sig
 
 
 def complex_to_real(sig):
-    """
-    Make a signal from complex to real.
+    """Makes a signal from complex to real.
 
     Args:
         sig (numpy array): Input signal
@@ -50,12 +49,12 @@ def complex_to_real(sig):
         real_sig (numpy array): Returns the real signal
     """
     real_sig = np.real(sig)
+
     return real_sig
 
 
 def fft(sig):
-    """
-    Compute the one-dimensional discrete Fourier Transform.
+    """Computes the one-dimensional discrete Fourier Transform.
 
     Args:
         sig (numpy array): Input signal
@@ -66,12 +65,12 @@ def fft(sig):
         Fourier Transform
     """
     fft = np.fft.fft(sig)
+
     return fft
 
 
 def spec_to_rgb(spec, dsize=(256, 256), cmap='viridis'):
-    """
-    Convert a spectrogram to a 3 channel RGB image.
+    """Converts a spectrogram to a 3 channel RGB image.
 
     Args:
         spec (numpy array): Input spectrogram   
@@ -94,17 +93,17 @@ def spec_to_rgb(spec, dsize=(256, 256), cmap='viridis'):
 
 
 def sliding_window_cpu(sig, window_size, overlap, verbose=True):
-    """
-    Create a sliding window of size window and stride stride 
+    """Creates a sliding window of size window and stride.
 
     Args:
-        sig (numpy array): Input signal
-        window (int): Window size in samples
-        stride (int): Stride size in samples
+        sig (numpy array): Input signal.
+        window_size (int): Window size in samples.
+        overlap (int): Stride size in samples.
+        verbose:
 
     Returns:
         sliding_window (numpy array): Returns a sliding window of size
-                                        window and stride stride
+            window and stride.
     """
 
     shape = sig.shape[:-1] + ((sig.shape[-1] - window_size + 1)//overlap,
@@ -119,4 +118,5 @@ def sliding_window_cpu(sig, window_size, overlap, verbose=True):
             print("Error in sliding window instance."
                   " Probably window size is bigger than the data or stride is"
                   " bigger than window size. Returning None.")
+
         return None
