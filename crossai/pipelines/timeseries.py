@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from crossai_lib.ts.signal._utils import pad_or_trim
-from crossai_lib.ts.signal._windowing import sliding_window_cpu
+from crossai.processing._utils import pad_or_trim
+from crossai.processing import sliding_window_cpu
 
 
 class TimeSeries():
