@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
+
 class Audio():
     """CrossAI TimeSeries object that contains the data and labels of a time
             series dataset.
