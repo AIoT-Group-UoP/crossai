@@ -37,3 +37,17 @@ def amplify(sig, factor):
     """
     amp_sig = sig * factor
     return amp_sig
+
+
+def complex_to_real(sig):
+    """
+    Make a signal from complex to real.
+
+    Args:
+        sig (numpy array): Input signal
+
+    Returns:
+        real_sig (numpy array): Returns the real signal
+    """
+    real_sig = np.real(sig)
+    return real_sig
