@@ -197,3 +197,45 @@ def inverse_melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512,
         pad_mode=pad_mode, power=power, n_iter=n_iter, length=length)
 
     return inverse_mel_spectrogram
+
+
+def chroma(sig, sr, hop_length=512, fmin=None, norm=1, threshold=0.0,
+           tuning=None, n_chroma=12, n_octaves=7, window=None,
+           bins_per_octave=36, cqt_mode='full', dsize=None):
+    """
+    Compute a chromagram from a waveform or power spectrogram.
+
+    Args:
+        sig (numpy array): Input signal
+        sr (int): Sampling rate of the input signal
+        hop_length (int): Number of samples between successive frames
+        fmin (float): Minimum frequency
+        norm (int): Normalization factor
+        threshold (float): Pre-normalization energy threshold.
+                            Values below the threshold are discarded,
+                                        resulting in a sparse chromagram.
+        tuning (float): Deviation from A440 tuning in fractional bins
+        n_chroma (int): Number of chroma bins to produce
+        n_octaves (int): Number of octaves to analyze above fmin
+        window (string): Type of window to use
+        bins_per_octave (int): Number of bins per octave
+        cqt_mode (string): Constant-Q transform mode
+        dsize   (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram 
+
+    Returns:
+        chroma (numpy array): Returns the chromagram for an audio signal
+    """
+
+    chroma = librosa.feature.chroma_cqt(y=sig, sr=sr, hop_length=hop_length,
+                                        fmin=fmin, norm=norm,
+                                        threshold=threshold, tuning=tuning,
+                                        n_chroma=n_chroma, n_octaves=n_octaves,
+                                        window=window,
+                                        bins_per_octave=bins_per_octave,
+                                        cqt_mode=cqt_mode)
+
+    if dsize is not None:
+        chroma = cv2.resize(
+            chroma, dsize=dsize, interpolation=cv2.INTER_CUBIC)
+
+    return chroma
