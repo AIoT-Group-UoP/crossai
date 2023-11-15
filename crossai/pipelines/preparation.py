@@ -2,7 +2,6 @@ import numpy as np
 import warnings
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-from crossai.processing import sliding_window_cpu
 from crossai.pipelines.timeseries import TimeSeries
 
 
