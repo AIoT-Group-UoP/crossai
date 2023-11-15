@@ -1,18 +1,20 @@
 import pandas as pd
+from crossai.performance.pilot_evaluation import pilot_label_processing
+from crossai.pipelines.tabular import Tabular
 
 
 def csv_loader(filename, classes: list, delimiter=',', header=0):
     """Loads an instance of tabular (csv) file and returns the
-    data in the equivalent crossai object for pilot evaluation
+    data in the equivalent crossai object for pilot evaluation.
 
     Args:
-        filename (str): path to the file
-        classes (list): list of class names shaped [class1, class2, ...]
-        delimiter (str, optional): delimiter of the csv files. Defaults to ','.
-        header (int, optional): row of the header. Defaults to 0.
+        filename (str): Path to the file
+        classes (list): List of class names shaped [class1, class2, ...].
+        delimiter (str, optional): Delimiter of the csv files. Defaults to ','.
+        header (int, optional): Row of the header. Defaults to 0.
 
     Returns:
-        crossai object: data in the equivalent crossai object
+        CrossAI object: data in the equivalent CrossAI object.
     """
     df = pd.DataFrame(columns=['instance', 'label', 'feature', 'data'])
     local_df = pd.read_csv(filename, delimiter=delimiter, header=header)

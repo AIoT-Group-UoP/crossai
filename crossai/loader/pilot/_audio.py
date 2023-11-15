@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from scipy.io import wavfile
 from crossai.processing import resample_sig
+from crossai.pipelines.timeseries import TimeSeries
+from crossai.performance.pilot_evaluation import pilot_label_processing
 
 
 def audio_loader(filename, classes, sampling_rate=22500):
@@ -9,10 +11,10 @@ def audio_loader(filename, classes, sampling_rate=22500):
     data in the equivalent crossai object for pilot evaluation.
 
     Args:
-        filename (str): path to the file
-        classes (list): list of class names shaped [class1, class2, ...]
-        sampling_rate (int, optional): sampling rate of the audio data.
-        Defaults to 44100.
+        filename (str): Path to the file
+        classes (list): List of class names shaped [class1, class2, ...]
+        sampling_rate (int, optional): Sampling rate of the audio data.
+            Defaults to 44100.
 
     Returns:
         CrossAI object: data in the equivalent CrossAI object.

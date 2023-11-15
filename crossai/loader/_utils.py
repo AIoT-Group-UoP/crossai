@@ -1,10 +1,10 @@
 import os
 import platform
 
+
 def get_sub_dirs(path):
-    """
-    Gets the subdirectories of a directory and returns the subdirectories and
-    the names of the subdirectories
+    """Gets the subdirectories of a directory and returns the subdirectories
+    and the names of the subdirectories.
 
     Args:
         path (str): path to the directory
