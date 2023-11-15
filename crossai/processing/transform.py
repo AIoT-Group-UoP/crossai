@@ -91,3 +91,32 @@ def spec_to_rgb(spec, dsize=(256, 256), cmap='viridis'):
     rgb_img = np.delete(rgba_img, 3, 2)
 
     return rgb_img
+
+
+def sliding_window_cpu(sig, window_size, overlap, verbose=True):
+    """
+    Create a sliding window of size window and stride stride 
+
+    Args:
+        sig (numpy array): Input signal
+        window (int): Window size in samples
+        stride (int): Stride size in samples
+
+    Returns:
+        sliding_window (numpy array): Returns a sliding window of size
+                                        window and stride stride
+    """
+
+    shape = sig.shape[:-1] + ((sig.shape[-1] - window_size + 1)//overlap,
+                              window_size)
+    strides = (sig.strides[0] * overlap,) + (sig.strides[-1],)
+
+    try:
+        return np.lib.stride_tricks.as_strided(sig, shape=shape,
+                                               strides=strides)
+    except ValueError:
+        if verbose:
+            print("Error in sliding window instance."
+                  " Probably window size is bigger than the data or stride is"
+                  " bigger than window size. Returning None.")
+        return None
