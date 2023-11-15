@@ -10,27 +10,30 @@ def butterworth_filter(sig, f_type, sr, cutoff_low=0,
     Args:
         sig (numpy array): Input signal
         f_type (string): Type of filter to apply, can be 'hp' (high pass),
-                            'lp' (low pass) or 'bp' (band pass).
+            'lp' (low pass) or 'bp' (band pass).
         sr (int): Sampling rate of the input signal.
         cutoff_low (int): Low cutoff frequency.
         cutoff_high (int): High cutoff frequency.
         order (int): Order of the filter.
         output (string): Type of output, can be 'sos' (second order sections)
-                                or 'ba' (numerator/denominator).
+            or 'ba' (numerator/denominator).
 
     Returns:
         filtered_sig (numpy array): Returns the filtered signal.
     """
     if output == 'sos':
         if f_type == 'hp':
-            sos = signal.butter(order, cutoff_low, 'hp', fs=sr, output=output)
+            sos = signal.butter(order, cutoff_low, 'hp', fs=sr,
+                                output=output)
             filtered_sig = signal.sosfilt(sos, sig)
         elif f_type == 'lp':
-            sos = signal.butter(order, cutoff_high, 'lp', fs=sr, output=output)
+            sos = signal.butter(order, cutoff_high, 'lp', fs=sr,
+                                output=output)
             filtered_sig = signal.sosfilt(sos, sig)
         elif f_type == 'bp':
             sos = signal.butter(
-                order, [cutoff_low, cutoff_high], 'bp', fs=sr, output=output)
+                order, [cutoff_low, cutoff_high], 'bp', fs=sr,
+                output=output)
             filtered_sig = signal.sosfilt(sos, sig)
     elif output == 'ba':
         if f_type == 'hp':

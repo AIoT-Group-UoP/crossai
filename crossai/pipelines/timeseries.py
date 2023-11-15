@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from crossai.processing._utils import pad_or_trim
-from crossai.processing import sliding_window_cpu
+from crossai.processing._transform import sliding_window_cpu
 
 
 class TimeSeries():
@@ -147,74 +147,18 @@ class SlidingWindow(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
-        """Slide windows over X.
-
-        Parameters
-        ----------
-        X : ndarray of shape (n_samples, ...)
-            Input data.
-
-        y : None
-            Ignored.
-
-        Returns
-        -------
-        X : ndarray of shape (n_windows, size, ...)
-            Windows of consecutive entries of the original time series.
         """
 
-        Y = []
-        Z = []
+        Args:
+            X: ndarray of shape (n_samples, ...)
+                Input data.
+            y: None
+                Ignored.
 
-        for i in range(len(X.data)):
-            Y.append(sliding_window_cpu(X.data[i], self.window_size,
-                                        self.overlap))
-            Z.append(np.repeat(X.labels[i], len(Y[i])))
+        Returns:
+            X: ndarray of shape (n_windows, size, ...)
+                Windows of consecutive entries of the original time series.
 
-        X.data = list(np.concatenate(Y, axis=0))
-        X.labels = list(np.concatenate(Z, axis=0))
-
-        return X
-
-
-class SlidingWindow(BaseEstimator, TransformerMixin):
-    """Sliding windows onto the data.
-
-    Useful in time series analysis to convert a sequence of objects (scalar or
-    array-like) into a sequence of windows on the original sequence. Each
-    window stacks together consecutive objects, and consecutive windows are
-    separated by a constant stride.
-
-    Parameters
-    ----------
-    window_size : int, optional, default: ``10``
-        Size of each sliding window.
-
-    overlap : int, optional, default: ``1``
-    """
-
-    def __init__(self, window_size=10, overlap=1):
-        self.window_size = window_size
-        self.overlap = overlap
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X, y=None):
-        """Slide windows over X.
-
-        Parameters
-        ----------
-        X : ndarray of shape (n_samples, ...)
-            Input data.
-
-        y : None
-            Ignored.
-
-        Returns
-        -------
-        X : ndarray of shape (n_windows, size, ...)
-            Windows of consecutive entries of the original time series.
         """
 
         Y = []
