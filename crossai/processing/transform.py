@@ -67,3 +67,27 @@ def fft(sig):
     """
     fft = np.fft.fft(sig)
     return fft
+
+
+def spec_to_rgb(spec, dsize=(256, 256), cmap='viridis'):
+    """
+    Convert a spectrogram to a 3 channel RGB image.
+
+    Args:
+        spec (numpy array): Input spectrogram   
+        dsize (tuple): Size of the output image
+        cmap (string): Colormap to use
+
+    Returns:
+        rgb_img (numpy array): Returns a 3 channel RGB image
+
+    """
+
+    norm = (spec-np.min(spec))/(np.max(spec)-np.min(spec))
+    img = norm
+
+    img = cv2.resize(img, dsize=dsize, interpolation=cv2.INTER_CUBIC)
+    rgba_img = plt.get_cmap(cmap)(img)
+    rgb_img = np.delete(rgba_img, 3, 2)
+
+    return rgb_img
