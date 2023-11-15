@@ -8,11 +8,11 @@ from crossai.processing.multiaxis._utils import axis_to_model_shape
 
 class Tabular():
     """Tabular Class which contains the data, instances and labels of
-            the multiaxial dataset.
+            the multi-axial dataset.
     """
 
     def __init__(self, X):
-        """Initialize the Tabular Class from data loaded using the
+        """Initializes the Tabular Class from data loaded using the
         multi_axis_data_loader_csv function.
 
         Args:
@@ -66,6 +66,7 @@ class MagnitudeExtractor(BaseEstimator, TransformerMixin):
                                           ignore_index=True)
                     X.data = pd.concat([X.data, pd.Series([mag])],
                                        ignore_index=True)
+
         return X
 
 
@@ -148,6 +149,7 @@ class MultiAxisSlidingWindow(BaseEstimator, TransformerMixin):
         X.feature = Y.feature
         Y.data = np.array(Y.data.tolist())
         X.data = Y.data
+
         return X
 
 
@@ -188,4 +190,5 @@ class AxisToModelShape(BaseEstimator, TransformerMixin):
         X.instance = Y_instance
         X.labels = Y_labels
         X.feature = Y_feature
+
         return X

@@ -4,9 +4,8 @@ from crossai.processing.motion._features import pure_acceleration
 
 
 class PureAccExtractor(BaseEstimator, TransformerMixin):
-    """Extract the pure acceleration from the data using a
-    high-pass filter (removing very low frequency drifts
-    or motion effects).
+    """Extracts the pure acceleration from the data using a high-pass filter
+        (removing very low frequency drifts or motion effects).
 
     Args:
         Fs (int): Sampling frequency of the data.

@@ -62,7 +62,7 @@ def augment_signal_data(crossai_object, augs):
 
 
 class Scaler(BaseEstimator, TransformerMixin):
-    """Create a transformer class for the pipeline using a custom function
+    """Creates a transformer class for the pipeline using a custom function.
 
     Args:
         func (function): Function to be used in the pipeline.
