@@ -123,3 +123,38 @@ def q_transform(sig, sr=44100, n_bins=84, hop_length=512, fmin=55, norm=1,
             q_transform, dsize=dsize, interpolation=cv2.INTER_CUBIC)
 
     return q_transform
+
+
+def melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512, n_mels=128,
+                   fmin=0.0, fmax=8000, power=2, to_dB=True, dsize=None):
+    """
+    Compute a mel-scaled spectrogram.
+
+    Args:
+        sig (numpy array): Input signal
+        sr (int): Sampling rate of the input signal
+        n_fft (int): Length of the FFT window
+        hop_length (int): Number of samples between successive frames
+        n_mels (int): Number of Mel bands to generate
+        fmin (float): Minimum frequency
+        fmax (float): Maximum frequency
+        power (int): Power of the spectrogram
+        to_dB (bool): Convert the spectrogram to dB scale
+        dsize (tuple): Size of the output spectrogram : if None, the output is the raw spectrogram              
+
+    Returns:
+        mel_spectrogram (numpy array): Returns a mel-scaled spectrogram
+    """
+
+    mel_spectrogram = librosa.feature.melspectrogram(
+        y=sig, sr=sr, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels,
+        fmin=fmin, fmax=fmax, power=power)
+
+    if to_dB is True:
+        mel_spectrogram = librosa.power_to_db(mel_spectrogram, ref=np.max)
+
+    if dsize is not None:
+        mel_spectrogram = cv2.resize(
+            mel_spectrogram, dsize=dsize, interpolation=cv2.INTER_CUBIC)
+
+    return mel_spectrogram
