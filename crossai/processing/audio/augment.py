@@ -21,7 +21,6 @@ def roll_signal(sig, augment_times, n_roll=randint(10000, 50000)):
         n_roll = randint(20000, 50000)
     return rolled_sig
 
-
 def spec_augment(spectrogram, augment_times=1, masks=2, freq_masking=0.15, time_masking=0.15):
     """
     Implementation of SpecAugment using numpy.
