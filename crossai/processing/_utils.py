@@ -158,7 +158,6 @@ def pad_or_trim(
             data[i] = np.pad(data[i], (0, target_len-len(data[i])),
                              mode='constant', constant_values=fill_value)
 
-
     data = np.array(data.tolist())
     return data
 
@@ -182,7 +181,6 @@ def encode_labels(y_train: list, y_test: list) -> tuple:
     return y_train_encoded, y_test_encoded
 
 
-
 def convert_to_model_shape(data: list, model_cat: str = "nn") -> np.ndarray:
     """
     Convert the data to the shape suitable for different types of models.
@@ -201,7 +199,7 @@ def convert_to_model_shape(data: list, model_cat: str = "nn") -> np.ndarray:
     if model_cat == "nn":
         data = np.expand_dims(data, axis=-1)
     elif model_cat == "statistical":
-        pass # No transformation needed for statistical models
+        pass  # No transformation needed for statistical models
     else:
         raise ValueError("Invalid model_cat argument. Should be either 'nn'"
                          " or 'statistical'.")
