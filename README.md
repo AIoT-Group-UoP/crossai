@@ -50,7 +50,7 @@ If you use CrossAI in a scientific publication, we would appreciate citations, u
 ```text
 @misc{,
     author = "{Tzamalis, Pantelis and Kapetanidis Panagiotis, and Kalioras, Fotios and Kontogiannis, George and 
-    Bardoutos, Andreas}",
+    Stamatelos, John and Bardoutos, Andreas}",
     title = "CrossAI: The Open Source library for End-to-End Time Series Analysis",
     year = "2023",
     url = "https://github.com/tzamalisp/crossai",
@@ -67,6 +67,7 @@ The following individuals are currently core contributors to the development and
 * [Panagiotis Kapetanidis](https://www.linkedin.com/in/kapetanidispanagiotis)
 * [Fotios Kalioras](https://www.linkedin.com/in/fotis-kalioras)
 * [George Kontogiannis](https://www.linkedin.com/in/georgios-kontogiannis)
+* [John Stamatelos](https://www.linkedin.com/in/john-stamatelos-427b53b3/)
 
 #### Emeritus Contributor Experience Team:
 

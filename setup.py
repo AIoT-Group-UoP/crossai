@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="crossai",
-    version="0.1.1.1",
+    version="0.1.1.3",
     packages=[
         "crossai",
         "crossai.ai",
@@ -19,7 +19,7 @@ setup(
     url="https://github.com/tzamalisp/crossai",
     license="Apache License 2.0",
     author="Pantelis Tzamalis, Panagiotis Kapetanidis, Fotios Kalioras, "
-           "George Kontogiannis, Andreas Bardoutsos",
+           "George Kontogiannis, John Stamatelos, Andreas Bardoutsos",
     author_email="tzamalis@ceid.upatras.gr",
     description="An open-source library for processing and developing "
                 "end-to-end ML pipelines for Time Series Analysis",
