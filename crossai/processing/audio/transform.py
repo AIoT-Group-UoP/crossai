@@ -158,3 +158,42 @@ def melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512, n_mels=128,
             mel_spectrogram, dsize=dsize, interpolation=cv2.INTER_CUBIC)
 
     return mel_spectrogram
+
+
+def inverse_melspectrogram(sig, sr=44100, n_fft=2048, hop_length=512,
+                           win_length=None, window='hann', center=True,
+                           pad_mode='reflect', power=2.0, n_iter=32,
+                           length=None):
+    """
+    Compute the inverse of a mel-scaled spectrogram.
+
+    Args:
+        sig (numpy array): Input signal
+        sr (int): Sampling rate of the input signal
+        n_fft (int): Length of the FFT window
+        hop_length (int): Number of samples between successive frames
+        win_length (int): Each frame of audio is windowed by window of length
+                            win_length and then padded with zeroes to match
+                                n_fft
+        window (string): Type of window to use
+        center (bool): If True, the signal y is padded so that frame D[:, t]
+                        is centered at y[t * hop_length]
+        pad_mode (string): If center=True, the padding mode to use at the
+                            edges of the signal. 
+                                By default, STFT uses reflection padding.
+        power (int): Power of the spectrogram
+        n_iter (int): Number of inversion iterations
+        length (int): If provided, the output y is zero-padded or clipped to
+                        exactly length samples
+
+    Returns:
+        inverse_mel_spectrogram (numpy array): Returns the inverse of a
+                                                mel-scaled spectrogram
+    """
+
+    inverse_mel_spectrogram = librosa.feature.inverse.mel_to_audio(
+        M=sig, sr=44100, n_fft=n_fft, hop_length=hop_length,
+        win_length=win_length, window=window, center=center,
+        pad_mode=pad_mode, power=power, n_iter=n_iter, length=length)
+
+    return inverse_mel_spectrogram
