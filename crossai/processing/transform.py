@@ -51,3 +51,19 @@ def complex_to_real(sig):
     """
     real_sig = np.real(sig)
     return real_sig
+
+
+def fft(sig):
+    """
+    Compute the one-dimensional discrete Fourier Transform.
+
+    Args:
+        sig (numpy array): Input signal
+        sr (int): Sampling rate of the input signal
+
+    Returns:
+        fft (numpy array): Returns the one-dimensional discrete
+        Fourier Transform
+    """
+    fft = np.fft.fft(sig)
+    return fft
