@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="crossai",
-    version="0.1.1.3",
+    version="0.1.1.3.1",
     packages=[
         "crossai",
         "crossai.ai",
@@ -14,7 +14,9 @@ setup(
         "crossai.processing",
         "crossai.processing.audio",
         "crossai.processing.motion",
-        "crossai.processing.tabular"
+        "crossai.processing.tabular",
+        "crossai.performance",
+        "crossai.performance.loader"
     ],
     url="https://github.com/tzamalisp/crossai",
     license="Apache License 2.0",
