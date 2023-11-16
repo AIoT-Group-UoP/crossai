@@ -9,7 +9,6 @@ setup(
         "crossai.ai.nn1d",
         "crossai.ai.nn2d",
         "crossai.loader",
-        "crossai.loader.pilot",
         "crossai.pipelines",
         "crossai.processing",
         "crossai.processing.audio",
