@@ -16,14 +16,15 @@ def plot_ts(data,
 
     Args:
         data (np.array or pd.Series): An array or Series with the defined
-                                    signal or prediction data.
-                Each row is expected to contain a different modality.
+            signal or prediction data. Each row is expected to contain a
+            different modality.
         title (str): The title of the plot
+        labels:
         path_to_save (str, optional): When defined, the plot is saved
-                                    on the given path. Default None.
+            on the given path. Default None.
         show (bool): (Optional) If True, the plot will be shown.
         return_artifact (bool): (Optional) If True, the plot will be returned
-                                as an artifact using return
+            as an artifact using return
         **kwargs:
             figsize (tuple): Default value (16,8)
             num (int): Figure number. Default value None
@@ -90,7 +91,7 @@ def plot_predictions(predictions,
                      show: bool = True,
                      return_artifact: bool = False,
                      **kwargs):
-    '''Plots the prediction results of a model in regard to time.
+    """Plots the prediction results of a model in regard to time.
 
     Args:
         predictions (list): List of predictions
@@ -119,7 +120,7 @@ def plot_predictions(predictions,
     Returns:
         plot artifact if return_artifact is True
 
-    '''
+    """
     predictions = np.array(predictions)
     predictions = np.transpose(predictions)
 
