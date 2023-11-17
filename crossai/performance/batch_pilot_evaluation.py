@@ -7,7 +7,7 @@ from crossai.performance.loader import audio_loader, csv_loader
 from crossai.performance import pilot_label_processing
 from crossai.visualization import plot_ts, plot_predictions
 from crossai.performance.event_detection import interpolate_preds as inter_pred
-from crossai.processing import butterworth_filter
+from crossai.processing.filter import butterworth_filter
 from crossai.performance import threshold_predictions
 
 
@@ -22,7 +22,6 @@ def batch_evaluate(
     is_classification: bool = True,
     per_window: bool = True,
     pipeline=None,
-    GT_threshold=None,
     repeats: int = 1,
     ts_scorer=None,
     ts_k=2,
@@ -64,8 +63,6 @@ def batch_evaluate(
         is_classification (bool): True if the model is a classification model.
         per_window (bool): True to perform per window evaluation.
         pipeline (pipeline): pipeline to be used for data preprocessing.
-        GT_threshold (float): confidence threshold required for the class
-                                to be accepted.
         repeats (int): number of times the evaluation will be repeated.
         ts_scorer (str or model): Trust score model to be used. Same loading
                                 mechanism as model. If none, no trust score
@@ -90,7 +87,7 @@ def batch_evaluate(
         pred_thres (float): Threshold for the predictions. If None, no
                             thresholding will be performed.
         **kwargs: additional arguments for the respective data loaders
-                or plotters (e.g sr for audio data loader
+                or plotters (e.g., sr for audio data loader
                 or s for predictions scatter plotter)
     """
     total_res = dict()
@@ -193,7 +190,6 @@ def batch_evaluate(
                         eval_object.labels,
                         is_classification,
                         per_window,
-                        GT_threshold,
                         repeats,
                         ts_scorer,
                         ts_k,
