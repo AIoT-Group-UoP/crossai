@@ -23,7 +23,7 @@ def s3_wavfile_reader(file_content):
     file_obj = io.BytesIO(file_content)
 
     # Open the file object in wave module
-    wav_file = wave.open(file_obj, 'rb')
+    wav_file = wave.open(file_obj, "rb")
 
     # Read frames and convert to byte array
     signal = np.frombuffer(wav_file.readframes(wav_file.getnframes()), dtype=np.int16)
@@ -44,13 +44,41 @@ def s3_wavfile_reader(file_content):
     return signal
 
 
-def s3_audio_loader(bucket, prefix='', endpoint_url="", sr=22500, n_workers=min(mp.cpu_count(), 4)):
-    s3 = boto3.client('s3', endpoint_url=endpoint_url)
-    paginator = s3.get_paginator('list_objects_v2')
-    page_iterator = paginator.paginate(Bucket=bucket, Prefix=prefix, Delimiter='/')
+def s3_audio_loader(
+    bucket,
+    prefix="",
+    endpoint_url="https://s3.amazonaws.com",
+    sr=22500,
+    n_workers=min(mp.cpu_count(), 4),
+):
+    """Loads audio files from s3 bucket and returns a pandas dataframe.
 
-    data = []  # sound data
-    df = []  # dataframes
+    The directory should:
+        - contain subdirectories containing the wav files
+            - the name of the subdirectories should be the label
+            of the wav files.
+        or
+        - contain wav files itself
+            - the name of the directory will be the label of the wav files.
+
+    Args:
+        bucket (str): name of the s3 bucket
+        prefix (str, optional): prefix of the directory. Defaults to "".
+        endpoint_url (str, optional): endpoint url of the s3 bucket. Defaults to "https://s3.amazonaws.com".
+        sr (int, optional): sampling rate of the audio data. Defaults to 44100.
+        n_workers (int, optional): number of workers for multiprocessing.
+                                    Defaults to mp.cpu_count().
+
+    Returns:
+        pandas Dataframe: data from the wav files in a pandas Dataframe.
+    """
+
+    s3 = boto3.client("s3", endpoint_url=endpoint_url)
+    paginator = s3.get_paginator("list_objects_v2")
+    page_iterator = paginator.paginate(Bucket=bucket, Prefix=prefix, Delimiter="/")
+
+    data = []
+    df = []
     subdirnames = []
 
     global sampling_rate
@@ -60,24 +88,32 @@ def s3_audio_loader(bucket, prefix='', endpoint_url="", sr=22500, n_workers=min(
 
     # load the sound data using multiprocessing
     for page in page_iterator:
-        for prefix in page.get('CommonPrefixes', []):
-            subdir_prefix = prefix['Prefix']
+        for prefix in page.get("CommonPrefixes", []):
+            subdir_prefix = prefix["Prefix"]
             subdirnames.append(subdir_prefix)
             subdir_page_iterator = paginator.paginate(Bucket=bucket, Prefix=subdir_prefix)
             for subdir_page in subdir_page_iterator:
-                keys = [obj['Key'] for obj in subdir_page['Contents']]
+                keys = [obj["Key"] for obj in subdir_page["Contents"]]
                 pool = mp.get_context("fork").Pool(n_workers)
-                data.append(pool.map(s3_wavfile_reader, [s3.get_object(Bucket=bucket, Key=key)['Body'].read() for key in keys]))
+                data.append(
+                    pool.map(
+                        s3_wavfile_reader,
+                        [
+                            s3.get_object(Bucket=bucket, Key=key)["Body"].read()
+                            for key in keys
+                        ],
+                    )
+                )
                 pool.close()
                 pool.join()
 
     for i in range(len(data)):
         for j in range(len(data[i])):
             # Extract the parent folder name from the key and use it as the label
-            label = keys[j].split('/')[-2]
+            label = keys[j].split("/")[-2]
             data[i][j] = (data[i][j].astype(np.float32), label)
 
-    df = pd.DataFrame(columns=['data', 'label', 'indice'])
+    df = pd.DataFrame(columns=["data", "label", "indice"])
 
     for i in range(len(data)):
         for j in range(len(data[i])):
