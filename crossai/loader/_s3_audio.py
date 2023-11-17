@@ -10,7 +10,7 @@ from crossai.processing import resample_sig
 
 
 def s3_wavfile_reader(file_content):
-    """Reads a wav file from a byte stream and returns the data as numpy array.
+    """Reads a wav file from a byte stream and returns data as numpy array.
 
     Args:
         file_content (bytes): Byte content of the wav file.
@@ -26,7 +26,9 @@ def s3_wavfile_reader(file_content):
     wav_file = wave.open(file_obj, "rb")
 
     # Read frames and convert to byte array
-    signal = np.frombuffer(wav_file.readframes(wav_file.getnframes()), dtype=np.int16)
+    signal = np.frombuffer(
+        wav_file.readframes(wav_file.getnframes()), dtype=np.int16
+    )
 
     # Convert to float32
     signal = signal.astype(np.float32)
@@ -55,17 +57,18 @@ def s3_audio_loader(
 
     The directory should:
         - contain subdirectories containing the wav files
-            - the name of the subdirectories should be the label
+        - the name of the subdirectories should be the label
             of the wav files.
         or
         - contain wav files itself
-            - the name of the directory will be the label of the wav files.
+        - the name of the directory will be the label of the wav files.
 
     Args:
         bucket (str): name of the s3 bucket
         prefix (str, optional): prefix of the directory. Defaults to "".
-        endpoint_url (str, optional): endpoint url of the s3 bucket. Defaults to "https://s3.amazonaws.com".
-        sr (int, optional): sampling rate of the audio data. Defaults to 44100.
+        endpoint_url (str, optional): endpoint url of the s3 bucket.
+                                    Defaults to "https://s3.amazonaws.com".
+        sr (int, optional): sampling rate of the audio data.
         n_workers (int, optional): number of workers for multiprocessing.
                                     Defaults to mp.cpu_count().
 
@@ -75,7 +78,9 @@ def s3_audio_loader(
 
     s3 = boto3.client("s3", endpoint_url=endpoint_url)
     paginator = s3.get_paginator("list_objects_v2")
-    page_iterator = paginator.paginate(Bucket=bucket, Prefix=prefix, Delimiter="/")
+    page_iterator = paginator.paginate(
+        Bucket=bucket, Prefix=prefix, Delimiter="/"
+    )
 
     data = []
     df = []
@@ -91,7 +96,9 @@ def s3_audio_loader(
         for prefix in page.get("CommonPrefixes", []):
             subdir_prefix = prefix["Prefix"]
             subdirnames.append(subdir_prefix)
-            subdir_page_iterator = paginator.paginate(Bucket=bucket, Prefix=subdir_prefix)
+            subdir_page_iterator = paginator.paginate(
+                Bucket=bucket, Prefix=subdir_prefix
+            )
             for subdir_page in subdir_page_iterator:
                 keys = [obj["Key"] for obj in subdir_page["Contents"]]
                 pool = mp.get_context("fork").Pool(n_workers)
@@ -99,7 +106,9 @@ def s3_audio_loader(
                     pool.map(
                         s3_wavfile_reader,
                         [
-                            s3.get_object(Bucket=bucket, Key=key)["Body"].read()
+                            s3.get_object(Bucket=bucket, Key=key)[
+                                "Body"
+                            ].read()
                             for key in keys
                         ],
                     )
@@ -109,7 +118,8 @@ def s3_audio_loader(
 
     for i in range(len(data)):
         for j in range(len(data[i])):
-            # Extract the parent folder name from the key and use it as the label
+            # Extract the parent folder name from the key
+            # and use it as the label
             label = keys[j].split("/")[-2]
             data[i][j] = (data[i][j].astype(np.float32), label)
 

@@ -4,17 +4,22 @@ import numpy as np
 
 
 def s3_csv_loader(
-    bucket, prefix, endpoint_url="https://s3.amazonaws.com", delimiter=",", header=0
+    bucket,
+    prefix,
+    endpoint_url="https://s3.amazonaws.com",
+    delimiter=",",
+    header=0,
 ):
-    """Loads multi-axis data from csv files in an S3 bucket. The csv files must be
-    organized in subdirectories, each subdirectory containing the csv files
-    of a class. The csv files must have the same headers. If not, a warning
-    will be displayed, and the files with different headers will be ignored.
+    """Loads multi-axis data from csv files in an S3 bucket. 
+    The csv files must be organized in subdirectories, each subdirectory 
+    containing the csv files of a class. The csv files must have the same 
+    headers. If not, a warning will be displayed, and the files with 
+    different headers will be ignored.
 
     Args:
         bucket (str): Name of the S3 bucket.
         prefix (str): Prefix in the S3 bucket where the csv files are stored.
-        endpoint_url (str, optional): Endpoint url of the S3 bucket. Defaults to "https://s3.amazonaws.com".
+        endpoint_url (str, optional): Endpoint url of the S3 bucket.
         delimiter (str, optional): Delimiter of the csv files. Defaults to ','.
         header (int, optional): Row of the header. Defaults to 0.
 
@@ -28,23 +33,17 @@ def s3_csv_loader(
     instance_counter = 0
     headers = None  # Initialize headers
 
-    df = pd.DataFrame(
-        columns=["instance", "label", "feature", "data"]
-    )
+    df = pd.DataFrame(columns=["instance", "label", "feature", "data"])
 
     # List all objects in the bucket with the given prefix
-    objects = s3.list_objects(Bucket=bucket, Prefix=prefix).get(
-        "Contents", []
-    )
+    objects = s3.list_objects(Bucket=bucket, Prefix=prefix).get("Contents", [])
 
     for obj in objects:
         instance_counter += 1
         file_key = obj["Key"]
         file_obj = s3.get_object(Bucket=bucket, Key=file_key)
         file_body = file_obj["Body"]
-        local_df = pd.read_csv(
-            file_body, delimiter=delimiter, header=header
-        )
+        local_df = pd.read_csv(file_body, delimiter=delimiter, header=header)
 
         # Check if headers are initialized
         if headers is None:
@@ -55,14 +54,17 @@ def s3_csv_loader(
             if warning_flag == 0:
                 print(
                     f"Warning! Different headers detected in {file_key}. "
-                    "This file and every file that does not have the same headers as "
-                    f"the first file ({headers}) will be ignored. This message will be displayed only once."
+                    "This file and every file that does not have the same \
+                    headers as "
+                    f"the first file ({headers}) will be ignored. This \
+                    message will be displayed only once."
                 )
                 warning_flag = 1
             instance_counter -= 1
             continue
 
-        # Add csv to dataframe. Each csv column goes to a different row of the dataframe
+        # Add csv to dataframe. 
+        # Each csv column goes to a different row of the dataframe
         for i in range(len(local_df.columns)):
             data = local_df.iloc[:, i].values.astype(np.float32)
             df = pd.concat(
@@ -72,7 +74,9 @@ def s3_csv_loader(
                         [
                             [
                                 instance_counter,
-                                file_key.split("/")[1],  # Extract label from file_key
+                                file_key.split("/")[
+                                    1
+                                ],  # Extract label from file_key
                                 local_df.columns[i],
                                 data,
                             ]
