@@ -19,7 +19,6 @@ def batch_evaluate(
     model,
     folder,
     classes: list = None,
-    is_classification: bool = True,
     per_window: bool = True,
     pipeline=None,
     repeats: int = 1,
@@ -63,6 +62,8 @@ def batch_evaluate(
         is_classification (bool): True if the model is a classification model.
         per_window (bool): True to perform per window evaluation.
         pipeline (pipeline): pipeline to be used for data preprocessing.
+        GT_threshold (float): confidence threshold required for the class
+                                to be accepted.
         repeats (int): number of times the evaluation will be repeated.
         ts_scorer (str or model): Trust score model to be used. Same loading
                                 mechanism as model. If none, no trust score
@@ -87,7 +88,7 @@ def batch_evaluate(
         pred_thres (float): Threshold for the predictions. If None, no
                             thresholding will be performed.
         **kwargs: additional arguments for the respective data loaders
-                or plotters (e.g., sr for audio data loader
+                or plotters (e.g sr for audio data loader
                 or s for predictions scatter plotter)
     """
     total_res = dict()
@@ -106,7 +107,7 @@ def batch_evaluate(
         "Mean_reliability",
     ]:
         total_res[metric] = 0
-    for metric in ["Mean_STD", "Mean_variance", "Mean_entropy"]:
+    for metric in ["Mean_std", "Mean_variance", "Mean_entropy"]:
         total_res[metric] = []
 
     if (
@@ -137,7 +138,7 @@ def batch_evaluate(
                         eval_object = audio_loader(
                             os.path.join(folder, subdir, file), classes, sr
                         )
-                    elif modality == "csv":
+                    elif modality == "tabular":
                         eval_object = csv_loader(
                             os.path.join(folder, subdir, file), classes
                         )
@@ -149,7 +150,8 @@ def batch_evaluate(
                                 subdir,
                                 file.replace(file.split(".")[-1], "json"),
                             ),
-                            classes,
+                            classes=classes,
+                            n_instances=len(eval_object.data[0])
                         )
 
                         # check if true or list
@@ -158,7 +160,7 @@ def batch_evaluate(
                                 eval_object.data,
                                 labels=np.unique(eval_object.feature),
                                 title=file,
-                                show=True,
+                                show=False,
                                 path_to_save=os.path.join(
                                     save_path, subdir, file[:-4], "signal.png"
                                 ),
@@ -169,7 +171,7 @@ def batch_evaluate(
                                 eval_object.data,
                                 labels=np.unique(eval_object.feature),
                                 title=file,
-                                show=True,
+                                show=False,
                                 path_to_save=os.path.join(
                                     save_path, subdir, file[:-4], "signal.png"
                                 ),
@@ -185,22 +187,21 @@ def batch_evaluate(
                     )
 
                     results = evaluate(
-                        model,
-                        eval_object.data,
-                        eval_object.labels,
-                        is_classification,
-                        per_window,
-                        repeats,
-                        ts_scorer,
-                        ts_k,
-                        ts_dist_type,
-                        duration_thres,
-                        pilot_save_path,
+                        model=model,
+                        data=eval_object.data,
+                        labels=eval_object.labels,
+                        per_window=per_window,
+                        repeats=repeats,
+                        ts_scorer=ts_scorer,
+                        ts_k=ts_k,
+                        ts_dist_type=ts_dist_type,
+                        duration_thres=duration_thres,
+                        save_path=pilot_save_path,
                     )
                     total_res["Num_of_Pilot"] += 1
 
-                    mean_std = np.mean(np.array(results["STD"]), axis=0)
-                    total_res["Mean_STD"].append(mean_std)
+                    mean_std = np.mean(np.array(results["std"]), axis=0)
+                    total_res["Mean_std"].append(mean_std)
 
                     mean_var = np.mean(np.array(results["variance"]), axis=0)
                     total_res["Mean_variance"].append(mean_var)
@@ -253,9 +254,9 @@ def batch_evaluate(
                         fltered = butterworth_filter(
                             interpolated,
                             "lp",
-                            sr,
+                            sr=None,
                             order=interp_filter_order,
-                            cutoff=interp_filter_cutoff,
+                            cutoff_high=interp_filter_cutoff,
                         )
                         # plot the filtered interpolated results
                         plot_ts(
@@ -295,7 +296,7 @@ def batch_evaluate(
         else:
             continue
 
-    for metric in ["Mean_STD", "Mean_variance", "Mean_entropy"]:
+    for metric in ["Mean_std", "Mean_variance", "Mean_entropy"]:
         total_res[metric] = np.array(total_res[metric])
         total_res[metric] = np.mean(total_res[metric], axis=0).tolist()
 
@@ -327,10 +328,6 @@ def batch_evaluate(
     total_res["Mean_reliability"] = total_res["Mean_correct"] / (
         total_res["Mean_correct"] + total_res["Mean_insertions"]
     )
-
-    total_res["interpolated"] = interpolated
-    total_res["fltered"] = fltered
-    total_res["thresholded"] = thresholded
 
     with open(os.path.join(save_path, "total_results.json"), "w") as fp:
         json.dump(total_res, fp)
