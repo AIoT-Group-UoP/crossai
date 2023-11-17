@@ -10,10 +10,10 @@ def s3_csv_loader(
     delimiter=",",
     header=0,
 ):
-    """Loads multi-axis data from csv files in an S3 bucket. 
-    The csv files must be organized in subdirectories, each subdirectory 
-    containing the csv files of a class. The csv files must have the same 
-    headers. If not, a warning will be displayed, and the files with 
+    """Loads multi-axis data from csv files in an S3 bucket.
+    The csv files must be organized in subdirectories, each subdirectory
+    containing the csv files of a class. The csv files must have the same
+    headers. If not, a warning will be displayed, and the files with
     different headers will be ignored.
 
     Args:
@@ -63,7 +63,7 @@ def s3_csv_loader(
             instance_counter -= 1
             continue
 
-        # Add csv to dataframe. 
+        # Add csv to dataframe.
         # Each csv column goes to a different row of the dataframe
         for i in range(len(local_df.columns)):
             data = local_df.iloc[:, i].values.astype(np.float32)
