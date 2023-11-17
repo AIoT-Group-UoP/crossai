@@ -103,10 +103,13 @@ def predict_y(
 #            print_shapes_types(data=probabilities,
 #                               data_name="Predictions",
 #                               show_instance=True)
-
     results = dict()
     if compute in ["class", "all"]:
-        results["class"] = np.argmax(probabilities, axis=1)
+        if probabilities.ndim == 3:
+            results["class"] = np.argmax(np.mean(probabilities, axis=2),
+                                         axis=1)
+        else:
+            results["class"] = np.argmax(probabilities, axis=1)
 
     if compute in ["probas", "all"]:
         results["probas"] = probabilities
