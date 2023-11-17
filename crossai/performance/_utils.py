@@ -38,10 +38,13 @@ def pilot_label_processing(json_path: str,
             determine the length of the label array.
     Returns:
         labels (list): list of processed labels.
+        segments(list): List of label segments ([start, end, label], [...]).
     """
 
     if classes is None or n_instances is None:
         raise ValueError('classes and n_instances must be defined.')
+
+    segments = []
 
     # load json
     with open(json_path) as f:
@@ -50,6 +53,10 @@ def pilot_label_processing(json_path: str,
     labels = [np.nan] * n_instances
 
     for label in data:
+        # Get segments
+        label["label"] = classes.index(label["label"])
+        segments.append([label['start'], label['end'], label['label']])
+        # map labels to label array
         for i in range(label['start'], label['end']):
             labels[i] = label['label']
     # map labels to model output
@@ -58,7 +65,7 @@ def pilot_label_processing(json_path: str,
             if labels[i] == c:
                 labels[i] = classes.index(c)
 
-    return np.array(labels)
+    return np.array(labels), segments
 
 
 def threshold_predictions(predictions, threshold: float):
