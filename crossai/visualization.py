@@ -90,9 +90,9 @@ def plot_ts(data,
         fig.suptitle(title)
     if path_to_save is not None:
         plt.savefig(path_to_save)
-        plt.close()
     if show:
         plt.show()
+    plt.close()
     if return_artifact:
         return fig
 
@@ -180,5 +180,6 @@ def plot_predictions(predictions,
         plt.savefig(path_to_save)
     if show:
         plt.show()
+    plt.close()
     if return_artifact:
         return fig
