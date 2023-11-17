@@ -42,15 +42,29 @@ def plot_ts(data,
     """
     figsize = kwargs.get("figsize", (16, 8))
 
-    fig, axs = plt.subplots(1, 1, figsize=figsize, sharex=True,
-                            num=kwargs.get("num", None),
-                            constrained_layout=True)
+    if kwargs.get("plot_features", None) is None:
+        fig, axs = plt.subplots(1, 1, figsize=figsize, sharex=True,
+                                num=kwargs.get("num", None),
+                                constrained_layout=True)
+        # for each row of df plot
+        for i in range(len(data)):
+            axs.plot(data[i], label=labels[i])
+        axs.grid()
+        axs.legend()
+    else:
+        features_list = kwargs.get("plot_features")
+        # create subplots
+        fig, axs = plt.subplots(len(features_list), 1, figsize=figsize,
+                                sharex=True, num=kwargs.get("num", None),
+                                constrained_layout=True, squeeze=False)
+        for i in range(len(features_list)):
+            # each feature is a row that has a column for each modality
+            for j in range(len(features_list[i])):
+                data_to_plot = data[features_list[i][j]]
+                axs[i][0].plot(data_to_plot, label=labels[features_list[i][j]])
+            axs[i][0].grid()
+            axs[i][0].legend()
 
-    # for each row of df plot
-    for i in range(len(data)):
-        axs.plot(data[i], label=labels[i])
-    axs.grid()
-    axs.legend()
     segments = kwargs.get("segments", None)
     if segments is not None and labels is not None:
         for ax in fig.axes:
@@ -157,6 +171,8 @@ def plot_predictions(predictions,
                     label_color = LABELS_COLORS[seg[2]]
                 ax.axvspan(seg[0], seg[1], facecolor=label_color,
                            alpha=0.3, label=seg[2])
+
+    axs.set_ylim([0, 1])
 
     if title is not None:
         fig.suptitle(title)
