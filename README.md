@@ -52,7 +52,6 @@ If you use CrossAI in a scientific publication, we would appreciate citations, u
     author = "{Tzamalis, Pantelis and Kapetanidis Panagiotis, and Kalioras, Fotios and Kontogiannis, George and 
     Stamatelos, John and Bardoutos, Andreas}",
     title = "CrossAI: The Open Source library for End-to-End Time Series Analysis",
-    year = "2023",
     url = "https://github.com/tzamalisp/crossai",
   }
 ```
