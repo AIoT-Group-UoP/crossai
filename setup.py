@@ -36,6 +36,7 @@ setup(
         "opencv-python==4.8.0.74",
         "scikit-learn==1.3.0",
         "seaborn>=0.12.2",
+        "boto3==1.29.2",
         "matchering==2.0.6"
     ],
     python_requires=">=3.10"
