@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="crossai",
-    version="0.1.1.3.5",
+    version="0.1.1.4",
     packages=[
         "crossai",
         "crossai.ai",
@@ -23,7 +23,7 @@ setup(
            "George Kontogiannis, John Stamatelos, Andreas Bardoutsos",
     author_email="tzamalis@ceid.upatras.gr",
     description="An open-source library for processing and developing "
-                "end-to-end ML pipelines for Time Series Analysis",
+                "end-to-end AI pipelines for Time Series Analysis",
     install_requires=[
         "tensorflow==2.13.0",
         'tensorflow-metal==1.0.0; platform_system=="Darwin"',
