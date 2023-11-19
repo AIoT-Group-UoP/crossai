@@ -158,7 +158,7 @@ def pad_or_trim(
             data[i] = np.pad(data[i], (0, target_len-len(data[i])),
                              mode='constant', constant_values=fill_value)
 
-    data = np.array(data.tolist())
+    data = np.array(data.tolist(), dtype=np.float32)
     return data
 
 
