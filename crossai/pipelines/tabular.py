@@ -189,7 +189,7 @@ class AxisToModelShape(BaseEstimator, TransformerMixin):
             Y_data.append(data)
             Y_instance.append(instance)
             Y_labels.append(X.labels[indexes[0]])
-            Y_feature.append("Combined_to_model_shape")
+            Y_feature.append("model_shaped")
 
         X.data = np.array(Y_data)
         X.instance = Y_instance
