@@ -5,13 +5,13 @@ from sklearn.preprocessing import LabelEncoder
 
 def find_min_val(data: list) -> int:
     """
-    Find the minimum value of the data
+    Find the minimum value of the data.
 
     Args:
-        data (list): List of data
+        data: List of data.
 
     Returns:
-        min_len: Minimum length of the data
+        min_len: Minimum length of the data.
     """
 
     min_val = min(data[0])
@@ -23,13 +23,13 @@ def find_min_val(data: list) -> int:
 
 def find_max_val(data: list) -> int:
     """
-    Find the maximum value of the data
+    Find the maximum value of the data.
 
     Args:
-        data (list): List of data
+        data: List of data.
 
     Returns:
-        max_len: Maximum length of the data
+        max_len: Maximum length of the data.
     """
 
     max_val = max(data[0])
@@ -41,13 +41,13 @@ def find_max_val(data: list) -> int:
 
 def find_mean_val(data: list) -> float:
     """
-    Find the mean value of the data
+    Find the mean value of the data.
 
     Args:
-        data (list): List of data
+        data: List of data.
 
     Returns:
-        mean_val: Mean value of the data
+        mean_val: Mean value of the data.
     """
 
     mean_val = 0
@@ -59,13 +59,13 @@ def find_mean_val(data: list) -> float:
 
 def find_max_len(data: list) -> int:
     """
-    Find the maximum length of the data
+    Find the maximum length of the data.
 
     Args:
-        data (list): List of data
+        data: List of data.
 
     Returns:
-        max_len: Maximum length of the data
+        max_len: Maximum length of the data.
     """
 
     max_len = len(data[0])
@@ -77,13 +77,13 @@ def find_max_len(data: list) -> int:
 
 def find_min_len(data: list) -> int:
     """
-    Find the minimum length of the data
+    Find the minimum length of the data.
 
     Args:
-        data (list): List of data
+        data: List of data.
 
     Returns:
-        min_len: Minimum length of the data
+        min_len: Minimum length of the data.
     """
 
     min_len = len(data[0])
@@ -95,13 +95,13 @@ def find_min_len(data: list) -> int:
 
 def find_mean_len(data: list) -> int:
     """
-    Find the mean length of the data
+    Find the mean length of the data.
 
     Args:
-        data (list): List of data
+        data: List of data.
 
     Returns:
-        mean_len: Mean length of the data
+        mean_len: Mean length of the data.
     """
 
     mean_len = 0
@@ -117,13 +117,15 @@ def pad_or_trim(
     pad_type: str = 'max'
 ) -> list:
     """
-    Make all data the same length by padding with fill_value.
+    Pad or trim the data to the same length.
+
+    Given a list of data, pads or trims the data to a common length.
 
     Args:
-        data (list): List of data.
-        fill_value (int): Value to fill the data with (default=0),
+        data: List of data.
+        fill_value: Value to fill the data with (default=0),
                           options: 'mean', 'min', 'max'.
-        pad_type (str): Type of padding to use (default='max'),
+        pad_type: Type of padding to use (default='max'),
                         options: 'max', 'min', 'mean'.
 
     Returns:
@@ -162,17 +164,19 @@ def pad_or_trim(
     return data
 
 
-def encode_labels(y_train: list, y_test: list) -> tuple:
+def encode_labels(
+    y_train: list,
+    y_test: list
+) -> tuple:
     """
     Encode the labels to integers.
 
     Args:
-        y_train (list): List of training labels.
-        y_test (list): List of testing labels.
+        y_train: List of training labels.
+        y_test: List of testing labels.
 
     Returns:
-        tuple: A tuple containing two lists,
-               the encoded training labels and the encoded testing labels.
+        tuple: A tuple containing two lists, the encoded training labels and the encoded testing labels.
     """
 
     label_encoder = LabelEncoder()
@@ -181,13 +185,16 @@ def encode_labels(y_train: list, y_test: list) -> tuple:
     return y_train_encoded, y_test_encoded
 
 
-def convert_to_model_shape(data: list, model_cat: str = "nn") -> np.ndarray:
+def convert_to_model_shape(
+    data: list,
+    model_cat: str = "nn"
+) -> np.ndarray:
     """
     Convert the data to the shape suitable for different types of models.
 
     Args:
-        data (list): List of data.
-        model_cat (str): Category of the model, which can be either "nn" for
+        data: List of data.
+        model_cat: Category of the model, which can be either "nn" for
                          Neural Network usage transformation or "statistical"
                          for sklearn models. Default is "nn".
 
