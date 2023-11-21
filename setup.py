@@ -25,7 +25,7 @@ setup(
     description="An open-source library for processing and developing "
                 "end-to-end AI pipelines for Time Series Analysis",
     install_requires=[
-        "tensorflow==2.13.*",
+        "tensorflow==2.13.0",
         'tensorflow-metal==1.0.0; platform_system=="Darwin"',
         "tensorflow_addons>=0.21.0",
         "pandas==2.0.3",
