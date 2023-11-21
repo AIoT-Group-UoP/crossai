@@ -3,23 +3,30 @@ import scipy
 import scipy.signal as signal
 
 
-def butterworth_filter(sig, f_type, sr, cutoff_low=0,
-                       cutoff_high=0, order=4, output='ba'):
-    """Applies a Butterworth filter to a 1D signal.
+def butterworth_filter(
+    sig: np.ndarray,
+    f_type: str,
+    sr: int,
+    cutoff_low: int = 0,
+    cutoff_high: int = 0,
+    order: int = 4,
+    output: str = 'ba'
+) -> np.ndarray:
+    """Applies a Butterworth filter.
+
+    Given a signal, applies a Butterworth filter of type f_type and order order.
 
     Args:
-        sig (numpy array): Input signal
-        f_type (string): Type of filter to apply, can be 'hp' (high pass),
-            'lp' (low pass) or 'bp' (band pass).
-        sr (int): Sampling rate of the input signal.
-        cutoff_low (int): Low cutoff frequency.
-        cutoff_high (int): High cutoff frequency.
-        order (int): Order of the filter.
-        output (string): Type of output, can be 'sos' (second order sections)
-            or 'ba' (numerator/denominator).
+        sig: Input signal
+        f_type: Type of filter to apply, can be 'hp' (high pass), 'lp' (low pass) or 'bp' (band pass).
+        sr: Sampling rate of the input signal.
+        cutoff_low: Low cutoff frequency.
+        cutoff_high: High cutoff frequency.
+        order: Order of the filter.
+        output: Type of output, can be 'sos' (second order sections) or 'ba' (numerator/denominator).
 
     Returns:
-        filtered_sig (numpy array): Returns the filtered signal.
+        filtered_sig: Returns the filtered signal.
     """
     if output == 'sos':
         if f_type == 'hp':
@@ -52,32 +59,40 @@ def butterworth_filter(sig, f_type, sr, cutoff_low=0,
     return filtered_sig
 
 
-def median_filter(sig, kernel_size=None):
+def median_filter(
+    sig: np.ndarray,
+    kernel_size: int = None
+) -> np.ndarray:
     """Applies a median filter to a nD signal.
 
     Args:
-        sig (numpy array): Input signal.
-        kernel_size (int): Size of the kernel, must be an odd integer.
+        sig: Input signal.
+        kernel_size: Size of the kernel, must be an odd integer.
 
     Returns:
-        filtered_sig (numpy array): Returns the filtered signal.
+        filtered_sig: Returns the filtered signal.
     """
 
     filtered_sig = signal.medfilt(sig, kernel_size)
     return filtered_sig
 
 
-def gaussian_filter(sig, sigma=1, order=0, mode='wrap'):
+def gaussian_filter(
+    sig: np.ndarray,
+    sigma: float = 1,
+    order: int = 0,
+    mode: str = 'wrap'
+):
     """Applies gaussian filter on a signal.
 
     Args:
-        sig (numpy array): Input signal.
-        sigma (float): Standard deviation of the gaussian kernel.
-        order (int): Gaussian's derivative order.
-        mode (str): Mode to extend when overlap border.
+        sig: Input signal.
+        sigma: Standard deviation of the gaussian kernel.
+        order: Gaussian's derivative order.
+        mode: Mode to extend when overlap border.
 
     Returns:
-           np.ndarray: Filtered signal.
+        Filtered signal.
 
     """
 
