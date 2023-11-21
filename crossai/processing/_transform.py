@@ -4,82 +4,102 @@ import scipy
 import cv2
 
 
-def resample_sig(sig, original_sr, target_sr):
-    """Resamples signal from its original sampling rate to a target sampling
-        rate.
+def resample_sig(
+    sig: np.ndarray,
+    original_sr: int,
+    target_sr: int
+) -> np.ndarray:
+    """Resamples a signal.
 
-    Args: 
-        sig: signal to resample
-        original_sr: original sampling rate
-        target_sr: target sampling rate
+    Given an input signal and it's sampling rate,
+    resamples it to a target sampling rate.
+
+    Args:
+        sig: Signal to resample.
+        original_sr: Original sampling rate.
+        target_sr: Target sampling rate.
 
     Returns:
-        rsmp_sig: resampled signal
+        rsmp_sig: Resampled signal.
     """
 
-    secs = int(np.ceil(len(sig)/original_sr))  # seconds in signal
-    samps = secs*target_sr     # num of samples to resample to
+    secs = int(np.ceil(len(sig)/original_sr))
+    samps = secs*target_sr
     rsmp_sig = scipy.signal.resample(sig, samps)
 
     return rsmp_sig
 
 
-def amplify(sig, factor):
-    """Amplifies the signal by a factor.
+def amplify(
+    sig: np.ndarray,
+    factor: int
+) -> np.ndarray:
+    """Amplifies a signal.
+
+    Given an input signal and a factor, amplifies the signal by the factor.
 
     Args:
-        sig (numpy array): Input signal
-        factor (int): Factor to amplify the signal
+        sig: Input signal.
+        factor: Factor to amplify the signal.
 
     Returns:
-        amp_sig (numpy array): Returns the amplified signal
+        amp_sig: Returns the amplified signal.
     """
+
     amp_sig = sig * factor
 
     return amp_sig
 
 
-def complex_to_real(sig):
-    """Makes a signal from complex to real.
+def complex_to_real(sig: np.ndarray) -> np.ndarray:
+    """Converts a complex signal to a real signal.
 
     Args:
-        sig (numpy array): Input signal
+        sig: Input signal.
 
     Returns:
-        real_sig (numpy array): Returns the real signal
+        real_sig: Returns the real signal.
     """
+
     real_sig = np.real(sig)
 
     return real_sig
 
 
-def fft(sig):
-    """Computes the one-dimensional discrete Fourier Transform.
+def fft(sig: np.ndarray) -> np.ndarray:
+    """Compute the fft of a signal.
+
+    Given an input signal,computes
+    the one-dimensional discrete Fourier Transform.
 
     Args:
-        sig (numpy array): Input signal
-        sr (int): Sampling rate of the input signal
+        sig: Input signal.
 
     Returns:
-        fft (numpy array): Returns the one-dimensional discrete
-        Fourier Transform
+        fft: Returns the one-dimensional discreteFourier Transform.
     """
+
     fft = np.fft.fft(sig)
 
     return fft
 
 
-def spec_to_rgb(spec, dsize=(256, 256), cmap='viridis'):
-    """Converts a spectrogram to a 3 channel RGB image.
+def spec_to_rgb(
+    spec: np.ndarray,
+    dsize: tuple = (256, 256),
+    cmap: str = 'viridis'
+) -> np.ndarray:
+    """Convert a Spectrogram to a RGB image.
+
+    Given an input spectrogram, converts it to a 3 channel RGB image.
 
     Args:
-        spec (numpy array): Input spectrogram   
-        dsize (tuple): Size of the output image
-        cmap (string): Colormap to use
+        spec: Input spectrogram.
+        dsize: Size of the output image.
+        cmap: Colormap to use.
 
     Returns:
-        rgb_img (numpy array): Returns a 3 channel RGB image
-
+        rgb_img: Returns a 3 channel RGB image
     """
 
     norm = (spec-np.min(spec))/(np.max(spec)-np.min(spec))
@@ -92,20 +112,30 @@ def spec_to_rgb(spec, dsize=(256, 256), cmap='viridis'):
     return rgb_img
 
 
-def sliding_window_cpu(sig, window_size, overlap, verbose=True):
-    """Creates a sliding window of size window and stride.
+def sliding_window_cpu(
+    sig: np.ndarray,
+    window_size: int,
+    overlap: int,
+    verbose: bool = True
+) -> np.ndarray:
+    """Applies a sliding window to a signal.
+
+    Given an input signal,
+    applies a sliding window to it to
+    generate windows with overlap.
 
     Args:
-        sig (numpy array): Input signal.
-        window_size (int): Window size in samples.
-        overlap (int): Stride size in samples.
-        verbose:
+        sig: Input signal.
+        window_size: Window size in samples.
+        overlap: Stride size in samples.
+        verbose: Whether to print errors or not.
 
     Returns:
-        sliding_window (numpy array): Returns a sliding window of size
-            window and stride.
+        sliding_window: Returns a sliding window of size window and
+        overlap overlap.
     """
 
+    overlap = window_size - overlap
     shape = sig.shape[:-1] + ((sig.shape[-1] - window_size + 1)//overlap,
                               window_size)
     strides = (sig.strides[0] * overlap,) + (sig.strides[-1],)
