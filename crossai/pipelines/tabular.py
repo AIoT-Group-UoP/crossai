@@ -193,7 +193,7 @@ class AxisToModelShape(BaseEstimator, TransformerMixin):
 
         X.data = np.array(Y_data)
         X.instance = Y_instance
-        X.labels = Y_labels
+        X.labels = np.array(Y_labels)
         X.feature = Y_feature
 
         return X
