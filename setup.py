@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="crossai",
-    version="0.1.1.5",
+    version="0.1.1.7.3",
     packages=[
         "crossai",
         "crossai.ai",
@@ -25,7 +25,7 @@ setup(
     description="An open-source library for processing and developing "
                 "end-to-end AI pipelines for Time Series Analysis",
     install_requires=[
-        "tensorflow==2.13.1",
+        "tensorflow==2.13.*",
         'tensorflow-metal==1.0.0; platform_system=="Darwin"',
         "tensorflow_addons>=0.21.0",
         "pandas==2.0.3",
@@ -36,7 +36,7 @@ setup(
         "opencv-python==4.8.0.74",
         "scikit-learn==1.3.0",
         "seaborn>=0.12.2",
-        "boto3==1.29.2",
+        "boto3==1.29.4",
         "matchering==2.0.6"
     ],
     python_requires=">=3.10"
