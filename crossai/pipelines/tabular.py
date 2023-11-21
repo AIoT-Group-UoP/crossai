@@ -78,9 +78,9 @@ class MultiAxisSlidingWindow(BaseEstimator, TransformerMixin):
         step_size (int): Step size of the sliding window.
     """
 
-    def __init__(self, window_size: int, step_size: int):
+    def __init__(self, window_size: int, overlap: int):
         self.window_size = window_size
-        self.step_size = step_size
+        self.overlap = overlap
 
     def fit(self, X, y=None):
         return self
@@ -96,7 +96,7 @@ class MultiAxisSlidingWindow(BaseEstimator, TransformerMixin):
             if not isinstance(X.labels[indexes[0]], str):
                 windows = sliding_window_cpu(X.labels[indexes[0]],
                                              self.window_size,
-                                             self.step_size,
+                                             self.overlap,
                                              verbose=False)
                 if windows is None:
                     continue
@@ -110,7 +110,7 @@ class MultiAxisSlidingWindow(BaseEstimator, TransformerMixin):
             for i in range(len(indexes)):
                 data = sliding_window_cpu(X.data[indexes[i]],
                                           self.window_size,
-                                          self.step_size,
+                                          self.overlap,
                                           verbose=False)
                 if data is None:
                     if not Warning_shown:
@@ -176,19 +176,24 @@ class AxisToModelShape(BaseEstimator, TransformerMixin):
         Y_labels = []
         Y_feature = []
 
-        for instance in X.instance.unique():
-            indexes = X.instance[X.instance == instance].index
-            # we dont know how many features we have till we see the data
-            data = axis_to_model_shape(*[X.data[indexes[i]]
-                                         for i in range(len(indexes))])
+        # Create a dictionary w/ keys the unique instances
+        # and values the lists of indexes.
+        instance_dict = {instance: [] for instance in X.instance.unique()}
+        for i, instance in enumerate(X.instance):
+            instance_dict[instance].append(i)
+
+        # Iterate over the dictionary
+        for instance, indexes in instance_dict.items():
+            data = axis_to_model_shape(*[X.data[i] for i in indexes])
 
             Y_data.append(data)
             Y_instance.append(instance)
             Y_labels.append(X.labels[indexes[0]])
-            Y_feature.append(X.feature[indexes[0]])
+            Y_feature.append("model_shaped")
+
         X.data = np.array(Y_data)
         X.instance = Y_instance
-        X.labels = Y_labels
+        X.labels = np.array(Y_labels)
         X.feature = Y_feature
 
         return X

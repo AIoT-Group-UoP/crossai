@@ -125,10 +125,10 @@ def sliding_window_cpu(
     generate windows with overlap.
 
     Args:
-        sig: Input signal.
-        window_size: Window size in samples.
-        overlap: Stride size in samples.
-        verbose: Whether to print errors or not.
+        sig (numpy array): Input signal.
+        window_size (int): Window size in samples.
+        overlap (int): Stride size in samples.
+        verbose (bool): If True, prints message when error occurs.
 
     Returns:
         sliding_window: Returns a sliding window of size window and
@@ -146,7 +146,7 @@ def sliding_window_cpu(
     except ValueError:
         if verbose:
             print("Error in sliding window instance."
-                  " Probably window size is bigger than the data or stride is"
+                  " Probably window size is bigger than the data or overlap is"
                   " bigger than window size. Returning None.")
 
         return None
