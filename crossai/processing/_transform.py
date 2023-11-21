@@ -131,9 +131,11 @@ def sliding_window_cpu(
         verbose: Whether to print errors or not.
 
     Returns:
-        sliding_window: Returns a sliding window of size window and stride.
+        sliding_window: Returns a sliding window of size window and
+        overlap overlap.
     """
 
+    overlap = window_size - overlap
     shape = sig.shape[:-1] + ((sig.shape[-1] - window_size + 1)//overlap,
                               window_size)
     strides = (sig.strides[0] * overlap,) + (sig.strides[-1],)
