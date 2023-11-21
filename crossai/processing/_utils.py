@@ -176,7 +176,9 @@ def encode_labels(
         y_test: List of testing labels.
 
     Returns:
-        tuple: A tuple containing two lists, the encoded training labels and the encoded testing labels.
+        tuple: A tuple containing two lists,
+               the encoded training labels and
+               the encoded testing labels.
     """
 
     label_encoder = LabelEncoder()

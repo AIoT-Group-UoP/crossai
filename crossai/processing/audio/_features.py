@@ -26,12 +26,15 @@ def zero_crossing_rate(
 
     Args:
         sig: Input signal
-        frame_length: Length of the frame over which to compute zero crossing rates.
+        frame_length: Length of the frame over which
+                      to compute zero crossing rates.
         hop_length: Number of samples between successive frames.
-        center: If True, the signal y is padded so that frame D[:, t] is centered at y[t * hop_length].
+        center: If True, the signal y is padded so that
+                frame D[:, t] is centered at y[t * hop_length].
 
     Returns:
-        zero_crossing_rate: Returns the zero-crossing rate of an audio time series.
+        zero_crossing_rate: Returns the zero-crossing 
+                            rate of an audio time series.
     """
 
     zero_crossing_rate = librosa.feature.zero_crossing_rate(

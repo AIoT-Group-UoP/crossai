@@ -103,13 +103,18 @@ def q_transform(
         norm: Normalization factor.
         bins_per_octave: Number of bins per octave.
         tuning: Deviation from A440 tuning in fractional bins.
-        filter_scale: Filter scale factor. Small values (<1) use shorter windows for improved time resolution.
+        filter_scale: Filter scale factor. Small values (<1)
+                      use shorter windows for improved
+                      time resolution.
         sparsity: Sparsity of the CQT basis.
         window: Type of window to use.
         scale: If True, scale the magnitude of the CQT by n_bins
-        pad_mode: If center=True, the padding mode to use at the edges of the signal. By default, STFT uses reflection padding.
+        pad_mode: If center=True, the padding mode to 
+                  use at the edges of the signal.
+                  By default, STFT uses reflection padding.
         to_db: Convert the spectrogram to dB scale.
-        dsize: Size of the output spectrogram : if None, the output is the raw spectrogram.
+        dsize: Size of the output spectrogram : 
+               if None, the output is the raw spectrogram.
 
     Returns:
         q_transform: Returns the constant-Q transform of an audio signal.
@@ -156,7 +161,8 @@ def melspectrogram(
         fmax: Maximum frequency.
         power: Power of the spectrogram.
         to_db: Convert the spectrogram to dB scale.
-        dsize: Size of the output spectrogram : if None, the output is the raw spectrogram.
+        dsize: Size of the output spectrogram : 
+               if None, the output is the raw spectrogram.
 
     Returns:
         mel_spectrogram: Returns a mel-scaled spectrogram.
@@ -194,16 +200,23 @@ def inverse_melspectrogram(
         sig: Input signal.
         n_fft: Length of the FFT window.
         hop_length: Number of samples between successive frames.
-        win_length: Each frame of audio is windowed by window of length win_length and then padded with zeroes to match n_fft.
+        win_length: Each frame of audio is windowed by window
+                    of length win_length and then padded 
+                    with zeroes to match n_fft.
         window: Type of window to use.
-        center: If True, the signal y is padded so that frame D[:, t] is centered at y[t * hop_length].
-        pad_mode: If center=True, the padding mode to use at the edges of the signal. By default, STFT uses reflection padding.
+        center: If True, the signal y is padded
+                so that frame D[:, t] is centered
+                at y[t * hop_length].
+        pad_mode: If center=True, the padding mode to use
+                  at the edges of the signal.
+                  By default, STFT uses reflection padding.
         power: Power of the spectrogram.
         n_iter:  Number of inversion iterations.
         length: If provided, the output y is zero-padded or clipped to exactly length samples.
 
     Returns:
-        inverse_mel_spectrogram : Returns the inverse of a mel-scaled spectrogram.
+        inverse_mel_spectrogram : Returns the inverse of
+                                  a mel-scaled spectrogram.
     """
 
     inverse_mel_spectrogram = librosa.feature.inverse.mel_to_audio(
@@ -237,14 +250,17 @@ def chroma(
         hop_length: Number of samples between successive frames.
         fmin: Minimum frequency.
         norm: Normalization factor.
-        threshold: Pre-normalization energy threshold. Values below the threshold are discarded, resulting in a sparse chromagram.
+        threshold: Pre-normalization energy threshold.
+                   Values below the threshold are discarded,
+                   resulting in a sparse chromagram.
         tuning: Deviation from A440 tuning in fractional bins.
         n_chroma: Number of chroma bins to produce.
         n_octaves: Number of octaves to analyze above fmin.
         window: Type of window to use.
         bins_per_octave: Number of bins per octave.
         cqt_mode: Constant-Q transform mode.
-        dsize: Size of the output spectrogram : if None, the output is the raw spectrogram.
+        dsize: Size of the output spectrogram : if None, 
+               the output is the raw spectrogram.
 
     Returns:
         chroma: Returns the chromagram for an audio signal
@@ -291,7 +307,8 @@ def chroma_cens(
         n_octaves: Number of octaves to analyze above fmin.
         bins_per_octave: Number of bins per octave.
         cqt_mode: Constant-Q transform mode.
-        dsize: Size of the output spectrogram : if None, the output is the raw spectrogram.
+        dsize: Size of the output spectrogram : 
+               if None, the output is the raw spectrogram.
 
     Returns:
         chroma_cens: Returns the chroma variant (CENS).
@@ -330,12 +347,18 @@ def chroma_stft(
         sr: Sampling rate of the input signal.
         n_chroma: Number of chroma bins to produce.
         hop_length: Number of samples between successive frames.
-        win_length: Each frame of audio is windowed by window().The window will be of length win_length and then padded with zeros to match n_fft.
+        win_length: Each frame of audio is windowed by window().
+                    The window will be of length win_length and
+                    then padded with zeros to match n_fft.
         window: Type of window to use.
-        center: If True, the signal y is padded so that frame D[:, t] is centered at y[t * hop_length].
-        pad_mode: If center=True, the padding mode to use at the edges of the signal. By default, STFT uses reflection padding.
+        center: If True, the signal y is padded so that
+                frame D[:, t] is centered at y[t * hop_length].
+        pad_mode: If center=True, the padding mode to use
+                  at the edges of the signal.
+                  By default, STFT uses reflection padding.
         tuning: Deviation from A440 tuning in fractional bins.
-        dsize: Size of the output spectrogram : if None, the output is the raw spectrogram.
+        dsize: Size of the output spectrogram : 
+               if None, the output is the raw spectrogram.
 
     Returns:
         chroma_stft: Returns the chromagram for an audio signal.
@@ -364,7 +387,8 @@ def mfcc(
     lifter: int = 0
 ) -> np.ndarray:
     """
-    Compute the MFCCs (Mel-frequency cepstral coefficients) from an audio signal.
+    Compute the MFCCs (Mel-frequency cepstral coefficients)
+    from an audio signal.
 
     Args:
         sig: Input signal.

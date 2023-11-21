@@ -14,16 +14,21 @@ def butterworth_filter(
 ) -> np.ndarray:
     """Applies a Butterworth filter.
 
-    Given a signal, applies a Butterworth filter of type f_type and order order.
+    Given a signal, applies a Butterworth filter
+    of type f_type and order order.
 
     Args:
         sig: Input signal
-        f_type: Type of filter to apply, can be 'hp' (high pass), 'lp' (low pass) or 'bp' (band pass).
+        f_type: Type of filter to apply,
+                can be 'hp' (high pass),
+                'lp' (low pass) or 'bp' (band pass).
         sr: Sampling rate of the input signal.
         cutoff_low: Low cutoff frequency.
         cutoff_high: High cutoff frequency.
         order: Order of the filter.
-        output: Type of output, can be 'sos' (second order sections) or 'ba' (numerator/denominator).
+        output: Type of output,
+                can be 'sos' (second order sections)
+                or 'ba' (numerator/denominator).
 
     Returns:
         filtered_sig: Returns the filtered signal.

@@ -11,7 +11,8 @@ def resample_sig(
 ) -> np.ndarray:
     """Resamples a signal.
 
-    Given an input signal and it's sampling rate, resamples it to a target sampling rate.
+    Given an input signal and it's sampling rate,
+    resamples it to a target sampling rate.
 
     Args: 
         sig: Signal to resample.
@@ -68,7 +69,8 @@ def complex_to_real(sig: np.ndarray) -> np.ndarray:
 def fft(sig: np.ndarray) -> np.ndarray:
     """Compute the fft of a signal.
 
-    Given an input signal, computes the one-dimensional discrete Fourier Transform.
+    Given an input signal,computes
+    the one-dimensional discrete Fourier Transform.
 
     Args:
         sig: Input signal.
@@ -118,7 +120,9 @@ def sliding_window_cpu(
 ) -> np.ndarray:
     """Applies a sliding window to a signal.
 
-    Given an input signal, applies a sliding window to it to generate a sliding window of size window_size and stride overlap.
+    Given an input signal,
+    applies a sliding window to it to 
+    generate windows with overlap.
 
     Args:
         sig: Input signal.

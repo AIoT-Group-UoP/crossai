@@ -7,8 +7,9 @@ import librosa
 def spectral_skewness(sig: np.ndarray) -> float:
     """Computes the spectral skewness of a spectrogram or a signal.
 
-    Calculates the skewness of a given spectrogram or signal. The skewness is a measure of the asymmetry of the
-    probability distribution of a real-valued random variable about its mean. 
+    Calculates the skewness of a given spectrogram or signal.
+    The skewness is a measure of the asymmetry of the probability
+    distribution of a real-valued random variable about its mean. 
 
     Args:
         sig: The input signal or spectrogram.
@@ -92,12 +93,10 @@ def energy(sig: np.ndarray) -> float:
     """Computes the energy of a signal.
 
     Args:
-        sig: 
-         Input signal
+        sig: Input signal
 
     Returns:
-        energy: 
-         Returns the energy of a signal
+        energy: Returns the energy of a signal
     """
 
     return np.sum(sig**2) / len(sig)
