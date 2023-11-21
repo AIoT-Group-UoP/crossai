@@ -33,7 +33,7 @@ def zero_crossing_rate(
                 frame D[:, t] is centered at y[t * hop_length].
 
     Returns:
-        zero_crossing_rate: Returns the zero-crossing 
+        zero_crossing_rate: Returns the zero-crossing
                             rate of an audio time series.
     """
 

@@ -9,13 +9,14 @@ def spectral_skewness(sig: np.ndarray) -> float:
 
     Calculates the skewness of a given spectrogram or signal.
     The skewness is a measure of the asymmetry of the probability
-    distribution of a real-valued random variable about its mean. 
+    distribution of a real-valued random variable about its mean.
 
     Args:
         sig: The input signal or spectrogram.
 
     Returns:
-        spec_skewness: Returns the spectral skewness of a spectrogram or a signal.
+        spec_skewness: Returns the spectral skewness
+        of a spectrogram or a signal.
     """
 
     spec_skewness = scipy.stats.skew(sig)

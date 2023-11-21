@@ -109,11 +109,11 @@ def q_transform(
         sparsity: Sparsity of the CQT basis.
         window: Type of window to use.
         scale: If True, scale the magnitude of the CQT by n_bins
-        pad_mode: If center=True, the padding mode to 
+        pad_mode: If center=True, the padding mode to
                   use at the edges of the signal.
                   By default, STFT uses reflection padding.
         to_db: Convert the spectrogram to dB scale.
-        dsize: Size of the output spectrogram : 
+        dsize: Size of the output spectrogram :
                if None, the output is the raw spectrogram.
 
     Returns:
@@ -161,7 +161,7 @@ def melspectrogram(
         fmax: Maximum frequency.
         power: Power of the spectrogram.
         to_db: Convert the spectrogram to dB scale.
-        dsize: Size of the output spectrogram : 
+        dsize: Size of the output spectrogram :
                if None, the output is the raw spectrogram.
 
     Returns:
@@ -201,7 +201,7 @@ def inverse_melspectrogram(
         n_fft: Length of the FFT window.
         hop_length: Number of samples between successive frames.
         win_length: Each frame of audio is windowed by window
-                    of length win_length and then padded 
+                    of length win_length and then padded
                     with zeroes to match n_fft.
         window: Type of window to use.
         center: If True, the signal y is padded
@@ -212,7 +212,8 @@ def inverse_melspectrogram(
                   By default, STFT uses reflection padding.
         power: Power of the spectrogram.
         n_iter:  Number of inversion iterations.
-        length: If provided, the output y is zero-padded or clipped to exactly length samples.
+        length: If provided, the output y is zero-padded or clipped
+                to exactly length samples.
 
     Returns:
         inverse_mel_spectrogram : Returns the inverse of
@@ -259,7 +260,7 @@ def chroma(
         window: Type of window to use.
         bins_per_octave: Number of bins per octave.
         cqt_mode: Constant-Q transform mode.
-        dsize: Size of the output spectrogram : if None, 
+        dsize: Size of the output spectrogram : if None,
                the output is the raw spectrogram.
 
     Returns:
@@ -307,7 +308,7 @@ def chroma_cens(
         n_octaves: Number of octaves to analyze above fmin.
         bins_per_octave: Number of bins per octave.
         cqt_mode: Constant-Q transform mode.
-        dsize: Size of the output spectrogram : 
+        dsize: Size of the output spectrogram :
                if None, the output is the raw spectrogram.
 
     Returns:
@@ -357,7 +358,7 @@ def chroma_stft(
                   at the edges of the signal.
                   By default, STFT uses reflection padding.
         tuning: Deviation from A440 tuning in fractional bins.
-        dsize: Size of the output spectrogram : 
+        dsize: Size of the output spectrogram :
                if None, the output is the raw spectrogram.
 
     Returns:

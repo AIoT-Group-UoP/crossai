@@ -14,7 +14,7 @@ def resample_sig(
     Given an input signal and it's sampling rate,
     resamples it to a target sampling rate.
 
-    Args: 
+    Args:
         sig: Signal to resample.
         original_sr: Original sampling rate.
         target_sr: Target sampling rate.
@@ -121,7 +121,7 @@ def sliding_window_cpu(
     """Applies a sliding window to a signal.
 
     Given an input signal,
-    applies a sliding window to it to 
+    applies a sliding window to it to
     generate windows with overlap.
 
     Args:
