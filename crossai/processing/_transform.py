@@ -4,7 +4,11 @@ import scipy
 import cv2
 
 
-def resample_sig(sig: np.ndarray, original_sr: int, target_sr: int) -> np.ndarray:
+def resample_sig(
+    sig: np.ndarray,
+    original_sr: int,
+    target_sr: int
+) -> np.ndarray:
     """Resamples a signal.
 
     Given an input signal and it's sampling rate, resamples it to a target sampling rate.
@@ -25,7 +29,10 @@ def resample_sig(sig: np.ndarray, original_sr: int, target_sr: int) -> np.ndarra
     return rsmp_sig
 
 
-def amplify(sig: np.ndarray, factor: int) -> np.ndarray:
+def amplify(
+    sig: np.ndarray,
+    factor: int
+) -> np.ndarray:
     """Amplifies a signal.
 
     Given an input signal and a factor, amplifies the signal by the factor.
@@ -75,7 +82,11 @@ def fft(sig: np.ndarray) -> np.ndarray:
     return fft
 
 
-def spec_to_rgb(spec: np.ndarray, dsize: tuple = (256, 256), cmap: str = 'viridis') -> np.ndarray:
+def spec_to_rgb(
+    spec: np.ndarray,
+    dsize: tuple = (256, 256),
+    cmap: str = 'viridis'
+) -> np.ndarray:
     """Convert a Spectrogram to a RGB image.
 
     Given an input spectrogram, converts it to a 3 channel RGB image.
@@ -99,7 +110,12 @@ def spec_to_rgb(spec: np.ndarray, dsize: tuple = (256, 256), cmap: str = 'viridi
     return rgb_img
 
 
-def sliding_window_cpu(sig: np.ndarray, window_size: int, overlap: int, verbose: bool = True) -> np.ndarray:
+def sliding_window_cpu(
+    sig: np.ndarray,
+    window_size: int,
+    overlap: int,
+    verbose: bool = True
+) -> np.ndarray:
     """Applies a sliding window to a signal.
 
     Given an input signal, applies a sliding window to it to generate a sliding window of size window_size and stride overlap.
