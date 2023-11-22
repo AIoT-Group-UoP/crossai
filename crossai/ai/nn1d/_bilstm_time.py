@@ -17,7 +17,7 @@ def BiLSTM_Time(
     drp_rate: float = 0.,
     spatial: bool = False,
     mc_inference: bool = None
-) -> tf.keras.models.Model:
+) -> tf.keras.Model:
     """Constructs a deep neural network using bidirectional LSTM.
 
     This model converts low-level audio features into high-level expressions.

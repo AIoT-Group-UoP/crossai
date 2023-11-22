@@ -28,7 +28,7 @@ def XceptionTime(
     kernel_initialize: str = "he_uniform",
     kernel_regularize: float = 1e-5,
     kernel_constraint: int = 3
-) -> tf.keras.models.Model:
+) -> tf.keras.Model:
     """Constructs a deep neural network based on Xception Architecture meant
         for Time-Series tasks.
 

@@ -28,7 +28,7 @@ def InceptionTime(
     kernel_constraint: int = 3,
     spatial: bool = False,
     mc_inference: bool = None,
-) -> tf.keras.models.Model:
+) -> tf.keras.Model:
     """Constructs a deep neural network based on Inception (AlexNet)
         Architecture meant for Time-Series tasks.
 

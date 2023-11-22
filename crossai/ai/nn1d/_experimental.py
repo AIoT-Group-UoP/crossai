@@ -14,7 +14,7 @@ def CNN1D(
     drp_rate: float = 0.,
     spatial: bool = False,
     mc_inference: bool = None
-) -> tf.keras.models.Model:
+) -> tf.keras.Model:
     """Creates a simple 1D CNN model for experimental purposes.
 
     Args:
