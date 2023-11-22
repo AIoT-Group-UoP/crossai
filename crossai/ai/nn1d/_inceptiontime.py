@@ -29,9 +29,12 @@ def InceptionTime(
     spatial: bool = False,
     mc_inference: bool = None,
 ) -> tf.keras.models.Model:
-    """An ensemble of deep Convolutional Neural Network (CNN) models, inspired
-        by the Inception-v4 architecture, transformed mainly for Time Series
-        Classification (TSC) tasks.
+    """Constructs a deep neural network based on Inception (AlexNet)
+        Architecture meant for Time-Series tasks.
+
+    An ensemble of deep Convolutional Neural Network (CNN) models, inspired
+    by the Inception-v4 architecture, transformed mainly for Time Series
+    Classification (TSC) tasks.
 
     Args:
         input_shape: Shape of the input data, excluding the batch size.
@@ -120,7 +123,7 @@ def inception_block(
     kernel_initialize: str = "he_uniform",
     kernel_regularize: float = None,
     kernel_constraint: int = None
-):
+) -> tf.Tensor:
     """Creates an Inception Block.
 
     Args:
@@ -171,16 +174,18 @@ def inception_block(
     return x
 
 
-def inception_module(inputs,
-                     use_bottleneck=True,
-                     bottleneck_size=32,
-                     activation="softmax",
-                     nb_filters=64,
-                     kernel_size=41,
-                     kernel_initialize="he_uniform",
-                     kernel_regularize=None,
-                     kernel_constraint=None,
-                     stride=1):
+def inception_module(
+    inputs: tf.Tensor,
+    use_bottleneck: bool = True,
+    bottleneck_size: int = 32,
+    activation: str = "softmax",
+    nb_filters: int = 64,
+    kernel_size: int = 41,
+    kernel_initialize: str = "he_uniform",
+    kernel_regularize: float = None,
+    kernel_constraint: int = None,
+    stride: int = 1
+):
     """Creates an Inception Module.
 
     Args:
