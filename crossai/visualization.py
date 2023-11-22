@@ -104,21 +104,30 @@ def plot_predictions(predictions,
                      path_to_save=None,
                      show: bool = True,
                      return_artifact: bool = False,
+                     window_length: int = 1,
+                     window_overlap: int = 0,
                      **kwargs):
-    """Plots the prediction results of a model in regard to time.
+    """Plots the prediction results of a model in regard to time and by taking
+    into account the windowing process. The predictions are plotted as a
+    horizontal line for each class, with the color of the line indicating the
+    dominant class and the length of the line indicating the length of the
+    window that the prediction corresponds to.
 
     Args:
-        predictions (list): List of predictions
-        title (str): (Optional) Title of the plot
-        labels (list): List of labels. If none the plot will not have a legend
-        color_threshold (float): (Optional) Prediction threshold for the
-                                instance to be colored with the class color
-                                in a vertical line. Default 0.5
-        path_to_save (str, optional): When defined, the plot is saved
-                                    on the given path. Default None.
-        show (bool): (Optional) If True, the plot will be shown.
-        return_artifact (bool): (Optional) If True, the plot will be returned
-                                as an artifact using return
+        predictions (numpy.ndarray): The predictions of the model.
+        title (str, optional): The title of the plot. Defaults to None.
+        labels (list, optional): The labels of the classes. Defaults to None.
+        color_threshold (float, optional): The threshold for the color of the
+            lines. Defaults to 0.5.
+        path_to_save ([type], optional): The path to save the plot. Defaults to
+            None.
+        show (bool, optional): Whether to show the plot. Defaults to True.
+        return_artifact (bool, optional): Whether to return the plot as an
+            artifact. Defaults to False.
+        window_length (int, optional): The length of the window. Defaults to 1.
+        window_overlap (int, optional): The overlap of the windows. Defaults to
+            0.
+
         **kwargs:
             figsize (tuple): Default value (16,8)
             num (int): Figure number. Default value None
@@ -130,36 +139,51 @@ def plot_predictions(predictions,
                 compatible with matplotlib color format.
                 Note that if segments are passed, the normal coloring of the
                 predictions will be overriden.
-            s (int): (Optional) Size of the markers
+
     Returns:
-        plot artifact if return_artifact is True
-
+        Plot artifact if return_artifact is True.
     """
-    predictions = np.array(predictions)
-    predictions = np.transpose(predictions)
+    plot_dict = {}
 
+    for i in range(len(predictions[0])):  # create dict keys
+        plot_dict[i] = []
     figsize = kwargs.get("figsize", (16, 8))
-
     fig, axs = plt.subplots(1, 1, figsize=figsize, sharex=True,
                             num=kwargs.get("num", None),
                             constrained_layout=True)
-    s = kwargs.get("s", 5)
+
     for i in range(len(predictions)):
-        index = 0
-        axs.scatter(np.arange(len(predictions[i])), predictions[i],
-                    label=labels[i], marker="_", s=s)
-        for prediction in predictions[i]:
-            if prediction > color_threshold:
-                axs.axvspan(index, index + 1, facecolor=LABELS_COLORS[i],
-                            alpha=0.3)
-            index += 1
+        seg_start = i * (window_length - window_overlap)
+        seg_end = seg_start + window_length
+        for j in range(len(predictions[i])):
+            axs.plot([seg_start, seg_end],
+                     [predictions[i][j], predictions[i][j]],
+                     color=LABELS_COLORS[j])
+            plot_dict[j].append([seg_start, seg_end])
+
+    # find consecutive segments with the same label
+    transposed_preds = np.transpose(predictions)
+    for i in range(len(transposed_preds)):
+        start_color = None
+        end_color = None
+        for j in range(len(transposed_preds[i])):
+            if transposed_preds[i][j] > color_threshold:
+                if start_color is None:
+                    start_color = plot_dict[i][j][0]
+                end_color = plot_dict[i][j][1]
+            else:
+                if start_color is not None:
+                    axs.axvspan(start_color, end_color,
+                                color=LABELS_COLORS[i], alpha=0.3)
+                    start_color = None
+                    end_color = None
 
     axs.grid()
-    axs.legend()
+    axs.legend(labels)
+    axs.legend(labels, bbox_to_anchor=(1.02, 0.5), loc='center right')
     segments = kwargs.get("segments", None)
 
     if segments is not None and labels is not None:
-        # remove any axvline that might have been added
         for line in axs.lines:
             line.remove()
 
@@ -172,7 +196,7 @@ def plot_predictions(predictions,
                 ax.axvspan(seg[0], seg[1], facecolor=label_color,
                            alpha=0.3, label=seg[2])
 
-    axs.set_ylim([0, 1])
+    axs.set_ylim([-0.02, 1.02])
 
     if title is not None:
         fig.suptitle(title)
