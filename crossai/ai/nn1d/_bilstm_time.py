@@ -31,7 +31,7 @@ def BiLSTM_Time(
         n_layers: Number of Bidirectional LSTM layers.
         lstm_units: LSTM units for each layer.
         Dense_units: Units for each dense layer.
-        drp_rate_rate: Dropout rate.
+        drp_rate: Dropout rate.
         spatial: Type of Dropout. True for SpatialDropout1D, False for
             Monte Carlo Dropout.
         mc_inference: Dropout setting during inference. True
@@ -74,7 +74,7 @@ def bilstm_block(
         inputs: Input tensor for the BiLSTM block.
         n_layers: Number of LSTM layers in the block.
         lstm_units: Number of units in each LSTM layer.
-        drp_rate_rate: Dropout rate to be applied after each LSTM layer.
+        drp_rate: Dropout rate to be applied after each LSTM layer.
         mc_inference: If True, enables Monte Carlo dropout
             during inference. Defaults to None.
 
