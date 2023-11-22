@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="crossai",
-    version="0.1.1.7.4",
+    version="0.1.1.7.5",
     packages=[
         "crossai",
         "crossai.ai",
