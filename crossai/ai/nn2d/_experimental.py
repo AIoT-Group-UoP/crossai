@@ -56,6 +56,6 @@ def CNN2D(input_shape,
     else:
         outputs = x
 
-    model = Model(inputs=input_layer, outputs=outputs)
+    model = Model(inputs=input_layer, outputs=outputs, name='CNN2D')
 
     return model

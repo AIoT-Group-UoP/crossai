@@ -56,7 +56,7 @@ def BiLSTM_Time(input_shape,
     else:
         outputs = x_dense
 
-    model = Model(inputs=input_layer, outputs=outputs)
+    model = Model(inputs=input_layer, outputs=outputs, name="BiLSTM_Time")
 
     return model
 

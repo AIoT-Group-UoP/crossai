@@ -112,7 +112,7 @@ def ResNet34(input_shape,
     else:
         outputs = x
 
-    model = Model(input_layer, outputs)
+    model = Model(input_layer, outputs, name="Resnet_34")
     return model
 
 

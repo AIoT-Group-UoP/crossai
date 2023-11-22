@@ -111,7 +111,7 @@ def ResNet50(input_shape,
         outputs = x
 
     # Construct and return the model
-    model = Model(input_layer, outputs)
+    model = Model(input_layer, outputs, name="Resnet_50")
     return model
 
 
