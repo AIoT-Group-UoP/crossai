@@ -61,7 +61,7 @@ def XceptionTime(
         spatial: If true, applies Spatial Dropout, else applies standard
             Dropout.
         mc_inference: If True, enables Monte Carlo dropout
-            during inference. Defaults to None.
+            during inference.
         kernel_initialize: The variance scaling initializer.
         kernel_regularize: Penalty to apply on the layer's kernel.
         kernel_constraint: The constraint of the value of the incoming weights.
@@ -193,7 +193,7 @@ def conv1d_block(
         spatial: If true, applies Spatial Dropout, else applies standard
             Dropout.
         mc_inference: If True, enables Monte Carlo dropout
-            during inference. Defaults to None.
+            during inference.
         kernel_initialize: The variance scaling initializer.
         kernel_regularize: Penalty to apply on the layer's kernel.
         kernel_constraint: The constraint of the value of the incoming weights.
