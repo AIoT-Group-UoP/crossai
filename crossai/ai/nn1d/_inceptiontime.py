@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Flatten, Input, Conv1D
 from tensorflow.keras.layers import GlobalAveragePooling1D, BatchNormalization
@@ -9,59 +10,53 @@ from .._layers_dropout import dropout_layer_1d
 
 # Implementation of InceptionTime NN model based on:
 # - https://arxiv.org/pdf/1909.04939
-def InceptionTime(input_shape,
-                  include_top=True,
-                  num_classes=1,
-                  classifier_activation="softmax",
-                  nb_filters=32,
-                  use_residual=True,
-                  use_bottleneck=True,
-                  depth=6,
-                  kernel_size=41,
-                  bottleneck_size=32,
-                  drp_input=0,
-                  drp_high=0,
-                  kernel_initialize="he_uniform",
-                  kernel_regularize=4e-5,
-                  kernel_constraint=3,
-                  spatial=False,
-                  mc_inference=None):
+def InceptionTime(
+    input_shape: tuple,
+    include_top: bool = True,
+    num_classes: int = 1,
+    classifier_activation: str = "softmax",
+    nb_filters: int = 32,
+    use_residual: bool = True,
+    use_bottleneck: bool = True,
+    depth: int = 6,
+    kernel_size: int = 41,
+    bottleneck_size: int = 32,
+    drp_low: float = 0.,
+    drp_high: float = 0.,
+    kernel_initialize: str = "he_uniform",
+    kernel_regularize: float = 4e-5,
+    kernel_constraint: int = 3,
+    spatial: bool = False,
+    mc_inference: bool = None,
+) -> tf.keras.models.Model:
     """An ensemble of deep Convolutional Neural Network (CNN) models, inspired
         by the Inception-v4 architecture, transformed mainly for Time Series
         Classification (TSC) tasks.
 
     Args:
-        input_shape (tuple): The train data shape.
-        include_top (bool): whether to include a fully-connected layer at
-            the top of the network.
-        num_classes (int): number of classes to predict. Default 1.
-        classifier_activation (str or callable, optional): activation function
-            (either as str or object) for the classification task.
-        nb_filters (int): The number of nb filters.
-        use_residual (bool): Whether to use a residual block or not.
-        use_bottleneck (bool): Whether to use a bottleneck layer or not.
-        depth (int): The depth of the network.
-        kernel_size (int): The kernel size of the network.
-        bottleneck_size (int): The number of output filters in the convolution.
-        drp_input (float): Range 0-1.
-        drp_high (float): Range 0-1.
-        kernel_initialize (str): The variance scaling initializer.
-            Default: "he_uniform".
-        kernel_regularize (Union([float, None])): Regularizer to apply a
-            penalty on the layer's kernel.Default: 4e-5.
-        kernel_constraint (int): The constraint of the value of the incoming
-            weights. Default 3.
-        spatial (bool): Determines the type of Dropout. If True, it applies
-            SpatialDropout1D else Monte Carlo Dropout. Default False.
-        mc_inference (bool, optional):
-            -If true, Dropout is enabled even during inference.
-            -If False, Dropout is neither enabled on training nor
-                during inference.
-            -If None, Dropout is enabled during training but not during
-                inference. Defaults to None.
+        input_shape: Shape of the input data, excluding the batch size.
+        include_top: If true, includes a fully-connected layer at the top of
+            the model. Set to False for a custom layer.
+        num_classes: Number of classes to predict.
+        classifier_activation: Activation function for the classification task.
+        nb_filters: The number of nb filters.
+        use_residual: Whether to use a residual block or not.
+        use_bottleneck: Whether to use a bottleneck layer or not.
+        depth: The depth of the network.
+        kernel_size: The kernel size of the network.
+        bottleneck_size: The number of output filters in the convolution.
+        drp_low: Dropout rate after the input layer of the model.
+        drp_high: Dropout rate before the top layer of the model.
+        kernel_initialize: The variance scaling initializer.
+        kernel_regularize: Penalty to apply on the layer's kernel.
+        kernel_constraint: The constraint of the value of the incoming weights.
+        spatial: If true, applies Spatial Dropout, else applies standard
+            Dropout.
+        mc_inference: If True, enables Monte Carlo dropout
+            during inference. Defaults to None.
 
     Returns:
-        A Keras model instance.
+        model: A Keras model instance.
     """
 
     if isinstance(kernel_regularize, str):
@@ -78,7 +73,7 @@ def InceptionTime(input_shape,
     # define the input of the network
     input_layer = Input(shape=input_shape, name="input_layer")
 
-    x = dropout_layer_1d(inputs=input_layer, drp_rate=drp_input,
+    x = dropout_layer_1d(inputs=input_layer, drp_rate=drp_low,
                          spatial=spatial, mc_inference=mc_inference)
 
     x_incept = inception_block(inputs=x,
@@ -113,33 +108,38 @@ def InceptionTime(input_shape,
     return model
 
 
-def inception_block(inputs,
-                    depth=6,
-                    use_bottleneck=True,
-                    bottleneck_size=1,
-                    use_residual=True,
-                    activation="softmax",
-                    nb_filters=32,
-                    kernel_size=41,
-                    kernel_initialize="he_uniform",
-                    kernel_regularize=None,
-                    kernel_constraint=None):
-    """
+def inception_block(
+    inputs: tf.Tensor,
+    depth: int = 6,
+    use_bottleneck: bool = True,
+    bottleneck_size: int = 1,
+    use_residual: bool = True,
+    activation: str = "softmax",
+    nb_filters: int = 32,
+    kernel_size: int = 41,
+    kernel_initialize: str = "he_uniform",
+    kernel_regularize: float = None,
+    kernel_constraint: int = None
+):
+    """Creates an Inception Block.
+
     Args:
-        inputs:
-        depth:
-        use_bottleneck:
-        bottleneck_size:
-        use_residual:
-        activation:
-        nb_filters:
-        kernel_size:
-        kernel_initialize:
-        kernel_regularize:
-        kernel_constraint:
+        inputs: Input tensor to the block
+        depth: The depth of the block.
+        use_bottleneck: Whether to use a bottleneck layer or not.
+        bottleneck_size: he number of output filters in the convolution.
+        use_residual: The number of output filters in the convolution.
+        activation: Type of activation function.
+        nb_filters: The number of nb filters.
+        kernel_size: The kernel size of the convolution.
+        kernel_initialize: The variance scaling initializer.
+        kernel_regularize: Penalty to apply on the layer's kernel.
+        kernel_constraint: The constraint of the value of the incoming weights.
 
     Returns:
+        x: Input tensor passed thourgh the inception block.
     """
+
     x = inputs
     inputs_res = inputs
 
@@ -181,20 +181,22 @@ def inception_module(inputs,
                      kernel_regularize=None,
                      kernel_constraint=None,
                      stride=1):
-    """
+    """Creates an Inception Module.
+
     Args:
-        inputs:
-        use_bottleneck:
-        bottleneck_size:
-        activation:
-        nb_filters:
-        kernel_size:
-        kernel_initialize:
-        kernel_regularize:
-        kernel_constraint:
-        stride:
+        inputs: Input tensor to the module.
+        use_bottleneck: Whether to use a bottleneck layer or not.
+        bottleneck_size: he number of output filters in the convolution.
+        activation: Type of activation function.
+        nb_filters: The number of nb filters.
+        kernel_size: The kernel size of the convolution.
+        kernel_initialize: The variance scaling initializer.
+        kernel_regularize: Penalty to apply on the layer's kernel.
+        kernel_constraint: The constraint of the value of the incoming weights.
+        stride: Stride of the convolution.
 
     Returns:
+        x_post: Input tensor passed through the inception module.
     """
     if use_bottleneck and nb_filters > 1:
         x = Conv1D(filters=bottleneck_size, kernel_size=1,
@@ -239,9 +241,7 @@ def inception_module(inputs,
     conv_list.append(last_conv)
 
     x_concat = Concatenate(axis=2)(conv_list)
-
     x_bn = BatchNormalization()(x_concat)
-
     x_post = Activation("relu")(x_bn)
 
     return x_post
