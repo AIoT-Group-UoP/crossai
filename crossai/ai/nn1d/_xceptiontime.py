@@ -7,6 +7,7 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.constraints import MaxNorm
 from .._layers_dropout import dropout_layer_1d
 import tensorflow_addons as tfa
+from typing import Union, Callable
 
 
 # Implementation of XceptionTime NN model based on:
@@ -16,7 +17,7 @@ def XceptionTime(
     input_shape: tuple,
     include_top: bool = True,
     num_classes: int = 1,
-    classifier_activation: str = "softmax",
+    classifier_activation: Union[str, Callable] = "softmax",
     xception_adaptive_size: int = 50,
     xception_adapt_ws_divide: int = 4,
     n_filters: int = 16,
@@ -24,10 +25,10 @@ def XceptionTime(
     drp_mid: float = 0.,
     drp_high: float = 0.,
     spatial: bool = False,
-    mc_inference: bool = None,
-    kernel_initialize: str = "he_uniform",
-    kernel_regularize: float = 1e-5,
-    kernel_constraint: int = 3
+    kernel_initialize: Union[str, Callable] = "he_uniform",
+    kernel_regularize: Union[str, float] = 4e-5,
+    kernel_constraint: int = 3,
+    mc_inference: Union[bool, None] = None,
 ) -> tf.keras.Model:
     """Constructs a deep neural network based on Xception Architecture meant
         for Time-Series tasks.
@@ -49,6 +50,8 @@ def XceptionTime(
             the model. Set to False for a custom layer.
         num_classes: Number of classes to predict.
         classifier_activation: Activation function for the classification task.
+            Can be a string identifier or a callable function from
+                tf.keras.activations.
         xception_adaptive_size: The adaptive size.
         xception_adapt_ws_divide: The number that will divide the adaptive
             size.
@@ -58,13 +61,15 @@ def XceptionTime(
         drp_mid: Fraction of the input units to drop in the mid-dropout layer.
         drp_high: Fraction of the input units to drop in the last dropout
             layer.
+        kernel_initialize: The variance scaling initializer. Can be a string
+            identifieror a callable function from tf.keras.initializers.
+        kernel_regularize: L2 regularization factor; can be a string or float.
+            If a string is provided, it's converted to a float.
+        kernel_constraint: Max norm constraint for the kernel weights.
         spatial: If true, applies Spatial Dropout, else applies standard
             Dropout.
-        mc_inference: If True, enables Monte Carlo dropout
-            during inference.
-        kernel_initialize: The variance scaling initializer.
-        kernel_regularize: Penalty to apply on the layer's kernel.
-        kernel_constraint: The constraint of the value of the incoming weights.
+        mc_inference: If True, enables Monte Carlo dropout during inference.
+            Defaults to None.
 
     Returns:
         model: A Keras Model instance.

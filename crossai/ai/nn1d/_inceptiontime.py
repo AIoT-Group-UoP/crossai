@@ -1,3 +1,4 @@
+from typing import Union, Callable
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Flatten, Input, Conv1D
@@ -14,7 +15,7 @@ def InceptionTime(
     input_shape: tuple,
     include_top: bool = True,
     num_classes: int = 1,
-    classifier_activation: str = "softmax",
+    classifier_activation: Union[str, Callable] = "softmax",
     nb_filters: int = 32,
     use_residual: bool = True,
     use_bottleneck: bool = True,
@@ -23,14 +24,14 @@ def InceptionTime(
     bottleneck_size: int = 32,
     drp_low: float = 0.,
     drp_high: float = 0.,
-    kernel_initialize: str = "he_uniform",
-    kernel_regularize: float = 4e-5,
+    kernel_initialize: Union[str, Callable] = "he_uniform",
+    kernel_regularize: Union[str, float] = 4e-5,
     kernel_constraint: int = 3,
     spatial: bool = False,
-    mc_inference: bool = None,
+    mc_inference: Union[bool, None] = None,
 ) -> tf.keras.Model:
     """Constructs a deep neural network based on Inception (AlexNet)
-        Architecture meant for Time-Series tasks.
+    Architecture meant for Time-Series tasks.
 
     An ensemble of deep Convolutional Neural Network (CNN) models, inspired
     by the Inception-v4 architecture, transformed mainly for Time Series
@@ -42,24 +43,28 @@ def InceptionTime(
             the model. Set to False for a custom layer.
         num_classes: Number of classes to predict.
         classifier_activation: Activation function for the classification task.
-        nb_filters: The number of nb filters.
-        use_residual: Whether to use a residual block or not.
+            Can be a string identifier or a callable function from
+                tf.keras.activations.
+        nb_filters: The number of filters in each convolutional layer.
+        use_residual: Whether to use a residual connection or not.
         use_bottleneck: Whether to use a bottleneck layer or not.
         depth: The depth of the network.
-        kernel_size: The kernel size of the network.
-        bottleneck_size: The number of output filters in the convolution.
+        kernel_size: The kernel size for convolutional layers.
+        bottleneck_size: The number of output filters in the bottleneck layer.
         drp_low: Dropout rate after the input layer of the model.
         drp_high: Dropout rate before the top layer of the model.
-        kernel_initialize: The variance scaling initializer.
-        kernel_regularize: Penalty to apply on the layer's kernel.
-        kernel_constraint: The constraint of the value of the incoming weights.
+        kernel_initialize: The variance scaling initializer. Can be a string
+            identifieror a callable function from tf.keras.initializers.
+        kernel_regularize: L2 regularization factor; can be a string or float.
+            If a string is provided, it's converted to a float.
+        kernel_constraint: Max norm constraint for the kernel weights.
         spatial: If true, applies Spatial Dropout, else applies standard
             Dropout.
-        mc_inference: If True, enables Monte Carlo dropout
-            during inference. Defaults to None.
+        mc_inference: If True, enables Monte Carlo dropout during inference.
+            Defaults to None.
 
     Returns:
-        model: A Keras model instance.
+        A Keras model instance.
     """
 
     if isinstance(kernel_regularize, str):

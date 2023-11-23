@@ -1,3 +1,4 @@
+from typing import Union, Callable
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Flatten
@@ -10,24 +11,28 @@ def CNN1D(
     input_shape: tuple,
     include_top: bool = True,
     num_classes: int = 1,
-    classifier_activation: str = "softmax",
+    classifier_activation: Union[str, Callable] = "softmax",
     drp_rate: float = 0.,
     spatial: bool = False,
-    mc_inference: bool = None
+    mc_inference: Union[bool, None] = None
 ) -> tf.keras.Model:
     """Creates a simple 1D CNN model for experimental purposes.
 
+    This model is suitable for time-series or sequence data and can be used
+    for tasks such as classification or feature extraction.
+
     Args:
         input_shape: Shape of the input data, excluding the batch size.
-        include_top: If true, includes a fully-connected layer at the top of
-            the model. Set to False for a custom layer.
+        include_top: If True, includes a fully-connected layer at the top of
+            the model. Set to False for adding a custom layer.
         num_classes: Number of classes for prediction.
         classifier_activation: Activation function for the classification task.
+            Can be a string identifier or a function from tf.keras.activations.
         drp_rate: Dropout rate.
-        spatial: If true, applies Spatial Dropout, else applies standard
-            Dropout.
-        mc_inference: If True, enables Monte Carlo dropout
-            during inference. Defaults to None.
+        spatial: If True, applies Spatial Dropout. If False, applies standard
+             Dropout.
+        mc_inference: If True, enables Monte Carlo dropout during inference.
+            Defaults to None, meaning dropout is applied during training only.
 
     Returns:
         model: An instance of a Keras Model.

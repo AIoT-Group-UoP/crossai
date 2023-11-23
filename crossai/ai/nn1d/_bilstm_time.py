@@ -1,3 +1,4 @@
+from typing import Union, Callable
 import tensorflow as tf
 from tensorflow.keras.layers import Input, Bidirectional, LSTM, Dense
 from tensorflow.keras.models import Model
@@ -10,13 +11,13 @@ def BiLSTM_Time(
     input_shape: tuple,
     include_top: bool = True,
     num_classes: int = 1,
+    classifier_activation: Union[str, Callable] = "softmax",
     n_layers: int = 3,
-    classifier_activation: str = "softmax",
     lstm_units: list = [32, 32, 32],
     dense_units: list = [128],
     drp_rate: float = 0.,
     spatial: bool = False,
-    mc_inference: bool = None
+    mc_inference: Union[bool, None] = None
 ) -> tf.keras.Model:
     """Constructs a deep neural network using bidirectional LSTM.
 
@@ -24,21 +25,21 @@ def BiLSTM_Time(
 
     Args:
         input_shape: Shape of the input data, excluding batch size.
-        include_top: If `True`, includes a fully-connected layer at the top
-            Set to `False` for a custom layer at the top.
+        include_top: If True, includes a fully-connected layer at the top.
+            Set to False for adding a custom layer.
         num_classes: Number of prediction classes.
         classifier_activation: Activation function for the classification task.
+            Can be a string identifier or a function from tf.keras.activations.
         n_layers: Number of Bidirectional LSTM layers.
         lstm_units: LSTM units for each layer.
-        Dense_units: Units for each dense layer.
+        dense_units: Units for each dense layer.
         drp_rate: Dropout rate.
-        spatial: Type of Dropout. True for SpatialDropout1D, False for
-            Monte Carlo Dropout.
-        mc_inference: Dropout setting during inference. True
-            enables Dropout, False disables it, None for training only.
+        spatial: Type of Dropout. True for SpatialDropout1D, False for regular Dropout.
+        mc_inference: Dropout setting during inference. True enables,
+            False disables, and None means dropout is applied during training only.
 
     Returns:
-        model: A Keras model instance.
+        A Keras model instance.
     """
 
     input_layer = Input(shape=input_shape, name="input_layer")
