@@ -1,64 +1,64 @@
+from typing import Union, List, Callable
+import tensorflow as tf
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Conv2D, BatchNormalization, ReLU, Dense
 from tensorflow.keras.layers import GlobalAveragePooling2D
 from tensorflow.keras.layers import SeparableConv2D, MaxPooling2D, Add, Flatten
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras.constraints import MaxNorm
+from tensorflow.keras.initializers import Initializer
+from tensorflow.keras.regularizers import Regularizer, l2
+from tensorflow.keras.constraints import Constraint, MaxNorm
 from .._layers_dropout import dense_drop_block
 
 
 # Implementation of Xception NN model based on:
 # - https://arxiv.org/abs/1610.02357
-def Xception(input_shape,
-             include_top=True,
-             num_classes=1,
-             classifier_activation="softmax",
-             kernel_initialize="he_uniform",
-             kernel_regularize=1e-5,
-             kernel_constraint=3,
-             dense_layers=0,
-             dense_units=[128, 128],
-             dropout=False,
-             dropout_first=False,
-             dropout_rate=[0.5, 0.5],
-             spatial=False,
-             mc_inference=None
-             ):
-    """Xception Model.
+def Xception(
+    input_shape: tuple,
+    include_top: bool = True,
+    num_classes: int = 1,
+    classifier_activation: Union[str, Callable] = "softmax",
+    kernel_initialize: Union[str, Initializer] = "he_normal",
+    kernel_regularize: Union[float, str] = 1e-5,
+    kernel_constraint: int = 3,
+    dense_layers: int = 0,
+    dense_units: List[int] = [128, 128],
+    dropout: bool = False,
+    dropout_first: bool = False,
+    dropout_rate: List[float] = [0.5, 0.5],
+    spatial: bool = False,
+    mc_inference: Union[bool, None] = None
+) -> tf.keras.Model:
+    """
+    Constructs the Xception model, a deep convolutional neural network known
+    for its depth and efficiency.
+
+    The model is structured into entry, middle, and exit flows, utilizing
+    depth-wise separable convolutions. It allows for customization of the top
+    layer, dropout, dense layers, and other hyperparameters.
 
     Args:
-        input_shape (tuple): The shape of a single instance of the dataset.
-        include_top (bool, optional): whether to include a fully-connected
-            layer at the top of the network.
-        num_classes (int, optional): number of classes to predict. Default 1.
-        classifier_activation (Union[str, Callable], optional): activation
-            function (either as str or object) for the classification task.
-        kernel_initialize (str, optional): The variance scaling initializer.
-            Default: "he_uniform".
-        kernel_regularize (Union[str, float], optional): Regularizer to apply
-            penalty on the layer"s kernel. Can be float or str in 1e-5 format.
-        kernel_constraint (int, optional): The constraint of the value of the
-            incoming weights. Default 3.
-        dense_layers (int, optional): Number of dense layers. Default 0.
-        dense_units (List[int], optional): Number of units per dense layer.
-            Default [128, 128]
-        dropout (bool, optional): whether to use dropout or not. Default False.
-        dropout_first (bool, optional): Add dropout before dense layer or
-            after. Default False.
-        dropout_rate (List[float]): dropout rate for each dropout layer.
-            Default 0.5.
-        spatial (bool, optional): Determines the type of Dropout. If True, it
-            applies SpatialDropout2D else
-        Monte Carlo Dropout. Default: False.
-        mc_inference (bool, optional):
-        - If true, Dropout is enabled even during inference.
-        - If False, Dropout is neither enabled on training nor during
-            inference.
-        - If None, Dropout is enabled during training but not during inference.
-            Defaults to None.
+        input_shape: The shape of a single instance of the dataset.
+        include_top: Whether to include a fully-connected layer at the top of
+            the network.
+        num_classes: Number of classes for the output layer.
+        classifier_activation: Activation function for the classification task.
+        kernel_initialize: The variance scaling initializer.
+        kernel_regularize: Regularizer for the kernel weights. Can be a float
+            or a string in scientific notation (e.g., '1e-5').
+        kernel_constraint: Constraint on the kernel weights, expressed as an
+            integer.
+        dense_layers: Number of dense layers to add to the top of the network.
+        dense_units: Number of units per dense layer.
+        dropout: Whether to include dropout layers.
+        dropout_first: Whether to apply dropout before or after the dense
+            layers.
+        dropout_rate: Dropout rate for each dropout layer.
+        spatial: If True, applies Spatial Dropout; else applies standard
+            Dropout.
+        mc_inference: Determines the behavior of dropout during inference.
 
     Returns:
-        A Keras Model instance.
+        A tf.keras.Model instance representing the Xception architecture.
     """
 
     # regularizer settings
@@ -122,34 +122,52 @@ def Xception(input_shape,
     return model
 
 
-def entry_flow(inputs,
-               kernel_initialize,
-               kernel_regularize,
-               kernel_constraint):
-    """Creates the entry flow section.
+def entry_flow(
+    inputs: tf.Tensor,
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """
+    Creates the entry flow section of a convolutional neural network.
+
+    The entry flow consists of an initial stem function for dimensionality
+    reduction and expansion, followed by a series of projection blocks. This
+    section prepares the input tensor for deeper processing in the subsequent
+    sections of the network.
 
     Args:
-        inputs: Input tensor to neural network.
-        kernel_initialize:
-        kernel_regularize:
-        kernel_constraint:
+        inputs: Input tensor to the entry flow section.
+        kernel_initialize: Initializer for the kernel weights, can be a string
+            identifier or an initializer object.
+        kernel_regularize: Regularizer for the kernel weights, can be None, a
+            float, or a Regularizer object.
+        kernel_constraint: Constraint for the kernel weights, can be None, an
+            integer, or a Constraint object.
 
     Returns:
+        Output tensor after passing through the entry flow section.
 
+    Nested Functions:
+        stem: Creates the initial part of the entry flow, performing
+            dimensionality reduction and expansion.
     """
 
     def stem(inputs, kernel_initialize, kernel_regularize, kernel_constraint):
-        """Creates the stem entry into the neural network.
+        """
+        Creates the stem entry into the neural network, performing initial
+        dimensionality reduction and expansion.
 
         Args:
-            inputs: Input tensor to neural network.
-            kernel_initialize:
-            kernel_regularize:
-            kernel_constraint:
+            inputs: Input tensor to the stem section.
+            kernel_initialize: Initializer for the kernel weights.
+            kernel_regularize: Regularizer for the kernel weights.
+            kernel_constraint: Constraint for the kernel weights.
 
         Returns:
-
+            Output tensor after processing through the stem section.
         """
+
         # Strided convolution - dimensionality reduction
         # Reduce feature maps by 75%
         x = Conv2D(32, (3, 3), strides=(2, 2),
@@ -183,17 +201,32 @@ def entry_flow(inputs,
     return x
 
 
-def middle_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
-    """Creates the middle flow section
+def middle_flow(
+    x: tf.Tensor,
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """
+    Creates the middle flow section of a convolutional neural network.
+
+    This section consists of multiple (typically 8) residual blocks with
+    depth-wise separable convolutions. It processes the feature maps at a
+    consistent depth, applying a series of transformations without altering
+    their spatial dimensions.
 
     Args:
-        x: Input tensor into section.
-        kernel_initialize:
-        kernel_regularize:
-        kernel_constraint:
+        x: Input tensor to the middle flow section.
+        kernel_initialize: Initializer for the depth-wise and point-wise kernel
+            weights, can be a string identifier or an initializer object.
+        kernel_regularize: Regularizer for the depth-wise and point-wise kernel
+            weights, can be None, a float, or a Regularizer object.
+        kernel_constraint: Constraint for the depth-wise and point-wise kernel
+            weights, can be None, an integer, or a Constraint object.
 
     Returns:
-
+        Output tensor after passing through multiple residual blocks in the
+            middle flow section.
     """
     # Create 8 residual blocks
     for _ in range(8):
@@ -202,17 +235,32 @@ def middle_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
     return x
 
 
-def exit_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
-    """Creates the exit flow section.
+def exit_flow(
+    x: tf.Tensor,
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """
+    Creates the exit flow section of a convolutional neural network.
+
+    This section of the network applies depth-wise separable convolutions and
+    pooling to transform the feature maps into a form suitable for the final
+    classification layer. The depth of the feature maps is increased, and their
+    spatial dimensions are reduced, ending with global average pooling.
 
     Args:
-        x: Input to the exit flow section.
-        kernel_initialize:
-        kernel_regularize:
-        kernel_constraint:
+        x: Input tensor to the exit flow section.
+        kernel_initialize: Initializer for the depth-wise and point-wise kernel
+            weights, can be a string identifier or an initializer object.
+        kernel_regularize: Regularizer for the depth-wise and point-wise kernel
+            weights, can be None, a float, or a Regularizer object.
+        kernel_constraint: Constraint for the depth-wise and point-wise kernel
+            weights, can be None, an integer, or a Constraint object.
 
     Returns:
-        Output tensor of exit flow section.
+        Output tensor after applying the exit flow section, typically after
+            global average pooling.
     """
 
     # 1x1 strided convolution to increase number and reduce size of
@@ -288,20 +336,37 @@ def exit_flow(x, kernel_initialize, kernel_regularize, kernel_constraint):
     return output
 
 
-def projection_block(x, n_filters, kernel_initialize, kernel_regularize,
-                     kernel_constraint):
-    """Creates a residual block using Depth-wise Separable Convolutions
-    with Projection shortcut.
+def projection_block(
+    x: tf.Tensor,
+    n_filters: int,
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """
+    Creates a residual block with depth-wise separable convolutions and a
+    projection shortcut.
+
+    The projection shortcut is used when the dimensions of the input and output
+    of the block differ. It includes a strided convolutional layer to match the
+    number of filters and reduce the spatial dimensions of the input tensor to
+    align with the output tensor of the block. Depth-wise separable
+    convolutions are then applied.
 
     Args:
-        x: Input tensor into residual block.
-        n_filters: An integer that indicates the number of filters.
-        kernel_initialize:
-        kernel_regularize:
-        kernel_constraint:
+        x: Input tensor to the projection block.
+        n_filters: Number of filters for the depth-wise separable convolution
+            layers.
+        kernel_initialize: Initializer for the depth-wise and point-wise kernel
+            weights, can be a string identifier or an initializer object.
+        kernel_regularize: Regularizer for the depth-wise and point-wise kernel
+            weights, can be None, a float, or a Regularizer object.
+        kernel_constraint: Constraint for the depth-wise and point-wise kernel
+            weights, can be None, an integer, or a Constraint object.
 
     Returns:
-
+        Output tensor after applying the depth-wise separable convolutions and
+        the projection shortcut.
     """
     # Remember the input
     shortcut = x
@@ -353,19 +418,37 @@ def projection_block(x, n_filters, kernel_initialize, kernel_regularize,
     return x
 
 
-def residual_block(x, n_filters, kernel_initialize, kernel_regularize,
-                   kernel_constraint):
-    """Creates a residual block using Depth-wise Separable Convolutions.
+def residual_block(
+    x: tf.Tensor,
+    n_filters: int,
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """Creates a residual block using depth-wise separable convolutions.
+
+    This block applies several depth-wise separable convolutions with ReLU
+    activations. A residual connection (shortcut) is then added from the input
+    to the output of these layers. Depth-wise separable convolutions offer a
+    more efficient alternative to standard convolutions by first performing a
+    spatial convolution on each channel separately before combining them using
+    point-wise convolutions.
 
     Args:
-        x: Input into residual block.
-        n_filters: An integer that indicates the number of filters.
-        kernel_initialize:
-        kernel_regularize:
-        kernel_constraint:
+        x: Input tensor to the residual block.
+        n_filters: Number of filters for the depth-wise separable convolution
+            layers.
+        kernel_initialize: Initializer for the depth-wise and point-wise
+            kernel weights, can be a string identifier or an Initializer
+                object.
+        kernel_regularize: Regularizer for the depth-wise and point-wise kernel
+            weights, can be None, a float, or a Regularizer object.
+        kernel_constraint: Constraint for the depth-wise and point-wise kernel
+            weights, can be None, an integer, or a Constraint object.
 
     Returns:
-
+        Output tensor after applying the depth-wise separable convolutions and
+            the residual connection.
     """
     # Remember the input
     shortcut = x
