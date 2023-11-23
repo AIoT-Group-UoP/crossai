@@ -25,33 +25,39 @@ def InceptionV1(
     dropout_rate: List[float] = [0.5, 0.5],
     spatial: bool = False,
     mc_inference: Union[bool, None] = None,
-    kernel_initialize: Union[Initializer, str] = GlorotUniform(),
+    kernel_initialize: Union[Callable, str] = GlorotUniform(),
     kernel_regularize: Union[float, str] = 1e-5,
     kernel_constraint: int = 3,
 ) -> tf.keras.Model:
     """
     Builds the InceptionV1 or GoogLeNet Model.
 
+    This model is suitable for image classification and other computer vision
+        tasks.
+
     Args:
         input_shape: Shape of a single instance of the dataset.
-        include_top: If True, includes the fully-connected layer at the top.
+        include_top: If True, includes the fully-connected layer at the top of
+            the model.
         num_classes: Number of classes for prediction.
         classifier_activation: Activation function for the classification task.
-        kernel_initialize: Kernel initializer.
-        kernel_regularize: Regularizer for the kernel, can be tf initializer
-            or string.
-        kernel_constraint: Constraint on the kernel values.
-        dense_layers: Number of dense layers.
+        kernel_initialize: Kernel initializer, can be a
+            tf.keras.initializers.Initializer object or string identifier.
+        kernel_regularize: Regularizer for the kernel, can be a float or
+            string. If a string is provided, it's converted to a float.
+        kernel_constraint: Constraint on the kernel values, expressed as
+            an integer.
+        dense_layers: Number of dense layers to include in the model.
         dense_units: List of units for each dense layer.
-        dropout: If True, uses dropout.
-        dropout_first: If True, adds dropout before the dense layer.
-        dropout_rate: Dropout rate for each layer.
+        dropout: If True, applies dropout to the layers.
+        dropout_first: If True, adds dropout before the dense layer(s).
+        dropout_rate: List specifying the dropout rate for each layer.
         spatial: If True, applies Spatial Dropout, else applies standard
             Dropout.
         mc_inference: If True, enables Monte Carlo dropout during inference.
 
     Returns:
-        model: An instance of the Keras Model.
+        A Keras Model instance representing the InceptionV1 architecture.
     """
 
     # Initializer - regularizer settings

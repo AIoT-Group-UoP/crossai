@@ -21,8 +21,8 @@ def CNN2D(
         include_top: If True, includes a fully-connected layer at the top
             of the model.
         num_classes: Number of classes for prediction.
-        classifier_activation: Activation function for the classification
-            layer.
+        classifier_activation: Activation function for the classification task.
+            Can be a string identifier or a function from tf.keras.activations.
         drp_rate: Dropout rate.
         spatial: If true, applies Spatial Dropout, else applies standard
             Dropout.
