@@ -72,7 +72,6 @@ def pilot_label_processing(json_path: str,
 
     segments = []
 
-    # load json
     with open(json_path) as f:
         data = json.load(f)
     # create label array with None class
