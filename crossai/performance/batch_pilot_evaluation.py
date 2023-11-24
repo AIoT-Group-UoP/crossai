@@ -306,7 +306,7 @@ def batch_evaluate(
         "substitutions",
         "correct",
     ]:
-        total_res[metric] = (total_res["Total_" + metric[5:]] /
+        total_res[metric] = (total_res["Total_" + metric] /
                              total_res["Num_of_Pilot"])
 
     total_res["RER"] = (
