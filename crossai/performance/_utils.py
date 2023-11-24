@@ -4,7 +4,8 @@ import numpy as np
 
 def pilot_label_processing(json_path: str,
                            classes: list = None,
-                           n_instances: int = None):
+                           n_instances: int = None,
+                           sampling_rate: int = 16000):
     """Processes the labels of pilot data to be compared to the model's output.
 
         The labels must be in a json array looking like this:
@@ -28,6 +29,28 @@ def pilot_label_processing(json_path: str,
                 "end": 350
             },
         ]
+        or like this if type = 'time', where the start and end values are
+        given in seconds:
+        [
+            {
+                "label": "sneeze",
+                "type": "time",
+                "start": 0.118,
+                "end": 0.122
+            },
+            {
+                "label": "sneeze",
+                "type": "time",
+                "start": 0.168,
+                "end": 0.194
+            },
+            {
+                "label": "cough",
+                "type": "time",
+                "start": 0.312,
+                "end": 0.350
+            },
+        ]
 
     Args:
         json_path (str): Path to the json file.
@@ -36,6 +59,8 @@ def pilot_label_processing(json_path: str,
             List has shape: ['sneeze', 'cough', ...]
         n_instances (int): Number of instances in the data. The number will
             determine the length of the label array.
+        sampling_rate (int): The sampling rate of the audio data.
+            Used if type = 'time'.
     Returns:
         labels (list): list of processed labels.
         segments(list): List of label segments ([start, end, label], [...]).
@@ -55,6 +80,10 @@ def pilot_label_processing(json_path: str,
     for label in data:
         # Get segments
         label["label"] = classes.index(label["label"])
+        if label['type'] == 'time':
+            label['start'] = int(label['start'] * sampling_rate)
+            label['end'] = int(label['end'] * sampling_rate)
+
         segments.append([label['start'], label['end'], label['label']])
         # map labels to label array
         for i in range(label['start'], label['end']):
