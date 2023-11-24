@@ -5,7 +5,7 @@ import numpy as np
 def pilot_label_processing(json_path: str,
                            classes: list = None,
                            n_instances: int = None,
-                           sampling_rate: int = 16000):
+                           sampling_rate: int = None):
     """Processes the labels of pilot data to be compared to the model's output.
 
         The labels must be in a json array looking like this:
@@ -56,7 +56,8 @@ def pilot_label_processing(json_path: str,
         json_path (str): Path to the json file.
         classes (list): List of classes that map to the model output.
             The given list maps to numbers incrementally.
-            List has shape: ['sneeze', 'cough', ...]
+            List has shape: ['sneeze', 'cough', ...] and must contain all
+            classes that are in the json file.
         n_instances (int): Number of instances in the data. The number will
             determine the length of the label array.
         sampling_rate (int): The sampling rate of the audio data.
@@ -76,6 +77,9 @@ def pilot_label_processing(json_path: str,
         data = json.load(f)
     # create label array with None class
     labels = [np.nan] * n_instances
+    if data[0]['type'] == 'time':
+        if sampling_rate is None:
+            raise ValueError('sampling_rate must be defined when type = time.')
 
     for label in data:
         # Get segments
