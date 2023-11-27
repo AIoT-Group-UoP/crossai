@@ -34,9 +34,11 @@ def BiLSTM_Time(
         lstm_units: LSTM units for each layer.
         dense_units: Units for each dense layer.
         drp_rate: Dropout rate.
-        spatial: Type of Dropout. True for SpatialDropout1D, False for regular Dropout.
+        spatial: Type of Dropout. True for SpatialDropout1D, False for regular
+            Dropout.
         mc_inference: Dropout setting during inference. True enables,
-            False disables, and None means dropout is applied during training only.
+            False disables, and None means dropout is applied during training
+                only.
 
     Returns:
         A Keras model instance.
