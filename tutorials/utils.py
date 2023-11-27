@@ -4,8 +4,12 @@ import re
 
 
 def extract_csv_info(filename):
-    # Define the regex pattern to capture all occurrences of the pattern "label_start_end"
-    pattern = r'(01a|01b|01c|01d|02a|02b|02c|03a|03b|03c|null|null_plus|rest)_(\d+)_(\d+)'
+    # Define the regex pattern to capture all
+    # occurrences of the pattern "label_start_end"
+    pattern = (
+        r'(01a|01b|01c|01d|02a|02b|02c|03a|03b|03c|null|null_plus|rest)_'
+        r'(\d+)_(\d+)'
+    )
 
     # Use re.findall to find all matches
     matches = re.findall(pattern, filename)
@@ -66,4 +70,3 @@ def convert_csv_to_json(csv_path):
 
     else:
         print("Invalid input. Provide a valid directory or CSV file path.")
-
