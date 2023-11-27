@@ -68,7 +68,7 @@ def dropout_layer_1d(
     drp_rate: float = 0.1,
     spatial: bool = False,
     mc_inference: Union[bool, None] = None
-)-> Layer:
+) -> Layer:
     """Creates a Dropout layer suitable for a 1D model, with options for
     standard or spatial dropout.
 
