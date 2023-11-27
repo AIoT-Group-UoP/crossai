@@ -21,4 +21,3 @@ def load_config(config_file_path: str):
     except yaml.YAMLError as exc:
         print(f"Error parsing YAML file: {exc}")
     return None
-
