@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Dense, ReLU
 from tensorflow.keras.layers import Add, Flatten, BatchNormalization
 from tensorflow.keras.regularizers import Regularizer, l2
 from tensorflow.keras.constraints import Constraint, MaxNorm
-from  tensorflow.keras.initializers import Initializer
+from tensorflow.keras.initializers import Initializer
 from .._layers_dropout import dense_drop_block
 
 
@@ -229,7 +229,8 @@ def residual_group(
             integer, or a Constraint object.
 
     Returns:
-        Output tensor after applying the residual blocks and optional convolutional block.
+        Output tensor after applying the residual blocks and optional
+            convolutional block.
     """
 
     for _ in range(n_blocks):
