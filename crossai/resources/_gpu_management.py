@@ -35,10 +35,5 @@ def tf_exploit_gpu_physical_growth(print_setup: bool = True) -> None:
         except RuntimeError as e:
             print("No successful set up of GPUs' growth.")
             print(e)
-    gpu_list_new = []
-    for item in gpu_list:
-        item = item.replace("/physical_device:", "/")
-        gpu_list_new.append(item)
-
     if print_setup:
-        print("Replaced unnecessary string in GPUs' list", gpu_list_new)
+        print("GPUs is dynamic allocation functionality:", gpu_list)
