@@ -15,7 +15,8 @@ setup(
         "crossai.processing.motion",
         "crossai.processing.tabular",
         "crossai.performance",
-        "crossai.performance.loader"
+        "crossai.performance.loader",
+        "crossai.resources"
     ],
     url="https://github.com/tzamalisp/crossai",
     license="Apache License 2.0",
