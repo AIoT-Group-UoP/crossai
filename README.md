@@ -78,3 +78,7 @@ in its development:
 The main design and idea have been created by Pantelis Tzamalis, as well as Andreas Bardoutsos in the early versions of
 the library, and occurred from needs during the development of AI projects with regard to Time Series tasks 
 (classification, regression, clustering, etc.).
+
+The main part of the library is developed and maintained by the Artificial Intelligence of Things Group (AIoT Group) in 
+the Internet of Things Laboratory (IoT Lab) - Computer Engineering and Informatics Department, University of Patras, 
+Greece.
