@@ -61,8 +61,7 @@ def pitch_shift(
         factor: tuple,
         zone: tuple = (0, 1),
         coverage: int = 1):
-    """
-    Change the pitch of the signal
+    """Changes the pitch of the signal.
 
     Args:
         signal: Input signal.
