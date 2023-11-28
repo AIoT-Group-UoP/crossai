@@ -21,7 +21,8 @@ def BiLSTM_Time(
 ) -> tf.keras.Model:
     """Constructs a deep neural network using bidirectional LSTM.
 
-    This model converts low-level audio features into high-level expressions.
+    This model converts low-level time series features into high-level
+        expressions.
 
     Args:
         input_shape: Shape of the input data, excluding batch size.
@@ -42,6 +43,9 @@ def BiLSTM_Time(
 
     Returns:
         A Keras model instance.
+
+    References:
+        https://ieeexplore.ieee.org/document/8488627
     """
 
     input_layer = Input(shape=input_shape, name="input_layer")
