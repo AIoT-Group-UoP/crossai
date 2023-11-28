@@ -42,7 +42,8 @@ def tf_compatibility() -> None:
     print(">> TensorFlow is compatible.")
 
     if not tf.config.list_physical_devices('GPU'):
-        print(">> No GPU is detected. LSTMs and CNNs can be very slow without a GPU. A GPU usage is recommended.")
+        print("No GPU is detected. LSTMs and CNNs can be very "
+              "slow without a GPU. A GPU usage is recommended.")
     else:
         print(">> GPU usage is detected:")
         gpus = tf.config.list_physical_devices('GPU')

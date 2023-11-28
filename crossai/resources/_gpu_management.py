@@ -19,7 +19,8 @@ def tf_exploit_gpu_physical_growth(print_setup: bool = True) -> None:
 
     gpus = tf.config.list_physical_devices('GPU')
     if print_setup:
-        print(f"Set up growth dynamic limit in all the available GPUs: {gpus}", "info")
+        print(f"Set up growth dynamic limit in all "
+              f"the available GPUs: {gpus}", "info")
     gpu_list = []
     if gpus:
         try:
@@ -29,7 +30,8 @@ def tf_exploit_gpu_physical_growth(print_setup: bool = True) -> None:
                 assert tf.config.experimental.get_memory_growth(gpus[i])
                 gpu_list.append(gpus[i].name)
             if print_setup:
-                print("Growth for all the GPUs was set up successfully.", "success")
+                print("Growth for all the GPUs was set up "
+                      "successfully.", "success")
         except RuntimeError as e:
             print("No successful set up of GPUs' growth.")
             print(e)
