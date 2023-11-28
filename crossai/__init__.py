@@ -12,6 +12,6 @@ __author__ = ("Pantelis Tzamalis, Panagiotis Kapetanidis, Fotios Kalioras, "
 __credits__ = ("Academia and enterprise individuals who are AI and Time "
                "Series Analysis enthusiasts. The main part of the library "
                "is developed and maintained by the Artificial Intelligence of "
-               "Things Group (AIoT Group) in the Internet of Things Laboratory "
-               "(IoT Lab) - Computer Engineering and Informatics Department, "
-               "University of Patras, Greece.")
+               "Things Group (AIoT Group) in the Internet of Things "
+               "Laboratory (IoT Lab) - Computer Engineering and Informatics "
+               "Department, University of Patras, Greece.")
