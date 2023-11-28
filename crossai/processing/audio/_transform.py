@@ -86,9 +86,9 @@ def q_transform(
     tuning: int = None,
     filter_scale: int = 1,
     sparsity: int = 0.01,
-    window: str = 'hann',
+    window: str = "hann",
     scale: bool = True,
-    pad_mode: str = 'reflect',
+    pad_mode: str = "reflect",
     to_db: bool = True,
     dsize: tuple = None
 ) -> np.ndarray:
@@ -187,9 +187,9 @@ def inverse_melspectrogram(
     n_fft: int = 2048,
     hop_length: int = 512,
     win_length: int = None,
-    window: str = 'hann',
+    window: str = "hann",
     center: bool = True,
-    pad_mode: str = 'reflect',
+    pad_mode: str = "reflect",
     power: float = 2.0,
     n_iter: int = 32,
     length: int = None
@@ -240,7 +240,7 @@ def chroma(
     n_octaves: int = 7,
     window: str = None,
     bins_per_octave: int = 36,
-    cqt_mode: str = 'full',
+    cqt_mode: str = "full",
     dsize: tuple = None
 ) -> np.ndarray:
     """Computes a chromagram from a waveform or power spectrogram.
@@ -292,7 +292,7 @@ def chroma_cens(
     tuning: float = None,
     n_octaves: int = 7,
     bins_per_octave: int = 36,
-    cqt_mode: str = 'full',
+    cqt_mode: str = "full",
     dsize: tuple = None
 ) -> np.ndarray:
     """Computes the chroma variant “Chroma Energy Normalized” (CENS).
@@ -330,14 +330,14 @@ def chroma_cens(
 
 
 def chroma_stft(
-    sig: np.ndaarray,
+    sig: np.ndarray,
     sr: int,
     n_chroma: int = 12,
     hop_length: int = 512,
     win_length: int = None,
-    window: str = 'hann',
+    window: str = "hann",
     center: bool = True,
-    pad_mode: str = 'reflect',
+    pad_mode: str = "reflect",
     tuning: float = None,
     dsize: tuple = None
 ) -> np.ndarray:
@@ -384,7 +384,7 @@ def mfcc(
     spec: np.ndarray = None,
     n_mfcc: int = 20,
     dct_type: int = 2,
-    norm: str = 'ortho',
+    norm: str = "ortho",
     lifter: int = 0
 ) -> np.ndarray:
     """
