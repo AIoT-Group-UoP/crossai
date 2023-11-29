@@ -55,7 +55,8 @@ def XceptionTime(
         xception_adaptive_size: The adaptive size.
         xception_adapt_ws_divide: The number that will divide the adaptive
             size.
-        n_filters: The number of filters.
+        n_filters: An integer that represents the number of filters in the
+            convolutional neural network layer.
         drp_low: Fraction of the input units to drop in the input dropout
             layer.
         drp_mid: Fraction of the input units to drop in the mid-dropout layer.
@@ -73,6 +74,10 @@ def XceptionTime(
 
     Returns:
         model: A Keras Model instance.
+
+    References:
+        https://arxiv.org/pdf/1911.03803.pdf
+        https://ieeexplore.ieee.org/document/9881698/
     """
 
     # check and adjust adaptive size based on input shape
@@ -179,8 +184,8 @@ def conv1d_block(
     kernel_initialize: str = None,
     kernel_regularize: float = None,
     kernel_constraint: int = None
-):
-    """Create a block of layers consisting of Conv1D, BatchNormalization,
+) -> tf.Tensor:
+    """Creates a block of layers consisting of Conv1D, BatchNormalization,
         Activation and Dropout.
 
     Args:
@@ -237,9 +242,9 @@ def xception_block(
     kernel_initialize: bool = None,
     kernel_regularize: bool = None,
     kernel_constraint: bool = None
-):
-    """Xception Block function that applies a series of Xception modules,
-        potentially with residual connections.
+) -> tf.Tensor:
+    """Applies a series of Xception modules, potentially with residual
+        connections.
 
     Args:
         inputs: Input tensor to the block.
@@ -291,8 +296,8 @@ def xception_module(
     kernel_initialize: str = None,
     kernel_regularize: float = None,
     kernel_constraint: int = None
-):
-    """XceptionModule function that applies a series of SeparableConv1D layers
+) -> tf.Tensor:
+    """Applies the Xception module which is a series of SeparableConv1D layers
         and a MaxPooling1D layer, followed by concatenation.
 
     Args:
@@ -350,7 +355,7 @@ def xception_module(
     return x_post
 
 
-def kernel_padding_size_lists(max_kernel_size: int):
+def kernel_padding_size_lists(max_kernel_size: int) -> tuple:
     """Generates lists of kernel sizes and corresponding paddings based on a
         given max kernel size.
 
