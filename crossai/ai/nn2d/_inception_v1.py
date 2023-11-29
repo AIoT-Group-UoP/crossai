@@ -29,8 +29,7 @@ def InceptionV1(
     kernel_regularize: Union[float, str] = 1e-5,
     kernel_constraint: int = 3,
 ) -> tf.keras.Model:
-    """
-    Builds the InceptionV1 or GoogLeNet Model.
+    """Builds the InceptionV1 or GoogLeNet Model.
 
     This model is suitable for image classification and other computer vision
         tasks.
@@ -58,6 +57,11 @@ def InceptionV1(
 
     Returns:
         A Keras Model instance representing the InceptionV1 architecture.
+
+        Referenes:
+            - https://arxiv.org/pdf/1409.4842v1.pdf
+            - https://arxiv.org/pdf/1512.00567v3.pdf
+            - https://arxiv.org/pdf/1602.07261.pdf
     """
 
     # Initializer - regularizer settings
@@ -77,7 +81,7 @@ def InceptionV1(
 
     x = Conv2D(64, (7, 7), padding="same", strides=(2, 2), activation="relu",
                name="conv_1_7x7/2", kernel_initializer=kernel_initialize,
-               bias_initializer=bias_initialize)(input_layer)
+               bias_initializer=bias_initialize)(input_layer)#
     x = MaxPool2D((3, 3), padding="same", strides=(2, 2),
                   name="max_pool_1_3x3/2")(x)
     x = Conv2D(64, (1, 1), padding="same", strides=(1, 1), activation="relu",
