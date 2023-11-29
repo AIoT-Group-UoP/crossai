@@ -116,7 +116,7 @@ def VGG16(input_shape,
     else:
         outputs = x
 
-    model = Model(input_layer, outputs)
+    model = Model(input_layer, outputs, name="VGG_16")
     return model
 
 

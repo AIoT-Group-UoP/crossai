@@ -53,6 +53,6 @@ def CNN1D(input_shape,
     else:
         outputs = x
 
-    model = Model(inputs=input_layer, outputs=outputs)
+    model = Model(inputs=input_layer, outputs=outputs, name="CNN1D")
 
     return model

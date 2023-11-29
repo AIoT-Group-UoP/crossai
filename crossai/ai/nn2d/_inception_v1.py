@@ -246,7 +246,7 @@ def InceptionV1(input_shape,
         x = Dense(num_classes, activation=classifier_activation,
                   name="output")(x)
 
-    model = Model(input_layer, [x, x1, x2], name="inception_v1")
+    model = Model(input_layer, [x, x1, x2], name="Inception_v1")
 
     return model
 

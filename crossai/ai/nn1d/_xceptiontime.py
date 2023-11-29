@@ -160,7 +160,7 @@ def XceptionTime(input_shape,
         outputs = x
 
     # model
-    model = Model(inputs=input_layer, outputs=outputs)
+    model = Model(inputs=input_layer, outputs=outputs, name="Xception_Time")
 
     return model
 

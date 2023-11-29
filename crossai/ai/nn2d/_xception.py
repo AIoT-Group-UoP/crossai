@@ -117,7 +117,7 @@ def Xception(input_shape,
     else:
         outputs = x
 
-    model = Model(input_layer, outputs)
+    model = Model(input_layer, outputs, name="Xception")
 
     return model
 

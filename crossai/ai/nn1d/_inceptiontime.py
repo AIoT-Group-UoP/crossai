@@ -108,7 +108,7 @@ def InceptionTime(input_shape,
     else:
         outputs = x
     # model
-    model = Model(inputs=input_layer, outputs=outputs)
+    model = Model(inputs=input_layer, outputs=outputs, name="Inception_Time")
 
     return model
 
