@@ -74,7 +74,7 @@ def bilstm_block(
     lstm_units: list,
     drp_rate: float,
     mc_inference: bool = None
-):
+) -> tf.Tensor:
     """Constructs a bidirectional LSTM (BiLSTM) block.
 
     Args:
@@ -102,7 +102,11 @@ def bilstm_block(
     return x
 
 
-def dense_block(inputs: tf.Tensor, n_layers: int, dense_units: list):
+def dense_block(
+    inputs: tf.Tensor,
+    n_layers: int,
+    dense_units: list
+) -> tf.Tensor:
     """Builds a block of dense layers.
 
     Args:
