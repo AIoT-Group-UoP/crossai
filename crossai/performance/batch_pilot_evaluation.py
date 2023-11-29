@@ -98,16 +98,16 @@ def batch_evaluate(
         "Total_deletions",
         "Total_substitutions",
         "Total_correct",
-        "Mean_insertions",
-        "Mean_deletions",
-        "Mean_substitutions",
-        "Mean_correct",
-        "GRER",
-        "Mean_detection_ratio",
-        "Mean_reliability",
+        "insertions",
+        "deletions",
+        "substitutions",
+        "correct",
+        "RER",
+        "detection_ratio",
+        "reliability",
     ]:
         total_res[metric] = 0
-    for metric in ["Mean_std", "Mean_variance", "Mean_entropy"]:
+    for metric in ["std", "variance", "entropy"]:
         total_res[metric] = []
 
     if (
@@ -201,13 +201,13 @@ def batch_evaluate(
                     total_res["Num_of_Pilot"] += 1
 
                     mean_std = np.mean(np.array(results["std"]), axis=0)
-                    total_res["Mean_std"].append(mean_std)
+                    total_res["std"].append(mean_std)
 
                     mean_var = np.mean(np.array(results["variance"]), axis=0)
-                    total_res["Mean_variance"].append(mean_var)
+                    total_res["variance"].append(mean_var)
 
                     mean_entr = np.mean(np.array(results["entropy"]), axis=0)
-                    total_res["Mean_entropy"].append(mean_entr)
+                    total_res["entropy"].append(mean_entr)
 
                     total_res["Total_insertions"] += results["insertions"]
                     total_res["Total_deletions"] += results["deletions"]
@@ -296,38 +296,40 @@ def batch_evaluate(
         else:
             continue
 
-    for metric in ["Mean_std", "Mean_variance", "Mean_entropy"]:
+    for metric in ["std", "variance", "entropy"]:
         total_res[metric] = np.array(total_res[metric])
         total_res[metric] = np.mean(total_res[metric], axis=0).tolist()
 
     for metric in [
-        "Mean_insertions",
-        "Mean_deletions",
-        "Mean_substitutions",
-        "Mean_correct",
+        "insertions",
+        "deletions",
+        "substitutions",
+        "correct",
     ]:
-        total_res[metric] = (total_res["Total_" + metric[5:]] /
+        total_res[metric] = (total_res["Total_" + metric] /
                              total_res["Num_of_Pilot"])
 
-    total_res["GRER"] = (
-        total_res["Mean_deletions"]
-        + total_res["Mean_substitutions"]
-        + total_res["Mean_insertions"]
+    total_res["RER"] = (
+        total_res["deletions"]
+        + total_res["substitutions"]
+        + total_res["insertions"]
     ) / (
-        total_res["Mean_deletions"]
-        + total_res["Mean_substitutions"]
-        + total_res["Mean_correct"]
+        total_res["deletions"]
+        + total_res["substitutions"]
+        + total_res["correct"]
     )
 
-    total_res["Mean_detection_ratio"] = total_res["Mean_correct"] / (
-        total_res["Mean_correct"]
-        + total_res["Mean_substitutions"]
-        + total_res["Mean_deletions"]
+    total_res["detection_ratio"] = total_res["correct"] / (
+        total_res["correct"]
+        + total_res["substitutions"]
+        + total_res["deletions"]
     )
 
-    total_res["Mean_reliability"] = total_res["Mean_correct"] / (
-        total_res["Mean_correct"] + total_res["Mean_insertions"]
+    total_res["reliability"] = total_res["correct"] / (
+        total_res["correct"] + total_res["insertions"]
     )
 
     with open(os.path.join(save_path, "total_results.json"), "w") as fp:
         json.dump(total_res, fp)
+
+    return total_res
