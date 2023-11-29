@@ -27,8 +27,7 @@ def VGG16(
     spatial: bool = False,
     mc_inference: Union[bool, None] = None
 ) -> tf.keras.Model:
-    """
-    Constructs the VGG16 model, a convolutional neural network architecture
+    """Constructs the VGG16 model, a convolutional neural network architecture
     for image classification.
 
     The model includes customizable top layers, dropout settings, and other
@@ -62,6 +61,9 @@ def VGG16(
 
     Returns:
         A tf.keras.Model instance representing the VGG16 architecture.
+
+    References:
+        https://arxiv.org/abs/1409.1556
     """
 
     # regularizer settings
@@ -132,8 +134,7 @@ def vgg_block(
     kernel_regularize: Union[Regularizer, float, str],
     kernel_constraint: Union[Constraint, int]
 ) -> tf.Tensor:
-    """
-    Adds a VGG block to the model.
+    """Adds a VGG block to the model.
 
     Each VGG block consists of a specified number of convolutional layers, each
     with ReLU activation, followed by a max pooling layer.
