@@ -25,10 +25,10 @@ def load_config(config_file_path: str):
     return None
 
 
-
 def extract_csv_info(filename: str) -> list:
     """Defines the regex pattern to capture all 
         occurrences of the pattern "label_start_end"
+        of the defined in the GestureSet publication.
 
     Args:
         filename: A string that defines the filename of the data 
