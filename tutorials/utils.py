@@ -1,11 +1,40 @@
 import os
 import json
 import re
+import yaml
 
 
-def extract_csv_info(filename):
-    # Define the regex pattern to capture all
-    # occurrences of the pattern "label_start_end"
+def load_config(config_file_path: str):
+    """Loads configuration from a YAML file.
+
+    Args:
+        config_file_path: Path to the YAML configuration file.
+
+    Returns:
+     config: Configuration object if the file is read successfully,
+        None otherwise.
+    """
+    try:
+        with open(config_file_path, "r") as stream:
+            config = yaml.safe_load(stream)
+            return config
+    except FileNotFoundError:
+        print(f"Configuration file not found at {config_file_path}")
+    except yaml.YAMLError as exc:
+        print(f"Error parsing YAML file: {exc}")
+    return None
+
+
+
+def extract_csv_info(filename: str) -> list:
+    """Defines the regex pattern to capture all 
+        occurrences of the pattern "label_start_end"
+
+    Args:
+        filename: A string that defines the filename of the data 
+            to be processed.
+    
+    """
     pattern = (
         r'(01a|01b|01c|01d|02a|02b|02c|03a|03b|03c|null|null_plus|rest)_'
         r'(\d+)_(\d+)'
@@ -32,7 +61,9 @@ def extract_csv_info(filename):
         return None
 
 
-def convert_csv_to_json(csv_path):
+def export_event_time_frame(csv_path):
+    """
+    """
     if os.path.isdir(csv_path):
         # Iterate over each class directory
         for class_dir in os.listdir(csv_path):
