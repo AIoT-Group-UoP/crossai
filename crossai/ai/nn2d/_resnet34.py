@@ -27,8 +27,7 @@ def ResNet34(
     spatial: bool = False,
     mc_inference: Union[bool, None] = None
 ) -> tf.keras.Model:
-    """
-    Constructs a ResNet34 model suitable for image classification tasks.
+    """Constructs a ResNet34 model suitable for image classification tasks.
 
     This model includes the standard ResNet34 architecture with an optional
     fully-connected layer at the top. It can be customized with dropout, dense
@@ -57,6 +56,9 @@ def ResNet34(
 
     Returns:
         A Keras Model instance representing the ResNet34 architecture.
+
+    References:
+        https://arxiv.org/pdf/1512.03385.pdf
     """
 
     # regularizer settings
@@ -120,8 +122,7 @@ def stem(
     kernel_regularize: Union[Regularizer, float, None] = 1e-3,
     kernel_constraint: Union[Constraint, int, None] = 3
 ) -> tf.Tensor:
-    """
-    Constructs the stem group for a convolutional neural network.
+    """Constructs the stem group for a convolutional neural network.
 
     This stem group consists of a large kernel-sized convolutional layer
     followed by batch normalization and ReLU activation, and finally a max
@@ -160,8 +161,7 @@ def learner(
     kernel_regularize: Union[Regularizer, float, None] = 1e-3,
     kernel_constraint: Union[Constraint, int, None] = 3
 ) -> tf.Tensor:
-    """
-    Constructs the main learning structure (learner) of a ResNet-like
+    """Constructs the main learning structure (learner) of a ResNet-like
         architecture.
 
     This function sequentially applies several residual groups, each with an
@@ -208,8 +208,7 @@ def residual_group(
     kernel_regularize: Union[Regularizer, float, None] = 1e-3,
     kernel_constraint: Union[Constraint, int, None] = 3
 ) -> tf.Tensor:
-    """
-    Constructs a group of residual blocks within a ResNet architecture.
+    """Constructs a group of residual blocks within a ResNet architecture.
 
     This function builds a series of residual blocks. Optionally, it can
     include a convolutional block at the end of the group to double the number
