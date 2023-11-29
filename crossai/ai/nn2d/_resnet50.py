@@ -28,8 +28,7 @@ def ResNet34(
     spatial: bool = False,
     mc_inference: Union[bool, None] = None
 ) -> tf.keras.Model:
-    """
-    ResNet34 Model
+    """ResNet34 Model
 
     Args:
         input_shape: The shape of a single instance of the dataset.
@@ -57,6 +56,9 @@ def ResNet34(
 
     Returns:
         A Keras Model instance representing the ResNet34 architecture.
+
+    References:
+        https://arxiv.org/pdf/1512.03385.pdf
     """
 
     # Regularizer settings
@@ -121,7 +123,7 @@ def resnet_block(
     kernel_initialize: Union[Initializer, str, None],
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
-):
+) -> tf.Tensor:
     """Constructs a ResNet block with a specified number of repetitions.
 
     The block comprises a projection block followed by multiple identity
@@ -160,8 +162,7 @@ def projection_block(
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Constructs a projection block for a ResNet architecture.
+    """Constructs a projection block for a ResNet architecture.
 
     This block is used in ResNet when the dimensions of the input tensor and
     the output tensor of the residual layers do not match. It applies a series
@@ -203,8 +204,7 @@ def identity_block(
         kernel_regularize: Union[Regularizer, float, None],
         kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Constructs an identity block for a ResNet architecture.
+    """Constructs an identity block for a ResNet architecture.
 
     This block applies several convolutional layers with batch normalization
     and ReLU activation, followed by a skip connection that adds the input
@@ -244,8 +244,7 @@ def conv_bn_relu(
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Applies a convolution followed by batch normalization and a ReLU
+    """Applies a convolution followed by batch normalization and a ReLU
         activation to the input tensor.
 
     This function creates a 2D convolution layer using specified filters,
@@ -288,8 +287,8 @@ def _conv_bn(
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Applies a convolution followed by batch normalization to the input tensor.
+    """Applies a convolution followed by batch normalization to the input
+        tensor.
 
     This function creates a 2D convolution layer using specified filters,
     kernel size, and strides, and then applies batch normalization to
