@@ -193,7 +193,7 @@ def inception_module(
     kernel_regularize: float = None,
     kernel_constraint: int = None,
     stride: int = 1
-):
+) -> tf.Tensor:
     """Creates an Inception Module.
 
     Args:
