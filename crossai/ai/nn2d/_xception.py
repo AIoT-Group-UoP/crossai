@@ -28,8 +28,7 @@ def Xception(
     spatial: bool = False,
     mc_inference: Union[bool, None] = None
 ) -> tf.keras.Model:
-    """
-    Constructs the Xception model, a deep convolutional neural network known
+    """Constructs the Xception model, a deep convolutional neural network known
     for its depth and efficiency.
 
     The model is structured into entry, middle, and exit flows, utilizing
@@ -59,6 +58,9 @@ def Xception(
 
     Returns:
         A tf.keras.Model instance representing the Xception architecture.
+
+    References:
+        https://arxiv.org/abs/1610.02357
     """
 
     # regularizer settings
@@ -128,8 +130,7 @@ def entry_flow(
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Creates the entry flow section of a convolutional neural network.
+    """Creates the entry flow section of a convolutional neural network.
 
     The entry flow consists of an initial stem function for dimensionality
     reduction and expansion, followed by a series of projection blocks. This
@@ -154,8 +155,7 @@ def entry_flow(
     """
 
     def stem(inputs, kernel_initialize, kernel_regularize, kernel_constraint):
-        """
-        Creates the stem entry into the neural network, performing initial
+        """Creates the stem entry into the neural network, performing initial
         dimensionality reduction and expansion.
 
         Args:
@@ -207,8 +207,7 @@ def middle_flow(
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Creates the middle flow section of a convolutional neural network.
+    """Creates the middle flow section of a convolutional neural network.
 
     This section consists of multiple (typically 8) residual blocks with
     depth-wise separable convolutions. It processes the feature maps at a
@@ -241,8 +240,7 @@ def exit_flow(
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Creates the exit flow section of a convolutional neural network.
+    """Creates the exit flow section of a convolutional neural network.
 
     This section of the network applies depth-wise separable convolutions and
     pooling to transform the feature maps into a form suitable for the final
@@ -343,8 +341,7 @@ def projection_block(
     kernel_regularize: Union[Regularizer, float, None],
     kernel_constraint: Union[Constraint, int, None]
 ) -> tf.Tensor:
-    """
-    Creates a residual block with depth-wise separable convolutions and a
+    """Creates a residual block with depth-wise separable convolutions and a
     projection shortcut.
 
     The projection shortcut is used when the dimensions of the input and output
