@@ -65,6 +65,9 @@ def InceptionTime(
 
     Returns:
         A Keras model instance.
+
+    References:
+        https://arxiv.org/pdf/1909.04939
     """
 
     if isinstance(kernel_regularize, str):
