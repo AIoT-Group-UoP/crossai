@@ -5,10 +5,14 @@ from tensorflow.keras.layers import Layer, Dense
 from tensorflow import keras
 
 
-@keras.saving.register_keras_serializable(package="MyLayers")
 class MCDropout(Dropout):
-    """
-    Monte Carlo Dropout layer.
+    """Monte Carlo Dropout layer.
+
+    MC dropout can boost the performance of any trained dropout model without
+    having to retrain it or even modify it at all, by incorporating uncertainty
+    estimates through dropout during both training and inference. Also,
+    since it is just regular dropout during training, it also acts like a
+    regularizer.
 
     Attributes:
         rate: Float between 0 and 1. Fraction of the input units to drop.
@@ -20,11 +24,25 @@ class MCDropout(Dropout):
     def __init__(self, rate, **kwargs):
         super().__init__(rate, **kwargs)
 
+    def call(self, inputs, training):
+        return super().call(inputs, training=training)
 
-@keras.saving.register_keras_serializable(package="MyLayers")
+    def get_config(self):
+        base_config = super().get_config()
+        return {**base_config, "rate": self.rate}
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
+
 class MCSpatialDropout1D(SpatialDropout1D):
-    """
-    Monte Carlo Spatial Dropout 1D layer.
+    """Monte Carlo Spatial Dropout 1D layer.
+
+    Monte Carlo Spatial Dropout 1D improves the performance of a pre-trained
+    dropout model without requiring retraining or modifications. It
+    incorporates uncertainty estimates through dropout during both training and
+    inference, serving as an effective regularizer.
 
     Attributes:
         rate: Float between 0 and 1. Fraction of the input units to drop.
@@ -41,11 +59,22 @@ class MCSpatialDropout1D(SpatialDropout1D):
     def call(self, inputs, training):
         return super().call(inputs, training=training)
 
+    def get_config(self):
+        base_config = super().get_config()
+        return {**base_config, "rate": self.rate}
 
-@keras.saving.register_keras_serializable(package="MyLayers")
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
+
 class MCSpatialDropout2D(SpatialDropout2D):
-    """
-    Monte Carlo Spatial Dropout 2D layer.
+    """Monte Carlo Spatial Dropout 2D layer.
+
+    Monte Carlo Spatial Dropout 2D improves the performance of a pre-trained
+    dropout model without requiring retraining or modifications. It
+    incorporates uncertainty estimates through dropout during both training and
+    inference, serving as an effective regularizer.
 
     Attributes:
         rate: Float between 0 and 1. Fraction of the input units to drop.
@@ -61,6 +90,14 @@ class MCSpatialDropout2D(SpatialDropout2D):
 
     def call(self, inputs, training):
         return super().call(inputs, training=training)
+
+    def get_config(self):
+        base_config = super().get_config()
+        return {**base_config, "rate": self.rate}
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 
 def dropout_layer_1d(
@@ -104,9 +141,8 @@ def dropout_layer_2d(
     spatial: bool = False,
     mc_inference: Union[bool, None] = None
 ) -> Layer:
-    """
-    Creates a Dropout layer suitable for a 2D model, with options for standard
-    or spatial dropout.
+    """Creates a Dropout layer suitable for a 2D model, with options for
+    standard or spatial dropout.
 
     This layer can be configured to use either the standard dropout approach,
     where individual elements are dropped, or spatial dropout, where entire 2D
@@ -149,8 +185,7 @@ def dense_drop_block(
     spatial: bool = False,
     mc_inference: Union[bool, None] = None
 ) -> Layer:
-    """
-    Creates a block of dense and dropout layers for a neural network.
+    """Creates a block of dense and dropout layers for a neural network.
 
     This block can be configured to include a series of dense layers with
     optional dropout layers either before or after each dense layer. It allows
