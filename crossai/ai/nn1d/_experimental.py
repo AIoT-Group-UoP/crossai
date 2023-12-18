@@ -1,3 +1,5 @@
+from typing import Union, Callable
+import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Flatten
 from tensorflow.keras.layers import Dense, Conv1D, MaxPooling1D, \
@@ -5,32 +7,35 @@ from tensorflow.keras.layers import Dense, Conv1D, MaxPooling1D, \
 from crossai.ai import dropout_layer_1d
 
 
-def CNN1D(input_shape,
-          include_top=True,
-          num_classes=1,
-          classifier_activation="softmax",
-          drp=0.,
-          spatial=False,
-          mc_inference=None):
-    """
-    Creates a simple 1D CNN model for experimental purposes.
+def CNN1D(
+    input_shape: tuple,
+    include_top: bool = True,
+    num_classes: int = 1,
+    classifier_activation: Union[str, Callable] = "softmax",
+    drp_rate: float = 0.,
+    spatial: bool = False,
+    mc_inference: Union[bool, None] = None
+) -> tf.keras.Model:
+    """Creates a simple 1D CNN model for experimental purposes.
+
+    This model is suitable for time-series or sequence data and can be used
+    for tasks such as classification or feature extraction.
 
     Args:
-        input_shape (tuple): Shape of the input data, excluding the batch size.
-        include_top (bool, optional): If true, includes a fully-connected layer
-            at the top of the model. Defaults to True.
-        num_classes (int, optional): Number of classes for prediction.
-            Defaults to 1.
-        classifier_activation (str or callable, optional): Activation function
-            for the classification layer.
-        drp (float, optional): Dropout rate. Defaults to 0.
-        sptial (bool, optional): If true, applies Spatial Dropout, else applies
-            standard Dropout. Defaults to False.
-        mc_inference (bool, optional): If true, enables Dropout during
-            inference. Defaults to False.
+        input_shape: Shape of the input data, excluding the batch size.
+        include_top: If True, includes a fully-connected layer at the top of
+            the model. Set to False for adding a custom layer.
+        num_classes: Number of classes for prediction.
+        classifier_activation: Activation function for the classification task.
+            Can be a string identifier or a function from tf.keras.activations.
+        drp_rate: Dropout rate.
+        spatial: If True, applies Spatial Dropout. If False, applies standard
+             Dropout.
+        mc_inference: If True, enables Monte Carlo dropout during inference.
+            Defaults to None, meaning dropout is applied during training only.
 
     Returns:
-        keras.Model: An instance of a Keras Model.
+        model: An instance of a Keras Model.
     """
 
     # Define input tensor for the network, batch size is omitted
@@ -45,7 +50,7 @@ def CNN1D(input_shape,
     # retain tensor shape (keepdims) since Spatial Dropout expects 3D input
     x = GlobalAveragePooling1D(keepdims=True if spatial else False)(x)
 
-    x = dropout_layer_1d(inputs=x, drp_rate=drp, spatial=spatial,
+    x = dropout_layer_1d(inputs=x, drp_rate=drp_rate, spatial=spatial,
                          mc_inference=mc_inference)
     if include_top is True:
         x = Flatten()(x)

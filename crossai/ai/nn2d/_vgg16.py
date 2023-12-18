@@ -1,63 +1,69 @@
+from typing import Union, Callable, List
+import tensorflow as tf
 from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPool2D, Flatten
 from tensorflow.keras.layers import ReLU
 from tensorflow.keras.models import Model
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras.constraints import MaxNorm
+from tensorflow.keras.regularizers import Regularizer, l2
+from tensorflow.keras.constraints import Constraint, MaxNorm
+from tensorflow.keras.initializers import Initializer
 from .._layers_dropout import dense_drop_block
 
 
 # Implementation of Xception NN model based on:
 # - https://arxiv.org/abs/1409.1556
-def VGG16(input_shape,
-          include_top=True,
-          num_classes=1,
-          classifier_activation="softmax",
-          kernel_initialize="he_uniform",
-          kernel_regularize=1e-5,
-          kernel_constraint=3,
-          dense_layers=0,
-          dense_units=[128, 128],
-          dropout=False,
-          dropout_first=False,
-          dropout_rate=[0.5, 0.5],
-          spatial=False,
-          mc_inference=None
-          ):
-    """ VGG16 Model
+def VGG16(
+    input_shape: tuple,
+    include_top: bool = True,
+    num_classes: int = 1,
+    classifier_activation: Union[str, Callable] = "softmax",
+    kernel_initialize: Union[str, Initializer] = "he_normal",
+    kernel_regularize: Union[float, str] = 1e-5,
+    kernel_constraint: int = 3,
+    dense_layers: int = 0,
+    dense_units: List[int] = [128, 128],
+    dropout: bool = False,
+    dropout_first: bool = False,
+    dropout_rate: List[float] = [0.5, 0.5],
+    spatial: bool = False,
+    mc_inference: Union[bool, None] = None
+) -> tf.keras.Model:
+    """Constructs the VGG16 model, a convolutional neural network architecture
+    for image classification.
+
+    The model includes customizable top layers, dropout settings, and other
+    hyperparameters. VGG16 is known for its simplicity and depth, utilizing
+    repeated blocks of convolutional layers followed by max pooling.
 
     Args:
-        input_shape (tuple)): The shape of a single instance of the dataset.
-        include_top (bool, optional): whether to include a fully-connected
-            layer at the top of the network.
-        num_classes (int, optional): number of classes to predict. Default 1.
-        classifier_activation (Union[str, Callable], optional): activation
-            function (either as str or object) for the classification task.
-        kernel_initialize (str, optional): The variance scaling initializer.
-            Default: "he_uniform".
-        kernel_regularize (Union[str, float], optional): A penalty on the layer
-            kernel. Can be float or a str in scientific notation (e.g. '1e-5').
-            Default: 1e-5.
-        kernel_constraint (int, optional): The constraint of the value of the
-            incoming weights. Default 3.
-        dense_layers (int, optional): Number of dense layers. Default 0.
-        dense_units (List[int], optional): Number of units per dense layer.
-            Default [128, 128]
-        dropout (bool, optional): whether to use dropout or not. Default False.
-        dropout_first (bool, optional): Add dropout before dense layer or
-            after. Default False.
-        dropout_rate (List[float]): dropout rate for each dropout layer.
-            Default 0.5.
-        spatial (bool, optional): Determines the type of Dropout. If True, it
-            applies SpatialDropout2D else Monte Carlo Dropout. Default: False.
-        mc_inference (bool, optional):
-        - If true, Dropout is enabled even during inference.
-        - If False, Dropout is neither enabled on training nor during
-            inference.
-        - If None, Dropout is enabled during training but not during inference.
-            Defaults to None.
+        input_shape: The shape of a single instance of the dataset.
+        include_top: Whether to include a fully-connected layer at the top of
+            the network.
+        num_classes: Number of classes for the output layer.
+        classifier_activation: Activation function for the classification task.
+        kernel_initialize: The variance scaling initializer. Can be an str
+            identifier or a tf.keras.initializer object.
+        kernel_regularize: Regularizer for the kernel weights. Can be a float
+            or a string in scientific notation (e.g., '1e-5').
+        kernel_constraint: Constraint on the kernel weights, expressed as an
+            integer.
+        dense_layers: Number of dense layers to add to the top of the network.
+        dense_units: Number of units per dense layer.
+        dropout: Whether to include dropout layers.
+        dropout_first: Whether to apply dropout before or after the dense
+            layers.
+        dropout_rate: Dropout rate for each dropout layer.
+        spatial: If True, applies Spatial Dropout; else applies standard
+            Dropout.
+        mc_inference: Determines the behavior of dropout during inference.
+            If True, enabled during inference;
+            if False, disabled during training and inference;
+            if None, enabled during training but not during inference.
 
     Returns:
-        A Keras Model instance.
+        A tf.keras.Model instance representing the VGG16 architecture.
+
+    References:
+        https://arxiv.org/abs/1409.1556
     """
 
     # regularizer settings
@@ -120,25 +126,36 @@ def VGG16(input_shape,
     return model
 
 
-def vgg_block(input_tensor, num_convs, num_channels,
-              kernel_initialize, kernel_regularize, kernel_constraint):
-    """
-    Adds a VGG block to the model.
+def vgg_block(
+    input_tensor: tf.Tensor,
+    num_convs: int,
+    num_channels: int,
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, str],
+    kernel_constraint: Union[Constraint, int]
+) -> tf.Tensor:
+    """Adds a VGG block to the model.
+
+    Each VGG block consists of a specified number of convolutional layers, each
+    with ReLU activation, followed by a max pooling layer.
 
     Args:
-        input_tensor (keras Tensor): Input tensor for the block.
-        num_convs (int): Number of convolutional layers in the block.
-        num_channels (int): Number of filters/channels for the convolutional
-            layer.
-        kernel_initialize (str): The variance scaling initializer.
-        kernel_regularize (Union[str, float], optional): A penalty on the layer
-            kernel. Can be float or a str in scientific notation (e.g. '1e-5').
-        kernel_constraint (int): The constraint of the value of the incoming
-            weights.
+        input_tensor: Input tensor for the block.
+        num_convs: Number of convolutional layers in the block.
+        num_channels: Number of filters/channels for the convolutional layer.
+        kernel_initialize: The variance scaling initializer, can be a string
+            identifier or an initializer object.
+        kernel_regularize: Regularizer for the kernel weights, can be None, a
+            float, or a Regularizer object.
+            If a string is provided in scientific notation (e.g., '1e-5'), it
+                will be converted to float.
+        kernel_constraint: Constraint for the kernel weights, can be None, an
+            integer, or a Constraint object.
 
     Returns:
-        keras Tensor: Tensor after passing through the block.
+        Output tensor after passing through the VGG block.
     """
+
     x = input_tensor
     for _ in range(num_convs):
         x = Conv2D(filters=num_channels, kernel_size=(3, 3), padding="same",

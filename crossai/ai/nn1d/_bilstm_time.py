@@ -1,3 +1,5 @@
+from typing import Union, Callable
+import tensorflow as tf
 from tensorflow.keras.layers import Input, Bidirectional, LSTM, Dense
 from tensorflow.keras.models import Model
 from crossai.ai import dropout_layer_1d
@@ -5,50 +7,55 @@ from crossai.ai import dropout_layer_1d
 
 # Implementation of NN model for 1D based on:
 # - https://ieeexplore.ieee.org/document/8488627
-def BiLSTM_Time(input_shape,
-                include_top=True,
-                num_classes=1,
-                n_layers=3,
-                classifier_activation="softmax",
-                lstm_units=[32, 32, 32],
-                dense_units=[128],
-                drp=0,
-                spatial=False,
-                mc_inference=None):
+def BiLSTM_Time(
+    input_shape: tuple,
+    include_top: bool = True,
+    num_classes: int = 1,
+    classifier_activation: Union[str, Callable] = "softmax",
+    n_layers: int = 3,
+    lstm_units: list = [32, 32, 32],
+    dense_units: list = [128],
+    drp_rate: float = 0.,
+    spatial: bool = False,
+    mc_inference: Union[bool, None] = None
+) -> tf.keras.Model:
     """Constructs a deep neural network using bidirectional LSTM.
 
-    This model converts low-level audio features into high-level expressions.
+    This model converts low-level time series features into high-level
+        expressions.
 
     Args:
-        input_shape (tuple): Shape of the input data, excluding batch size.
-        include_top (bool): If true, includes a fully-connected layer at the
-            top.
-        num_classes (int): Number of prediction classes. Defaults to 1.
-        classifier_activation (str or callable, optional): Activation function
-            for the classification task.
-        n_layers (int): Number of Bidirectional LSTM layers. Defaults to 3.
-        lstm_units (list of int): LSTM units for each layer. Defaults to
-            [32, 32, 32].
-        Dense_units (list of int): Units for each dense layer. Defaults to
-            [128].
-        drp (float): Dropout rate. Defaults to 0.
-        spatial (bool): Type of Dropout. True for SpatialDropout1D, False for
-            Monte Carlo Dropout. Defaults to False.
-        mc_inference (bool, optional): Dropout setting during inference. True
-            enables Dropout, False disables it, None for training only.
-                Defaults to None.
+        input_shape: Shape of the input data, excluding batch size.
+        include_top: If True, includes a fully-connected layer at the top.
+            Set to False for adding a custom layer.
+        num_classes: Number of prediction classes.
+        classifier_activation: Activation function for the classification task.
+            Can be a string identifier or a function from tf.keras.activations.
+        n_layers: Number of Bidirectional LSTM layers.
+        lstm_units: LSTM units for each layer.
+        dense_units: Units for each dense layer.
+        drp_rate: Dropout rate.
+        spatial: Type of Dropout. True for SpatialDropout1D, False for regular
+            Dropout.
+        mc_inference: Dropout setting during inference. True enables,
+            False disables, and None means dropout is applied during training
+                only.
 
     Returns:
-        keras.Model: A Keras model instance.
+        A Keras model instance.
+
+    References:
+        https://ieeexplore.ieee.org/document/8488627
     """
 
     input_layer = Input(shape=input_shape, name="input_layer")
 
     x = Bidirectional(LSTM(units=lstm_units[0], activation="tanh",
                            return_sequences=True))(input_layer)
-    x = dropout_layer_1d(x, drp, spatial=spatial, mc_inference=mc_inference)
+    x = dropout_layer_1d(x, drp_rate, spatial=spatial,
+                         mc_inference=mc_inference)
 
-    x_block = bilstm_block(x, n_layers, lstm_units, drp)
+    x_block = bilstm_block(x, n_layers, lstm_units, drp_rate)
     x_dense = dense_block(x_block, n_layers, dense_units)
 
     if include_top is True:
@@ -61,24 +68,29 @@ def BiLSTM_Time(input_shape,
     return model
 
 
-def bilstm_block(inputs, n_layers, lstm_units, drp_rate, mc_inference=None):
-    """
-    Constructs a bidirectional LSTM (BiLSTM) block.
+def bilstm_block(
+    inputs: tf.Tensor,
+    n_layers: int,
+    lstm_units: list,
+    drp_rate: float,
+    mc_inference: bool = None
+) -> tf.Tensor:
+    """Constructs a bidirectional LSTM (BiLSTM) block.
 
     Args:
         inputs: Input tensor for the BiLSTM block.
-        n_layers (int): Number of LSTM layers in the block.
-        lstm_units (list of int): Number of units in each LSTM layer.
-        drp_rate (float): Dropout rate to be applied after each LSTM layer.
-        mc_inference (bool, optional): If True, enables Monte Carlo dropout
+        n_layers: Number of LSTM layers in the block.
+        lstm_units: Number of units in each LSTM layer.
+        drp_rate: Dropout rate to be applied after each LSTM layer.
+        mc_inference: If True, enables Monte Carlo dropout
             during inference. Defaults to None.
 
     Returns:
-        The output tensor from the last layer of the BiLSTM block.
+        x: The output tensor from the last layer of the BiLSTM block.
     """
 
     x = inputs
-    for i in range(1, n_layers - 1):
+    for i in range(1, n_layers-1):
         x = Bidirectional(LSTM(units=lstm_units[i], return_sequences=True,
                                activation="tanh"))(x)
         x = dropout_layer_1d(x, drp_rate, False, mc_inference)
@@ -90,17 +102,20 @@ def bilstm_block(inputs, n_layers, lstm_units, drp_rate, mc_inference=None):
     return x
 
 
-def dense_block(inputs, n_layers, dense_units):
-    """
-    Builds a block of dense layers.
+def dense_block(
+    inputs: tf.Tensor,
+    n_layers: int,
+    dense_units: list
+) -> tf.Tensor:
+    """Builds a block of dense layers.
 
     Args:
         inputs: Input tensor for the dense layers.
-        n_layers (int): Number of dense layers to be created.
-        dense_units (list of int): Number of units in each dense layer.
+        n_layers: Number of dense layers to be created.
+        dense_units: Number of units in each dense layer.
 
     Returns:
-        The output tensor from the last dense layer.
+        x: The output tensor from the last dense layer.
     """
 
     x = inputs
