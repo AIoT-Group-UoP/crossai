@@ -23,8 +23,8 @@ def resample_sig(
         rsmp_sig: Resampled signal.
     """
 
-    secs = int(np.ceil(len(sig)/original_sr))
-    samps = secs*target_sr
+    secs = len(sig)/original_sr
+    samps = round(secs*target_sr)
     rsmp_sig = scipy.signal.resample(sig, samps)
 
     return rsmp_sig
@@ -116,7 +116,7 @@ def sliding_window_cpu(
     sig: np.ndarray,
     window_size: int,
     overlap: int,
-    verbose: bool = True
+    verbose: bool = False
 ) -> np.ndarray:
     """Applies a sliding window to a signal.
 
@@ -148,5 +148,7 @@ def sliding_window_cpu(
             print("Error in sliding window instance."
                   " Probably window size is bigger than the data or overlap is"
                   " bigger than window size. Returning None.")
-
-        return None
+        if len(sig) > window_size:
+            return [np.array(sig[0:window_size])]
+        else:
+            return [np.pad(sig, (0, window_size-len(sig)), 'constant')]
