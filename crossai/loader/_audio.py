@@ -23,17 +23,22 @@ def wavfile_reader(filename):
     sr, signal = wavfile.read(filename)
     signal = signal.astype(np.float32)
 
+    #convert to mono if the signal is stereo
+    if len(signal.shape) > 1:
+        signal = signal.mean(axis=1)
+
     # resample the signal if the sampling rate is not 44100
     if sampling_rate != sr:
         signal = resample_sig(signal, original_sr=sr, target_sr=sampling_rate)
 
-    # normalize the signal
+    # normalize the signal to the custom range
     signal = (signal - np.min(signal)) / (np.max(signal) - np.min(signal))
+    signal = signal * (n_range[1] - n_range[0]) + n_range[0]
 
     return signal
 
 
-def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4)):
+def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = (-1, 1)):
     """Loads the audio data from a directory and returns the data
     as a pandas Dataframe.
 
@@ -50,6 +55,7 @@ def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4)):
         sr (int, optional): sampling rate of the audio data. Defaults to 44100.
         n_workers (int, optional): number of workers for multiprocessing.
                                     Defaults to mp.cpu_count().
+        norm_range (tuple, optional): range for normalization. Defaults to (-1, 1).
 
     Returns:
         pandas Dataframe: data from the wav files in a pandas Dataframe.
@@ -60,6 +66,9 @@ def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4)):
     subdirs, subdirnames = get_sub_dirs(path)
 
     global sampling_rate
+    global n_range
+    
+    n_range = copy.deepcopy(norm_range)
     sampling_rate = copy.deepcopy(sr)
 
     progress = tqdm(total=len(subdirs) + 2,
