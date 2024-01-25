@@ -4,7 +4,6 @@ from matplotlib.figure import Figure as Fig
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-import os
 import itertools
 
 
@@ -187,7 +186,8 @@ def plot_triu_corr_heatmap(
         An exception is raised if `target_column` is provided but
             `target_value` is None.
     """
-    plt.figure(figsize=(25, 10))
+
+    fig, ax = plt.subplots(figsize=(25, 10))
 
     # Filter rows to a specific target_vavlue
     if target_column is not None:
@@ -199,7 +199,7 @@ def plot_triu_corr_heatmap(
     # drop non-numeric columns
     # in case `target_column` is numeric, an extra row on the correlation
     # heatmap will be created
-    df = df.select_dtypes(include=['numberic'])
+    df = df.select_dtypes(include=['number'])
 
     # calculate pearson correlation
     corr_matrix = df.corr()
@@ -222,14 +222,12 @@ def plot_triu_corr_heatmap(
     heatmap.set_yticklabels(heatmap.get_yticklabels(), fontsize=label_size)
     heatmap.set_title(title, fontdict={'fontsize': 15}, pad=16)
 
-    # Get the Figure object from the Axes object and return it
-    fig = heatmap.get_gigure()
     return fig
 
 
 def plot_scatter_feature_pairs(
     df: pd.DataFrame,
-    target_column: Optional[str] = None,
+    target_column: str,
     target_value: Optional[str] = None,
     feature_list: List[str] = [],
     n_rows: int = 10,
@@ -277,9 +275,8 @@ def plot_scatter_feature_pairs(
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(30, 30))
     axes = axes.flatten()  # Flatten the axes array for easy indexing
 
-    if target_column is not None:
-        if target_value is not None:
-            dataframe = df[df[target_column] == target_value]
+    if target_value is not None:
+        dataframe = df[df[target_column] == target_value]
     else:
         dataframe = df
 
@@ -288,8 +285,8 @@ def plot_scatter_feature_pairs(
         if i >= n_rows * n_cols:  # Break if more combinations than subplots
             break
 
-        sns.scatterplot(x=feature1, y=feature2, hue=target_column,
-                        data=dataframe, ax=axes[i])
+        sns.scatterplot(x=feature1, y=feature2,
+                        hue=target_column, data=dataframe, ax=axes[i])
         axes[i].set_title(f'Scatter Plot for {feature1} vs {feature2}')
 
     # Hide any unused subplots
@@ -302,7 +299,7 @@ def plot_scatter_feature_pairs(
 def plot_explained_variance(
     exp_var_ratio: List[float],
     title: str = "Explained Variance"
-):
+) -> Fig:
     """Plots the explained variance and cumulative explained variance from the
     provided PCA explained variance ratios.
 
@@ -339,42 +336,3 @@ def plot_explained_variance(
     ax.legend(loc='best')
 
     return fig
-
-
-def save_fig(
-    fig_id: str,
-    save_path: str,
-    tight_layout: bool = True,
-    fig_extension: str = "png",
-    resolution: Union[float, str] = "figure"
-) -> None:
-    """Saves the figure to a predefined path with the given name and extension.
-
-    Args:
-        fig_id: Name of the figure.
-        save_path: The path of the local saving directory.
-        tight_layout: Whether to save the figure in tight layout or not.
-                      Defaults to True.
-        fig_extension: Format of the figure file. Defaults to 'png'.
-        resolution: Resolution of the exported figure. Can be a float
-                    or 'figure'. Defaults to 'figure'.
-
-    Returns:
-        None. The figure is saved to the specified path.
-    """
-    if not os.path.isdir(save_path):
-        raise FileNotFoundError(f"Provided path '{save_path}' does not exist \
-                                  or is not a directory.")
-
-    path = os.path.join(save_path, f"{fig_id}.{fig_extension}")
-
-    # TODO:
-    # Consider using logging instead of print
-    print(f"Saving figure {fig_id} to {path}")
-
-    if tight_layout:
-        plt.tight_layout()
-
-    dpi = resolution if isinstance(resolution, float) else None
-    plt.savefig(path, format=fig_extension, bbox_inches="tight", dpi=dpi)
-    plt.close()
