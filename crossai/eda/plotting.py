@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 import pandas as pd
 from matplotlib.figure import Figure as Fig
 import matplotlib.pyplot as plt
@@ -144,7 +144,7 @@ def plot_distribution(
 def plot_triu_corr_heatmap(
     df: pd.DataFrame,
     target_column: Optional[str] = None,
-    target_value: Optional[str | int] = None,
+    target_value: Optional[Union[str, int]] = None,
     title: str = 'Triangle Correlation Heatmap',
     cmap: str = 'coolwarm',
     fmt: str = ".2f",
@@ -346,25 +346,35 @@ def save_fig(
     save_path: str,
     tight_layout: bool = True,
     fig_extension: str = "png",
-    resolution: float | str = "figure"
+    resolution: Union[float, str] = "figure"
 ) -> None:
-    """Saves the figure to a predefined path with the given name and
-        extension.
+    """Saves the figure to a predefined path with the given name and extension.
 
     Args:
         fig_id: Name of the figure.
         save_path: The path of the local saving directory.
         tight_layout: Whether to save the figure in tight layout or not.
-        fig_extension: Format of the figure file.
-        resolution: Resolution of the exported figure.
+                      Defaults to True.
+        fig_extension: Format of the figure file. Defaults to 'png'.
+        resolution: Resolution of the exported figure. Can be a float
+                    or 'figure'. Defaults to 'figure'.
 
     Returns:
-        None
+        None. The figure is saved to the specified path.
     """
-    path = os.path.join(save_path, fig_id + "." + fig_extension)
-    print("Saving figure", fig_id)
+    if not os.path.isdir(save_path):
+        raise FileNotFoundError(f"Provided path '{save_path}' does not exist \
+                                  or is not a directory.")
+
+    path = os.path.join(save_path, f"{fig_id}.{fig_extension}")
+
+    # TODO:
+    # Consider using logging instead of print
+    print(f"Saving figure {fig_id} to {path}")
+
     if tight_layout:
         plt.tight_layout()
-    plt.savefig(path, format=fig_extension,
-                bbox_inches="tight", dpi=resolution)
+
+    dpi = resolution if isinstance(resolution, float) else None
+    plt.savefig(path, format=fig_extension, bbox_inches="tight", dpi=dpi)
     plt.close()
