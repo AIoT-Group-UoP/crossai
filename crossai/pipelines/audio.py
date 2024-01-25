@@ -16,3 +16,4 @@ class Audio():
 
         self.data = X.data
         self.labels = X.label
+        self.filename = X.filename

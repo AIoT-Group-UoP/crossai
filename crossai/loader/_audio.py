@@ -35,7 +35,7 @@ def wavfile_reader(filename):
     signal = (signal - np.min(signal)) / (np.max(signal) - np.min(signal))
     signal = signal * (n_range[1] - n_range[0]) + n_range[0]
 
-    return signal
+    return signal, filename 
 
 
 def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = (-1, 1)):
@@ -88,17 +88,19 @@ def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = 
     progress.update(1)
     progress.set_description("Load data into a dataframe")
 
-    for i in range(len(data)):
-        for j in range(len(data[i])):
-            data[i][j] = (data[i][j].astype(np.float32), subdirnames[i])
-
-    df = pd.DataFrame(columns=['data', 'label', 'indice'])
+    df = data
 
     for i in range(len(data)):
-        for j in range(len(data[i])):
-            df.loc[len(df)] = [data[i][j][0], data[i][j][1], j]
+            for j in range(len(data[i])):
+                data[i][j] = (data[i][j], subdirnames[i])
+
+    df = pd.DataFrame(columns=['data', 'label', 'filename'])
+
+    for i in range(len(data)):
+            for j in range(len(data[i])):
+                df.loc[len(df)] = [data[i][j][0][0].astype(np.float32), data[i][j][1], data[i][j][0][1]]
 
     progress.update(1)
     progress.set_description("Loaded data into the dataframe")
 
-    return df
+    return df, subdirnames
