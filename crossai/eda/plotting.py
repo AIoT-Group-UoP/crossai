@@ -314,7 +314,7 @@ def plot_explained_variance(
     Args:
         exp_var_ratio: Array of explained variance ratios for each principal
                        component. This should be obtained from the results of
-                        PCA performed on a dataset.
+                       PCA performed on a dataset.
         title: Title of the plot. Defaults to "Explained Variance".
 
     Returns:
@@ -326,9 +326,9 @@ def plot_explained_variance(
 
     # Create the visualization plot
     fig, ax = plt.subplots()
-    ax.bar(range(1, len(exp_var_ratio) + 1), exp_var_ratio, alpha=0.5,
+    ax.bar(range(0, len(exp_var_ratio)), exp_var_ratio, alpha=0.5,
            align='center', label='Individual explained variance')
-    ax.step(range(1, len(cum_sum_eigenvalues) + 1), cum_sum_eigenvalues,
+    ax.step(range(0, len(cum_sum_eigenvalues)), cum_sum_eigenvalues,
             where='mid', label='Cumulative explained variance')
     ax.set_ylabel('Explained variance ratio')
     ax.set_xlabel('Principal component index')
