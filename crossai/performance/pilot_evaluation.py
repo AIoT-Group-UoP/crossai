@@ -1,6 +1,6 @@
 from sklearn.metrics import jaccard_score
 import numpy as np
-from crossai.ai.classify import predict_y
+from crossai.ai.classify import predict_y, predict_y_per_window
 import json
 from typing import Literal
 
@@ -68,7 +68,6 @@ def detection_metrics(labels,
     substitutions = 0
     insertions = 0
     deletions = 0
-
     labels = np.nan_to_num(labels, copy=False, nan=-1)
     predicted_classes = np.nan_to_num(predicted_classes, copy=False, nan=-1)
 
@@ -131,9 +130,6 @@ def evaluate(model,
              labels,
              per_window: bool = True,
              repeats: int = 1,
-             ts_scorer=None,
-             ts_k=2,
-             ts_dist_type='point',
              compute: _RETURN_TYPES = 'all',
              logging: bool = False,
              duration_thres: int = 1,
@@ -163,27 +159,31 @@ def evaluate(model,
             on the given path.
                 Path must contain the name of the file to be saved.
     """
-    results = predict_y(model=model,
-                        data=data,
-                        per_window=per_window,
-                        repeats=repeats,
-                        ts_scorer=ts_scorer,
-                        ts_k=ts_k,
-                        ts_dist_type=ts_dist_type,
-                        compute=compute,
-                        logging=logging)
-    insertions, deletions, \
-        substitutions, correct = detection_metrics(labels,
-                                                   results['class'],
-                                                   duration_thres)
-
-    iou = intersection_over_union(results['class'], labels)
+    if not per_window:
+        results = predict_y(model=model, data=data, repeats=repeats,
+                            compute=compute, logging=logging)
+    else:
+        results = predict_y_per_window(model=model, data=data,
+                                       repeats=repeats, compute=compute,
+                                       logging=logging)
+    try:
+        ins, dels, subs, cors = detection_metrics(labels,
+                                                  results['class'],
+                                                  duration_thres)
+    except ValueError:
+        print("Error in detection metrics. Nulling results.")
+        ins, dels, subs, cors = 0, 0, 0, 0
+    try:
+        iou = intersection_over_union(results['class'], labels)
+    except ValueError:
+        print("Error in intersection over union. Nulling result.")
+        iou = 0
 
     # add insertions, deletions, substitutions, correct, iou to pred_results
-    results['insertions'] = insertions
-    results['deletions'] = deletions
-    results['substitutions'] = substitutions
-    results['correct'] = correct
+    results['insertions'] = ins
+    results['deletions'] = dels
+    results['substitutions'] = subs
+    results['correct'] = cors
     results['iou'] = iou
 
     if save_path is not None:
