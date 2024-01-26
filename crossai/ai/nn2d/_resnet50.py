@@ -1,64 +1,64 @@
+import tensorflow as tf
 from tensorflow.keras.layers import Input, Conv2D, BatchNormalization
 from tensorflow.keras.layers import MaxPool2D, GlobalAvgPool2D
 from tensorflow.keras.layers import Add, ReLU, Dense, Flatten
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras.constraints import MaxNorm
+from tensorflow.keras.initializers import Initializer
+from tensorflow.keras.regularizers import Regularizer, l2
+from tensorflow.keras.constraints import Constraint, MaxNorm
 from tensorflow.keras import Model
 from .._layers_dropout import dense_drop_block
+from typing import Union, Callable, List, Tuple
 
 
 # This architecture is based on ResNet 50 (2015)
 # Paper: https://arxiv.org/pdf/1512.03385.pdf
-def ResNet50(input_shape,
-             include_top=True,
-             num_classes=1,
-             classifier_activation="softmax",
-             kernel_initialize="he_normal",
-             kernel_regularize=1e-3,
-             kernel_constraint=3,
-             dense_layers=0,
-             dense_units=[128, 128],
-             dropout=False,
-             dropout_first=False,
-             dropout_rate=[0.5, 0.5],
-             spatial=False,
-             mc_inference=None
-             ):
-    """ResNet50 Model
+def ResNet34(
+    input_shape: tuple,
+    include_top: bool = True,
+    num_classes: int = 1,
+    classifier_activation: Union[str, Callable] = "softmax",
+    kernel_initialize: Union[str, Initializer] = "he_normal",
+    kernel_regularize: Union[float, None] = 1e-3,
+    kernel_constraint: Union[int, None] = 3,
+    dense_layers: int = 0,
+    dense_units: List[int] = [128, 128],
+    dropout: bool = False,
+    dropout_first: bool = False,
+    dropout_rate: List[float] = [0.5, 0.5],
+    spatial: bool = False,
+    mc_inference: Union[bool, None] = None
+) -> tf.keras.Model:
+    """ResNet34 Model
 
     Args:
-        input_shape (tuple)): The shape of a single instance of the dataset.
-        include_top (bool, optional): whether to include a fully-connected
-            layer at the top of the network.
-        num_classes (int, optional): number of classes to predict. Default 1.
-        classifier_activation (Union[str, Callable], optional): activation
-            function (either as str or object) for the classification task.
-        kernel_initialize (str, optional): The variance scaling initializer.
-            Default: "he_uniform".
-        kernel_regularize (Union[str, float], optional): Regularizer to apply
-            penalty on the layer"s kernel. Can be float or str in 1e-5 format.
-        kernel_constraint (int, optional): The constraint of the value of the
-            incoming weights. Default 3.
-        dense_layers (int, optional): Number of dense layers. Default 0.
-        dense_units (List[int], optional): Number of units per dense layer.
-            Default [128, 128]
-        dropout (bool, optional): whether to use dropout or not. Default False.
-        dropout_first (bool, optional): Add dropout before dense layer or
-            after. Default False.
-        dropout_rate (List[float]): dropout rate for each dropout layer.
-            Default 0.5.
-        spatial (bool, optional): Determines the type of Dropout. If True, it
-            applies SpatialDropout2D else
-        Monte Carlo Dropout. Default: False.
-        mc_inference (bool, optional):
-        - If true, Dropout is enabled even during inference.
-        - If False, Dropout is neither enabled on training nor during
-            inference.
-        - If None, Dropout is enabled during training but not during inference.
-            Defaults to None.
+        input_shape: The shape of a single instance of the dataset.
+        include_top: Whether to include a fully-connected layer at the top of
+            the network.
+        num_classes: Number of classes to predict.
+        classifier_activation: Activation function for the classification task.
+        kernel_initialize: Initializer for the kernel weights, can be a string
+            identifier or an tf.keras.Initializer object.
+        kernel_regularize: Regularizer for the kernel weights, typically a
+            float indicating the L2 regularization factor.
+        kernel_constraint: Constraint for the kernel weights, typically an
+            integer for the max norm constraint.
+        dense_layers: Number of dense layers to include in the model.
+        dense_units: List of units for each dense layer.
+        dropout: Whether to use dropout.
+        dropout_first: If True, adds dropout before the dense layer(s).
+        dropout_rate: List specifying the dropout rate for each layer.
+        spatial: If True, applies Spatial Dropout, else applies standard
+            Dropout.
+        mc_inference: If True, enables Monte Carlo dropout during inference;
+                      If False, disables Dropout in training and inference;
+                      If None, enables Dropout during training but not during
+                        inference.
 
     Returns:
-        A Keras Model instance.
+        A Keras Model instance representing the ResNet34 architecture.
+
+    References:
+        https://arxiv.org/pdf/1512.03385.pdf
     """
 
     # Regularizer settings
@@ -111,27 +111,41 @@ def ResNet50(input_shape,
         outputs = x
 
     # Construct and return the model
-    model = Model(input_layer, outputs)
+    model = Model(input_layer, outputs, name="Resnet_50")
     return model
 
 
-def resnet_block(x, n_filters, reps, strides, kernel_initialize,
-                 kernel_regularize, kernel_constraint):
-    """
-    Create a ResNet block with multiple residual layers.
+def resnet_block(
+    x: tf.Tensor,
+    n_filters: int,
+    reps: int,
+    strides: Union[int, tuple],
+    kernel_initialize: Union[Initializer, str, None],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """Constructs a ResNet block with a specified number of repetitions.
+
+    The block comprises a projection block followed by multiple identity
+    blocks. The projection block aligns the dimensions of input and output,
+    while identity blocks follow the standard building patterns of ResNet.
 
     Args:
-        x (tensor): Input tensor.
-        n_filters (int): Number of filters.
-        reps (int): Number of repetitions.
-        strides (int): Strides for convolution.
-        kernel_initialize (str): Initialization method for the layers.
-        kernel_regularize (float): Regularization factor.
-        kernel_constraint (int): Max norm constraint for kernel values.
+        x: Input tensor to the ResNet block, represented as a tf.Tensor.
+        n_filters: Number of filters for the convolution layers.
+        reps: Number of repetitions of the identity blocks.
+        strides: Strides for the convolution layer in the projection block.
+        kernel_initialize: Initializer for the kernel weights, either a string
+            or a tf.keras.initializers.Initializer.
+        kernel_regularize: Regularizer for the kernel weights, either a float
+            or a tf.keras.regularizers.Regularizer.
+        kernel_constraint: Constraint for the kernel weights, either an integer
+            or a tf.keras.constraints.Constraint.
 
     Returns:
-        tensor: Output tensor.
+        The output tensor after processing through the ResNet block.
     """
+
     x = projection_block(x, n_filters, strides, kernel_initialize,
                          kernel_regularize, kernel_constraint)
     for _ in range(reps-1):
@@ -140,21 +154,36 @@ def resnet_block(x, n_filters, reps, strides, kernel_initialize,
     return x
 
 
-def projection_block(x, n_filters, strides, kernel_initialize,
-                     kernel_regularize, kernel_constraint):
-    """
-    Create a ResNet block with multiple residual layers.
+def projection_block(
+    x: tf.Tensor,
+    n_filters: int,
+    strides: Union[int, tuple],
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """Constructs a projection block for a ResNet architecture.
+
+    This block is used in ResNet when the dimensions of the input tensor and
+    the output tensor of the residual layers do not match. It applies a series
+    of convolutions and adds a shortcut connection that projects the input
+    tensor to align its dimensions with the output.
 
     Args:
-        x (tensor): Input tensor.
-        n_filters (int): Number of filters.
-        strides (int): Strides for convolution.
-        kernel_initialize (str): Initialization method for the layers.
-        kernel_regularize (float): Regularization factor.
-        kernel_constraint (int): Max norm constraint for kernel values.
+        x: Input tensor to the projection block.
+        n_filters: Number of filters for the convolution layers within the
+            block.
+        strides: Strides for the first convolution layer in the block.
+            Can be an integer or a tuple.
+        kernel_initialize: Initializer for the kernel weights, can be a string
+            identifier or an initializer object.
+        kernel_regularize: Regularizer for the kernel weights, typically a
+            float indicating the L2 regularization factor.
+        kernel_constraint: Constraint for the kernel weights, typically an
+            integer for the max norm constraint.
 
     Returns:
-        tensor: Output tensor.
+        Output tensor after applying the projection block operations.
     """
     shortcut = _conv_bn(x, 4*n_filters, 1, strides, kernel_initialize,
                         kernel_regularize, kernel_constraint)
@@ -168,21 +197,32 @@ def projection_block(x, n_filters, strides, kernel_initialize,
     return ReLU()(x)
 
 
-def identity_block(x, n_filters, kernel_initialize, kernel_regularize,
-                   kernel_constraint):
-    """
-    Create a ResNet block with multiple residual layers.
+def identity_block(
+        x: tf.Tensor,
+        n_filters: int,
+        kernel_initialize: Union[Initializer, str],
+        kernel_regularize: Union[Regularizer, float, None],
+        kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """Constructs an identity block for a ResNet architecture.
+
+    This block applies several convolutional layers with batch normalization
+    and ReLU activation, followed by a skip connection that adds the input
+    tensor to the output of the convolutional layers.
 
     Args:
-        x (tensor): Input tensor.
-        n_filters (int): Number of filters.
-        strides (int): Strides for convolution.
-        kernel_initialize (str): Initialization method for the layers.
-        kernel_regularize (float): Regularization factor.
-        kernel_constraint (int): Max norm constraint for kernel values.
+        x: Input tensor to the identity block.
+        n_filters: Number of filters for the convolution layers within
+            the block.
+        kernel_initialize: Initializer for the kernel weights, can be a string
+            identifier or an initializer object.
+        kernel_regularize: Regularizer for the kernel weights, typically a
+            float indicating the L2 regularization factor.
+        kernel_constraint: Constraint for the kernel weights, typically an
+            integer for the max norm constraint.
 
     Returns:
-        tensor: Output tensor.
+        Output tensor after applying the identity block operations.
     """
     shortcut = x
     x = conv_bn_relu(x, n_filters, 1, 1, kernel_initialize, kernel_regularize,
@@ -195,24 +235,39 @@ def identity_block(x, n_filters, kernel_initialize, kernel_regularize,
     return ReLU()(x)
 
 
-def conv_bn_relu(inputs, n_filters,
-                 kernel_size, strides,
-                 kernel_initialize,
-                 kernel_regularize,
-                 kernel_constraint):
-    """
-    Create a ResNet block with multiple residual layers.
+def conv_bn_relu(
+    inputs: tf.Tensor,
+    n_filters: int,
+    kernel_size: Union[int, Tuple[int, int]],
+    strides: Union[int, Tuple[int, int]],
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """Applies a convolution followed by batch normalization and a ReLU
+        activation to the input tensor.
+
+    This function creates a 2D convolution layer using specified filters,
+        kernel size, and strides, applies batch normalization to its output,
+         and then applies a ReLU activation function.
 
     Args:
-        x (tensor): Input tensor.
-        n_filters (int): Number of filters.
-        strides (int): Strides for convolution.
-        kernel_initialize (str): Initialization method for the layers.
-        kernel_regularize (float): Regularization factor.
-        kernel_constraint (int): Max norm constraint for kernel values.
+        inputs: The input tensor.
+        n_filters: Number of filters in the convolution layer.
+        kernel_size: Size of the convolution kernel. Can be an integer or a
+            tuple of 2 integers.
+        strides: Strides of the convolution. Can be an integer or a tuple
+            of 2 integers.
+        kernel_initialize: Initializer for the kernel weights. Can be a string
+            identifier or a tf.keras.initializers.Initializer.
+        kernel_regularize: Regularizer function for the kernel weights. Can be
+            None, a float, or a tf.keras.regularizers.Regularizer.
+        kernel_constraint: Constraint for the kernel weights. Can be None, an
+            integer, or a tf.keras.constraints.Constraint.
 
     Returns:
-        tensor: Output tensor.
+        The output tensor after applying convolution, batch normalization,
+            and ReLU activation, represented as a tf.Tensor.
     """
     x = Conv2D(filters=n_filters, kernel_size=kernel_size, strides=strides,
                padding="same",
@@ -223,27 +278,44 @@ def conv_bn_relu(inputs, n_filters,
     return ReLU()(x)
 
 
-def _conv_bn(inputs, n_filters,
-             kernel_size, strides,
-             kernel_initialize,
-             kernel_regularize,
-             kernel_constraint):
-    """
-    Create a ResNet block with multiple residual layers.
+def _conv_bn(
+    inputs: tf.Tensor,
+    n_filters: int,
+    kernel_size: Union[int, Tuple[int, int]],
+    strides: Union[int, Tuple[int, int]],
+    kernel_initialize: Union[Initializer, str],
+    kernel_regularize: Union[Regularizer, float, None],
+    kernel_constraint: Union[Constraint, int, None]
+) -> tf.Tensor:
+    """Applies a convolution followed by batch normalization to the input
+        tensor.
+
+    This function creates a 2D convolution layer using specified filters,
+    kernel size, and strides, and then applies batch normalization to
+    its output.
 
     Args:
-        x (tensor): Input tensor.
-        n_filters (int): Number of filters.
-        strides (int): Strides for convolution.
-        kernel_initialize (str): Initialization method for the layers.
-        kernel_regularize (float): Regularization factor.
-        kernel_constraint (int): Max norm constraint for kernel values.
+        inputs: The input tensor.
+        n_filters: Number of filters in the convolution layer.
+        kernel_size: Size of the convolution kernel. Can be an integer or a
+            tuple of 2 integers.
+        strides: Strides of the convolution. Can be an integer or a tuple
+            of 2 integers.
+        kernel_initialize: Initializer for the kernel weights. Can be a string
+            identifier or a tf.keras.initializers.Initializer.
+        kernel_regularize: Regularizer function for the kernel weights. Can be
+            None, a float, or a tf.keras.regularizers.Regularizer.
+        kernel_constraint: Constraint for the kernel weights. Can be None, an
+            integer, or a tf.keras.constraints.Constraint.
 
     Returns:
-        tensor: Output tensor.
+        The output tensor after applying the convolution and batch
+            normalization, represented as a tf.Tensor.
     """
     x = Conv2D(filters=n_filters, kernel_size=kernel_size, strides=strides,
                kernel_initializer=kernel_initialize,
                kernel_regularizer=kernel_regularize,
                kernel_constraint=kernel_constraint)(inputs)
-    return BatchNormalization()(x)
+    x = BatchNormalization()(x)
+
+    return x

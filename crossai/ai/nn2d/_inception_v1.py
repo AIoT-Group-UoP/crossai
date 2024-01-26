@@ -1,9 +1,9 @@
+from typing import Union, Callable, List, Optional
+import tensorflow as tf
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Conv2D, Dense, AveragePooling2D, \
-    GlobalAveragePooling2D
-from tensorflow.keras.layers import MaxPool2D, Flatten, concatenate, Dropout
-from tensorflow.keras.initializers import glorot_uniform
-from tensorflow.keras.initializers import Constant
+    GlobalAveragePooling2D, MaxPool2D, Flatten, concatenate, Dropout
+from tensorflow.keras.initializers import Initializer, GlorotUniform, Constant
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.constraints import MaxNorm
 from crossai.ai import dense_drop_block
@@ -13,48 +13,55 @@ from crossai.ai import dense_drop_block
 # - https://arxiv.org/pdf/1409.4842v1.pdf
 # InceptionV2-3: https://arxiv.org/pdf/1512.00567v3.pdf
 # InceptionV4-ResNet: https://arxiv.org/pdf/1602.07261.pdf
-def InceptionV1(input_shape,
-                include_top=True,
-                num_classes=1,
-                classifier_activation="softmax",
-                kernel_initialize=glorot_uniform(),
-                kernel_regularize=1e-5,
-                kernel_constraint=3,
-                dense_layers=0,
-                dense_units=[128, 128],
-                dropout=False,
-                dropout_first=False,
-                dropout_rate=[0.5, 0.5],
-                spatial=False,
-                mc_inference=None
-                ):
-    """
-    Builds the InceptionV1 or GoogLeNet Model.
+def InceptionV1(
+    input_shape: tuple,
+    include_top: bool = True,
+    num_classes: int = 1,
+    classifier_activation: Union[str, Callable] = "softmax",
+    dense_layers: int = 0,
+    dense_units: List[int] = [128, 128],
+    dropout: bool = False,
+    dropout_first: bool = False,
+    dropout_rate: List[float] = [0.5, 0.5],
+    spatial: bool = False,
+    mc_inference: Union[bool, None] = None,
+    kernel_initialize: Union[Callable, str] = GlorotUniform(),
+    kernel_regularize: Union[float, str] = 1e-5,
+    kernel_constraint: int = 3,
+) -> tf.keras.Model:
+    """Builds the InceptionV1 or GoogLeNet Model.
+
+    This model is suitable for image classification and other computer vision
+        tasks.
 
     Args:
-        input_shape (tuple): Shape of a single instance of the dataset.
-        include_top (bool): If true, includes the fully-connected layer at the
-            top.
-        num_classes (int): Number of classes for prediction. Defaults to 1.
-        classifier_activation (Union[str, Callable]): Activation function for
-            the classification task.
-        kernel_initialize (str): Kernel initializer. Defaults to
-            "glorot uniform".
-        kernel_regularize (Union[float, str]): Regularizer for the kernel, can
-            be float or string. Default is None.
-        kernel_constraint (int): Constraint on the kernel values. Default is 3.
-        dropout (bool): If true, uses dropout. Defaults to False.
-        dropout_first (bool): If true, adds dropout before the dense layer.
-            Defaults to False.
-        dropout_rate (list of float): Dropout rates for each layer.
-        spatial (bool): If true, uses SpatialDropout2D, else Monte Carlo
-            Dropout. Defaults to False.
-        mc_inference (bool or None): Dropout setting during inference. True for
-            enabled, False for disabled, None for training only. Defaults to
-            None.
+        input_shape: Shape of a single instance of the dataset.
+        include_top: If True, includes the fully-connected layer at the top of
+            the model.
+        num_classes: Number of classes for prediction.
+        classifier_activation: Activation function for the classification task.
+        kernel_initialize: Kernel initializer, can be a
+            tf.keras.initializers.Initializer object or string identifier.
+        kernel_regularize: Regularizer for the kernel, can be a float or
+            string. If a string is provided, it's converted to a float.
+        kernel_constraint: Constraint on the kernel values, expressed as
+            an integer.
+        dense_layers: Number of dense layers to include in the model.
+        dense_units: List of units for each dense layer.
+        dropout: If True, applies dropout to the layers.
+        dropout_first: If True, adds dropout before the dense layer(s).
+        dropout_rate: List specifying the dropout rate for each layer.
+        spatial: If True, applies Spatial Dropout, else applies standard
+            Dropout.
+        mc_inference: If True, enables Monte Carlo dropout during inference.
 
     Returns:
-        keras.Model: An instance of the Keras Model.
+        A Keras Model instance representing the InceptionV1 architecture.
+
+        Referenes:
+            - https://arxiv.org/pdf/1409.4842v1.pdf
+            - https://arxiv.org/pdf/1512.00567v3.pdf
+            - https://arxiv.org/pdf/1602.07261.pdf
     """
 
     # Initializer - regularizer settings
@@ -74,7 +81,7 @@ def InceptionV1(input_shape,
 
     x = Conv2D(64, (7, 7), padding="same", strides=(2, 2), activation="relu",
                name="conv_1_7x7/2", kernel_initializer=kernel_initialize,
-               bias_initializer=bias_initialize)(input_layer)
+               bias_initializer=bias_initialize)(input_layer)#
     x = MaxPool2D((3, 3), padding="same", strides=(2, 2),
                   name="max_pool_1_3x3/2")(x)
     x = Conv2D(64, (1, 1), padding="same", strides=(1, 1), activation="relu",
@@ -222,8 +229,6 @@ def InceptionV1(input_shape,
                          name="inception_5b")
 
     if include_top:
-        # flatten
-        # x = Flatten()(x)
 
         x = GlobalAveragePooling2D(name="avg_pool_5_3x3/1")(x)
 
@@ -246,23 +251,47 @@ def InceptionV1(input_shape,
         x = Dense(num_classes, activation=classifier_activation,
                   name="output")(x)
 
-    model = Model(input_layer, [x, x1, x2], name="inception_v1")
+    model = Model(input_layer, [x, x1, x2], name="Inception_v1")
 
     return model
 
 
-def inception_module(x,
-                     filters_1x1,
-                     filters_3x3_reduce,
-                     filters_3x3,
-                     filters_5x5_reduce,
-                     filters_5x5,
-                     filters_pool_proj,
-                     kernel_initialize,
-                     kernel_regularize,
-                     kernel_constraint,
-                     bias_initialize,
-                     name=None):
+def inception_module(
+    x: tf.Tensor,
+    filters_1x1: int,
+    filters_3x3_reduce: int,
+    filters_3x3: int,
+    filters_5x5_reduce: int,
+    filters_5x5: int,
+    filters_pool_proj: int,
+    kernel_initialize: Union[Initializer, str, None] = None,
+    kernel_regularize: Union[float, str, None] = None,
+    kernel_constraint: Union[int, None] = None,
+    bias_initialize: Union[Initializer, None] = None,
+    name: Optional[str] = None
+) -> tf.Tensor:
+    """Creates an inception module that combines 1x1, 3x3, 5x5 convolutions,
+        and max pooling.
+
+    Args:
+        x: Input tensor.
+        filters_1x1: Number of 1x1 convolution filters.
+        filters_3x3_reduce: Number of 1x1 filters before the 3x3 convolution.
+        filters_3x3: Number of 3x3 convolution filters.
+        filters_5x5_reduce: Number of 1x1 filters before the 5x5 convolution.
+        filters_5x5: Number of 5x5 convolution filters.
+        filters_pool_proj: Number of filters for the 1x1 convolution after max
+            pooling.
+        kernel_initialize: Kernel initializer for convolution layers.
+        kernel_regularize: Regularizer for convolution layers.
+        kernel_constraint: Constraint on the kernel values.
+        bias_initialize: Initializer for bias values.
+        name: Name for the inception module.
+
+    Returns:
+        Output tensor representing the concatenation of the inception module's
+            branches.
+    """
 
     conv_1x1 = Conv2D(filters_1x1, (1, 1), padding="same",
                       activation="relu",

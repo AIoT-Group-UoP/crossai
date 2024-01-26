@@ -7,7 +7,7 @@ from crossai.performance.loader import audio_loader, csv_loader
 from crossai.performance import pilot_label_processing
 from crossai.visualization import plot_ts, plot_predictions
 from crossai.performance.event_detection import interpolate_preds as inter_pred
-from crossai.processing import butterworth_filter
+from crossai.processing.filter import butterworth_filter
 from crossai.performance import threshold_predictions
 
 
@@ -19,10 +19,8 @@ def batch_evaluate(
     model,
     folder,
     classes: list = None,
-    is_classification: bool = True,
     per_window: bool = True,
     pipeline=None,
-    GT_threshold=None,
     repeats: int = 1,
     ts_scorer=None,
     ts_k=2,
@@ -100,16 +98,16 @@ def batch_evaluate(
         "Total_deletions",
         "Total_substitutions",
         "Total_correct",
-        "Mean_insertions",
-        "Mean_deletions",
-        "Mean_substitutions",
-        "Mean_correct",
-        "GRER",
-        "Mean_detection_ratio",
-        "Mean_reliability",
+        "insertions",
+        "deletions",
+        "substitutions",
+        "correct",
+        "RER",
+        "detection_ratio",
+        "reliability",
     ]:
         total_res[metric] = 0
-    for metric in ["Mean_STD", "Mean_variance", "Mean_entropy"]:
+    for metric in ["std", "variance", "entropy"]:
         total_res[metric] = []
 
     if (
@@ -140,7 +138,7 @@ def batch_evaluate(
                         eval_object = audio_loader(
                             os.path.join(folder, subdir, file), classes, sr
                         )
-                    elif modality == "csv":
+                    elif modality == "tabular":
                         eval_object = csv_loader(
                             os.path.join(folder, subdir, file), classes
                         )
@@ -152,7 +150,8 @@ def batch_evaluate(
                                 subdir,
                                 file.replace(file.split(".")[-1], "json"),
                             ),
-                            classes,
+                            classes=classes,
+                            n_instances=len(eval_object.data[0])
                         )
 
                         # check if true or list
@@ -161,7 +160,7 @@ def batch_evaluate(
                                 eval_object.data,
                                 labels=np.unique(eval_object.feature),
                                 title=file,
-                                show=True,
+                                show=False,
                                 path_to_save=os.path.join(
                                     save_path, subdir, file[:-4], "signal.png"
                                 ),
@@ -172,7 +171,7 @@ def batch_evaluate(
                                 eval_object.data,
                                 labels=np.unique(eval_object.feature),
                                 title=file,
-                                show=True,
+                                show=False,
                                 path_to_save=os.path.join(
                                     save_path, subdir, file[:-4], "signal.png"
                                 ),
@@ -188,29 +187,27 @@ def batch_evaluate(
                     )
 
                     results = evaluate(
-                        model,
-                        eval_object.data,
-                        eval_object.labels,
-                        is_classification,
-                        per_window,
-                        GT_threshold,
-                        repeats,
-                        ts_scorer,
-                        ts_k,
-                        ts_dist_type,
-                        duration_thres,
-                        pilot_save_path,
+                        model=model,
+                        data=eval_object.data,
+                        labels=eval_object.labels,
+                        per_window=per_window,
+                        repeats=repeats,
+                        ts_scorer=ts_scorer,
+                        ts_k=ts_k,
+                        ts_dist_type=ts_dist_type,
+                        duration_thres=duration_thres,
+                        save_path=pilot_save_path,
                     )
                     total_res["Num_of_Pilot"] += 1
 
-                    mean_std = np.mean(np.array(results["STD"]), axis=0)
-                    total_res["Mean_STD"].append(mean_std)
+                    mean_std = np.mean(np.array(results["std"]), axis=0)
+                    total_res["std"].append(mean_std)
 
                     mean_var = np.mean(np.array(results["variance"]), axis=0)
-                    total_res["Mean_variance"].append(mean_var)
+                    total_res["variance"].append(mean_var)
 
                     mean_entr = np.mean(np.array(results["entropy"]), axis=0)
-                    total_res["Mean_entropy"].append(mean_entr)
+                    total_res["entropy"].append(mean_entr)
 
                     total_res["Total_insertions"] += results["insertions"]
                     total_res["Total_deletions"] += results["deletions"]
@@ -257,9 +254,9 @@ def batch_evaluate(
                         fltered = butterworth_filter(
                             interpolated,
                             "lp",
-                            sr,
+                            sr=None,
                             order=interp_filter_order,
-                            cutoff=interp_filter_cutoff,
+                            cutoff_high=interp_filter_cutoff,
                         )
                         # plot the filtered interpolated results
                         plot_ts(
@@ -299,42 +296,40 @@ def batch_evaluate(
         else:
             continue
 
-    for metric in ["Mean_STD", "Mean_variance", "Mean_entropy"]:
+    for metric in ["std", "variance", "entropy"]:
         total_res[metric] = np.array(total_res[metric])
         total_res[metric] = np.mean(total_res[metric], axis=0).tolist()
 
     for metric in [
-        "Mean_insertions",
-        "Mean_deletions",
-        "Mean_substitutions",
-        "Mean_correct",
+        "insertions",
+        "deletions",
+        "substitutions",
+        "correct",
     ]:
-        total_res[metric] = (total_res["Total_" + metric[5:]] /
+        total_res[metric] = (total_res["Total_" + metric] /
                              total_res["Num_of_Pilot"])
 
-    total_res["GRER"] = (
-        total_res["Mean_deletions"]
-        + total_res["Mean_substitutions"]
-        + total_res["Mean_insertions"]
+    total_res["RER"] = (
+        total_res["deletions"]
+        + total_res["substitutions"]
+        + total_res["insertions"]
     ) / (
-        total_res["Mean_deletions"]
-        + total_res["Mean_substitutions"]
-        + total_res["Mean_correct"]
+        total_res["deletions"]
+        + total_res["substitutions"]
+        + total_res["correct"]
     )
 
-    total_res["Mean_detection_ratio"] = total_res["Mean_correct"] / (
-        total_res["Mean_correct"]
-        + total_res["Mean_substitutions"]
-        + total_res["Mean_deletions"]
+    total_res["detection_ratio"] = total_res["correct"] / (
+        total_res["correct"]
+        + total_res["substitutions"]
+        + total_res["deletions"]
     )
 
-    total_res["Mean_reliability"] = total_res["Mean_correct"] / (
-        total_res["Mean_correct"] + total_res["Mean_insertions"]
+    total_res["reliability"] = total_res["correct"] / (
+        total_res["correct"] + total_res["insertions"]
     )
-
-    total_res["interpolated"] = interpolated
-    total_res["fltered"] = fltered
-    total_res["thresholded"] = thresholded
 
     with open(os.path.join(save_path, "total_results.json"), "w") as fp:
         json.dump(total_res, fp)
+
+    return total_res
