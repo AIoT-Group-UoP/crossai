@@ -1,21 +1,60 @@
-import pickle
 import numpy as np
-import tensorflow as tf
 from typing import Literal
-
 
 _RETURN_TYPES = Literal["class", "probas", "std", "variance",
                         "entropy", "mean_pred", "all"]
 
 
+def predict_y_per_window(
+    model,
+    data,
+    repeats: int = 1,
+    compute: _RETURN_TYPES = "class",
+    logging: bool = False
+):
+    # get the probabilities
+    if hasattr(model, "predict_proba"):
+        if logging:
+            print("using predict_proba")
+        # iterate through every window and get the probabilities
+        for instance in data:
+            instance = np.expand_dims(instance, axis=0)
+            instance = instance.reshape(instance.shape[0], -1)
+            loc_probs = model.predict_proba(instance)
+            if repeats > 1:
+                for _ in range(repeats - 1):
+                    loc_probs = np.dstack(
+                        (loc_probs, model.predict_proba(instance))
+                    )
+            if "probabilities" not in locals():
+                probabilities = loc_probs
+            else:
+                probabilities = np.vstack((probabilities, loc_probs))
+    else:
+        if logging:
+            print("using predict")
+        for instance in data:
+            instance = np.expand_dims(instance, axis=0)
+            loc_probs = model.predict(instance, verbose=0)
+            if repeats > 1:
+                for _ in range(repeats - 1):
+                    loc_probs = np.dstack(
+                        (loc_probs, model.predict(instance, verbose=0))
+                    )
+            if "probabilities" not in locals():
+                probabilities = loc_probs
+            else:
+                probabilities = np.vstack((probabilities, loc_probs))
+
+    results = compute_results(probabilities, compute)
+
+    return results
+
+
 def predict_y(
     model,
     data,
-    per_window: bool = True,
     repeats: int = 1,
-    ts_scorer=None,
-    ts_k=2,
-    ts_dist_type="point",
     compute: _RETURN_TYPES = "class",
     logging: bool = False
 ):
@@ -24,10 +63,7 @@ def predict_y(
     The evaluation is based on confidence, uncertainty and trustworthiness.
 
     Args:
-        model (str or model): Model to be evaluated.
-                            If str, the model will be
-                            loaded from the path. Currently
-                            supporting .pkl, .h5, .keras files.
+        model (model): Model to be evaluated.
         data (pandas dataframe): data to be predicted upon.
         per_window (bool): True to perform per window evaluation.
                             Useful for MC dropout.
@@ -41,75 +77,43 @@ def predict_y(
         ts_dist_type (str): type of distance to be used for trust score.
     """
 
-    if isinstance(model, str):  # load the model
-        if model.endswith(".pkl"):
-            model = pickle.load(open(model, "rb"))
-        elif model.endswith(".h5") or model.endswith(".keras"):
-            model = tf.keras.models.load_model(model)
-        else:
-            raise Exception("Model file extension not supported yet.")
-
     # get the probabilities
     if hasattr(model, "predict_proba"):
         if logging:
             print("using predict_proba")
-        if per_window:
-            # iterate through every window and get the probabilities
-            for instance in data:
-                instance = np.expand_dims(instance, axis=0)
-                instance = instance.reshape(instance.shape[0], -1)
-                loc_probs = model.predict_proba(instance)
-                if repeats > 1:
-                    for _ in range(repeats - 1):
-                        loc_probs = np.dstack(
-                            (loc_probs, model.predict_proba(instance))
-                        )
-                if "probabilities" not in locals():
-                    probabilities = loc_probs
-                else:
-                    probabilities = np.vstack((probabilities, loc_probs))
-        else:
-            data = data.reshape(data.shape[0], -1)
-            probabilities = model.predict_proba(data)
-            if repeats > 1:
-                for _ in range(repeats - 1):
-                    probabilities = np.dstack(
-                        (probabilities, model.predict_proba(data))
-                    )
+        probabilities = model.predict_proba(data)
+        if repeats > 1:
+            for _ in range(repeats - 1):
+                probabilities = np.dstack(
+                    (probabilities, model.predict_proba(data))
+                )
     else:
         if logging:
             print("using predict")
-        if per_window:
-            for instance in data:
-                instance = np.expand_dims(instance, axis=0)
-                loc_probs = model.predict(instance, verbose=0)
-                if repeats > 1:
-                    for _ in range(repeats - 1):
-                        loc_probs = np.dstack(
-                            (loc_probs, model.predict(instance, verbose=0))
-                        )
-                if "probabilities" not in locals():
-                    probabilities = loc_probs
-                else:
-                    probabilities = np.vstack((probabilities, loc_probs))
-        else:
-            probabilities = model.predict(data)
-            if repeats > 1:
-                for _ in range(repeats - 1):
-                    probabilities = np.dstack(
-                        (probabilities, model.predict(data, verbose=0))
-                    )
-#        if logging:
-#            print_shapes_types(data=probabilities,
-#                               data_name="Predictions",
-#                               show_instance=True)
+
+        probabilities = model.predict(data, verbose=0)
+        if repeats > 1:
+            for _ in range(repeats - 1):
+                probabilities = np.dstack(
+                    (probabilities, model.predict(data, verbose=0))
+                )
+
+    results = compute_results(probabilities, compute)
+
+    return results
+
+
+def compute_results(probabilities, compute: _RETURN_TYPES = "class"):
     results = dict()
     if compute in ["class", "all"]:
         if probabilities.ndim == 3:
             results["class"] = np.argmax(np.mean(probabilities, axis=2),
                                          axis=1)
         else:
-            results["class"] = np.argmax(probabilities, axis=1)
+            try:
+                results["class"] = np.argmax(probabilities, axis=1)
+            except:
+                results["class"] = np.argmax(probabilities)
 
     if compute in ["probas", "all"]:
         results["probas"] = probabilities
@@ -127,17 +131,5 @@ def predict_y(
         if compute in ["entropy", "all"]:
             entropy = -np.sum(probabilities * np.log(probabilities), axis=2)
             results["entropy"] = entropy
-
-    if ts_scorer is not None:
-        if isinstance(ts_scorer, str):
-            if ts_scorer.endswith(".pkl"):
-                ts_scorer = pickle.load(open(ts_scorer, "rb"))
-            else:
-                raise Exception("TS Model file extension not supported yet.")
-        trust_score, closest_class = ts_scorer.get_trust_score(
-            data, probabilities, k=ts_k, dist_type=ts_dist_type
-        )
-        results["trust_score"] = trust_score
-        results["closest_class"] = closest_class
 
     return results

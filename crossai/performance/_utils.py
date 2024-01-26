@@ -1,5 +1,6 @@
 import json
 import numpy as np
+import os
 
 
 def pilot_label_processing(json_path: str,
@@ -115,3 +116,13 @@ def threshold_predictions(predictions, threshold: float):
     thresholded_preds[thresholded_preds < threshold] = 0
 
     return thresholded_preds
+
+
+def check_and_create_paths(path: str):
+    """Checks if a path exists and creates it if not.
+
+    Args:
+        path (str): The path to check
+    """
+    if not os.path.exists(path):
+        os.makedirs(path)

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.io import wavfile
 from crossai.processing import resample_sig
-from crossai.pipelines.timeseries import TimeSeries
+from crossai.pipelines.audio import Audio
 from crossai.performance import pilot_label_processing
 
 
@@ -32,13 +32,13 @@ def audio_loader(filename, classes, sampling_rate=22500):
 
     labels = pilot_label_processing(filename.replace('.wav', '.json'),
                                     classes,
-                                    len(signal))
-
+                                    len(signal),
+                                    sampling_rate=sampling_rate)[0]
     # create the object
-    df = pd.DataFrame(columns=['data', 'label', 'indice'])
+    df = pd.DataFrame(columns=['data', 'label'])
     df['data'] = [signal]
     df['label'] = [labels]
-    df['indice'] = [filename.split('/')[-1]]
-    crossai_object = TimeSeries(df)
+
+    crossai_object = Audio(df)
 
     return crossai_object
