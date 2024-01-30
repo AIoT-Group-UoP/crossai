@@ -35,7 +35,7 @@ def wavfile_reader(filename):
     signal = (signal - np.min(signal)) / (np.max(signal) - np.min(signal))
     signal = signal * (n_range[1] - n_range[0]) + n_range[0]
 
-    return signal, filename 
+    return signal,  os.path.splitext(os.path.basename(filename))[0]
 
 
 def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = (-1, 1)):
@@ -103,4 +103,4 @@ def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = 
     progress.update(1)
     progress.set_description("Loaded data into the dataframe")
 
-    return df, subdirnames
+    return df
