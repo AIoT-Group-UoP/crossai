@@ -98,15 +98,17 @@ class PadOrTrim(BaseEstimator, TransformerMixin):
 
     Args:
         func (function): Function to be used in the pipeline
+        return_series (bool): True to return a pandas Series, False otherwise
         **kwargs: Keyword arguments to be passed to the function
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, return_series=False, **kwargs):
         """
         Initialize the Transformer class
         """
 
         self.kwargs = kwargs
+        self.return_series = return_series
 
     def fit(self, X, y=None):
         """
@@ -119,7 +121,10 @@ class PadOrTrim(BaseEstimator, TransformerMixin):
         Transform the data using the custom function
         """
 
-        X.data = pad_or_trim(X.data, **self.kwargs)
+        if self.return_series:
+            X.data = pd.Series(X.data)
+        else:
+            X.data = pad_or_trim(X.data, **self.kwargs)
 
         return X
 
@@ -168,11 +173,22 @@ class SlidingWindow(BaseEstimator, TransformerMixin):
         for i in range(len(X.data)):
             Y.append(sliding_window_cpu(X.data[i], self.window_size,
                                         self.overlap))
-            Z.append(np.repeat(X.labels[i], len(Y[i])))
-            K.append(np.repeat(X.filename[i], len(Y[i])))
+            # check if the labels are array (pilot data)
+            if not isinstance(X.labels[i], str):
+                windows = sliding_window_cpu(X.labels[i], self.window_size,
+                                             self.overlap)
+                if windows is None:
+                    continue
+                # get the most frequent label in each window
+                for j in range(len(windows)):
+                    unique, counts = np.unique(windows[j], return_counts=True)
+                    Z.append(unique[np.argmax(counts)])
+            else:
+                Z.append(np.repeat(X.labels[i], len(Y[i])))
+                K.append(np.repeat(X.filename[i], len(Y[i])))
 
         X.data = list(np.concatenate(Y, axis=0))
-        X.labels = list(np.concatenate(Z, axis=0))
         X.filename = list(np.concatenate(K, axis=0))
+        X.labels = list(np.concatenate(Z, axis=0))
 
         return X

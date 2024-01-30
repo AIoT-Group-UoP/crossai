@@ -36,4 +36,4 @@ def tf_exploit_gpu_physical_growth(print_setup: bool = True) -> None:
             print("No successful set up of GPUs' growth.")
             print(e)
     if print_setup:
-        print("GPUs is dynamic allocation functionality:", gpu_list)
+        print("GPUs in dynamic allocation functionality:", gpu_list)
