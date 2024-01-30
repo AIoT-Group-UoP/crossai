@@ -163,13 +163,16 @@ class SlidingWindow(BaseEstimator, TransformerMixin):
 
         Y = []
         Z = []
+        K = []
 
         for i in range(len(X.data)):
             Y.append(sliding_window_cpu(X.data[i], self.window_size,
                                         self.overlap))
             Z.append(np.repeat(X.labels[i], len(Y[i])))
+            K.append(np.repeat(X.filename[i], len(Y[i])))
 
         X.data = list(np.concatenate(Y, axis=0))
         X.labels = list(np.concatenate(Z, axis=0))
+        X.filename = list(np.concatenate(K, axis=0))
 
         return X
