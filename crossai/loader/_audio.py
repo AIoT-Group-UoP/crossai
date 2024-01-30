@@ -23,7 +23,7 @@ def wavfile_reader(filename):
     sr, signal = wavfile.read(filename)
     signal = signal.astype(np.float32)
 
-    #convert to mono if the signal is stereo
+    # convert to mono if the signal is stereo
     if len(signal.shape) > 1:
         signal = signal.mean(axis=1)
 
@@ -38,7 +38,7 @@ def wavfile_reader(filename):
     return signal,  os.path.splitext(os.path.basename(filename))[0]
 
 
-def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = (-1, 1)):
+def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range=(-1, 1)):
     """Loads the audio data from a directory and returns the data
     as a pandas Dataframe.
 
@@ -67,7 +67,7 @@ def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = 
 
     global sampling_rate
     global n_range
-    
+
     n_range = copy.deepcopy(norm_range)
     sampling_rate = copy.deepcopy(sr)
 
@@ -91,14 +91,15 @@ def audio_loader(path, sr=22500, n_workers=min(mp.cpu_count(), 4), norm_range = 
     df = data
 
     for i in range(len(data)):
-            for j in range(len(data[i])):
-                data[i][j] = (data[i][j], subdirnames[i])
+        for j in range(len(data[i])):
+            data[i][j] = (data[i][j], subdirnames[i])
 
     df = pd.DataFrame(columns=['data', 'label', 'filename'])
 
     for i in range(len(data)):
-            for j in range(len(data[i])):
-                df.loc[len(df)] = [data[i][j][0][0].astype(np.float32), data[i][j][1], data[i][j][0][1]]
+        for j in range(len(data[i])):
+            df.loc[len(df)] = [data[i][j][0][0].astype(
+                np.float32), data[i][j][1], data[i][j][0][1]]
 
     progress.update(1)
     progress.set_description("Loaded data into the dataframe")
