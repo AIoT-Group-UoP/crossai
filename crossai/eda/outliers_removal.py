@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union, Tuple
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -68,10 +68,11 @@ def filter_outliers(
     threshold: float = 3,
     lower_quantile: float = 0.25,
     upper_quantile: float = 0.75,
-    exclude_columns: Optional[List[str]] = None
-) -> pd.DataFrame:
+    exclude_columns: Optional[List[str]] = None,
+    return_removed_indices: bool = False
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, List[int]]]:
     """Filters out outliers from a DataFrame, class by class and feature by
-        feature, using the specified outlier removal method.
+    feature, using the specified outlier removal method.
 
     This function first removes specified columns, then iterates over each
     class in the target column, applying either the Z-score or IQR method to
@@ -100,41 +101,43 @@ def filter_outliers(
         ValueError: If target_column is in exclude_columns, or if an invalid
             outlier_method is specified.
     """
-    # Create a copy of the original DataFrame to avoid modifying the input
     df_copy = df.copy()
 
-    # Remove specified columns
     if exclude_columns:
         if target_column in exclude_columns:
             raise ValueError("Cannot Drop Target value.")
         df_copy = df_copy.drop(exclude_columns, axis=1, errors='ignore')
 
     dfs_no_outliers = []
-    # Iterate over unique values in the target column (classes)
+    removed_indices = []
+
     for target_value in df_copy[target_column].unique():
-        # Filter rows based on the current target value (class)
-        class_df = df_copy[df_copy[target_column] == target_value].drop(
-            [target_column], axis=1
-        )
+        class_df = df_copy[df_copy[target_column] == target_value]
 
         if outlier_method == 'z_score':
-            filtered_df = _remove_outliers_z_score(class_df, threshold)
+            filtered_df = _remove_outliers_z_score(
+                class_df.drop([target_column], axis=1), threshold
+            )
         elif outlier_method == 'iqr':
-            filtered_df = _remove_outliers_iqr(class_df, lower_quantile,
-                                               upper_quantile)
+            filtered_df = _remove_outliers_iqr(
+                class_df.drop([target_column], axis=1),
+                lower_quantile,
+                upper_quantile
+            )
         else:
             raise ValueError("Invalid outlier removal method. \
                              Use 'z_score' or 'iqr'.")
 
-        with pd.option_context("mode.copy_on_write", True):
-            # append class again as column
-            filtered_df[target_column] = target_value
+        filtered_class_df = class_df.loc[filtered_df.index]
 
-        # append to total rows
-        dfs_no_outliers.append(filtered_df)
+        # Collect removed indices
+        removed_indices.extend(class_df.drop(filtered_df.index).index.tolist())
 
-    # Concatenate the filtered results to the overall results DataFrame
+        dfs_no_outliers.append(filtered_class_df)
+
     df_dataset_no_outliers = pd.concat(dfs_no_outliers, ignore_index=True)
 
-    # Return the DataFrame with outliers removed for all classes
-    return df_dataset_no_outliers
+    if return_removed_indices:
+        return df_dataset_no_outliers, removed_indices
+    else:
+        return df_dataset_no_outliers
