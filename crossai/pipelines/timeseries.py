@@ -185,10 +185,12 @@ class SlidingWindow(BaseEstimator, TransformerMixin):
                     Z.append(unique[np.argmax(counts)])
             else:
                 Z.append(np.repeat(X.labels[i], len(Y[i])))
-                K.append(np.repeat(X.filename[i], len(Y[i])))
+            
+            K.append(np.repeat(X.filename[i], len(Y[i])))
 
-        X.data = list(np.concatenate(Y, axis=0))
         X.filename = list(np.concatenate(K, axis=0))
-        X.labels = list(np.concatenate(Z, axis=0))
+        X.data = list(np.concatenate(Y, axis=0))
+
+        X.labels = list(Z)
 
         return X
