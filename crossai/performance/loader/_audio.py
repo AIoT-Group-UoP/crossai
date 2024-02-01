@@ -35,9 +35,10 @@ def audio_loader(filename, classes, sampling_rate=22500):
                                     len(signal),
                                     sampling_rate=sampling_rate)[0]
     # create the object
-    df = pd.DataFrame(columns=['data', 'label'])
+    df = pd.DataFrame(columns=['data', 'label', 'filename'])
     df['data'] = [signal]
     df['label'] = [labels]
+    df['filename'] = [filename]
 
     crossai_object = Audio(df)
 
