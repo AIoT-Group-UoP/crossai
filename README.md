@@ -34,14 +34,14 @@ topologies are designed to analyze Time Series data within both the 1D and 2D do
 > It delivers Explainable AI (XAI) mechanisms for interpreting the AI models' exports to actual exports of interest, 
 as well as functionalities and algorithms for measuring the models' Trustworthiness and Robustness.
 
-The implementation is based on the following study:
+The implementation has been applied to the following study:
 
 > Tzamalis, Pantelis, Andreas Bardoutsos, Dimitris Markantonatos, Christoforos Raptopoulos, Sotiris Nikoletseas, 
 Xenophon Aggelides, and Nikos Papadopoulos. "End-to-end Gesture Recognition Framework for the Identification of 
 Allergic Rhinitis Symptoms." In 2022 18th International Conference on Distributed Computing in Sensor 
 Systems (DCOSS), pp. 25-34. IEEE, 2022.
 
-Next steps: Add Generative AI State-of-the-Art Neural Network Topologies.
+Next steps: To add Generative AI State-of-the-Art Neural Network Topologies.
 
 ## Citing CrossAI
 
@@ -50,9 +50,9 @@ If you use CrossAI in a scientific publication, we would appreciate citations, u
 ```text
 @misc{,
     author = "{Tzamalis, Pantelis and Kapetanidis Panagiotis, and Kalioras, Fotios and Kontogiannis, George and 
-    Stamatelos, John and Bardoutos, Andreas}",
+    Stamatelos, John and Bardoutos, Andreas and Nikoletseas, Sotiris}",
     title = "CrossAI: The Open Source library for End-to-End Time Series Analysis",
-    url = "https://github.com/tzamalisp/crossai",
+    url = "https://github.com/AIoT-Group-UoP/crossai",
   }
 ```
 
@@ -60,7 +60,8 @@ If you use CrossAI in a scientific publication, we would appreciate citations, u
 
 #### Authors
 
-The following individuals are currently core contributors to the development and maintenance of the library:
+The following individuals are currently core contributors to the development 
+and maintenance of the library:
 
 * [Pantelis Tzamalis](https://www.linkedin.com/in/pantelis-tzamalis/)
 * [Panagiotis Kapetanidis](https://www.linkedin.com/in/kapetanidispanagiotis)
@@ -68,17 +69,37 @@ The following individuals are currently core contributors to the development and
 * [George Kontogiannis](https://www.linkedin.com/in/georgios-kontogiannis)
 * [John Stamatelos](https://www.linkedin.com/in/john-stamatelos-427b53b3/)
 
+#### Scientific Advisor
+
+* [Sotiris Nikoletseas](https://www.cti.gr/RD1/nikole/)
+
 #### Emeritus Contributor Experience Team:
 
-The following people have been active in the contribution of previous versions of the library but no longer are engaging
-in its development:
+The following people have been active in the contribution of previous versions 
+of the library but no longer are engaging in its development:
 
 * [Andreas Bardoutsos](https://www.linkedin.com/in/andreasbardoutsos/)
+* [Constantinos Tsakonas]()
+* [Dimitris Markantonatos]()
 
-The main design and idea have been created by Pantelis Tzamalis, as well as Andreas Bardoutsos in the early versions of
-the library, and occurred from needs during the development of AI projects with regard to Time Series tasks 
+The main design and idea have been created by Pantelis Tzamalis, as well as 
+Andreas Bardoutsos in the early versions of the library, and occurred from 
+needs during the development of AI projects with regard to Time Series tasks 
 (classification, regression, clustering, etc.).
 
-The main part of the library is developed and maintained by the Artificial Intelligence of Things Group (AIoT Group) in 
-the Internet of Things Laboratory (IoT Lab) - Computer Engineering and Informatics Department, University of Patras, 
+The main part of the library is developed and maintained by the Artificial 
+Intelligence of Things Group (AIoT Group) in 
+the [Internet of Things Laboratory (IoT Lab)](https://iotlab.ceid.upatras.gr/) 
+at the Computer Engineering and Informatics Department, University of Patras, 
 Greece.
+
+## Deployment & Usage
+
+The library has been used, tested, and validated on various Research Projects
+funded by the EU and the Greek state, as well as projects funded by the 
+Industry:
+
+* [Personal Allergy Tracer](http://pat.vidavo.eu/) - National Project
+* [SynAir-G](https://www.efanet.org/news/news/4201-synairg-kickoff-meeting) - EU Horizon
+* [Voice-Based Diagnostics](https://centerfordigitalinnovation.pfizer.com/) - Private with Pfizer CDI
+* [Voice-Based Diagnostics 2](https://centerfordigitalinnovation.pfizer.com/) - Private with Pfizer CDI
