@@ -103,7 +103,7 @@ def batch_evaluate_audio(model, folder, classes: list = None,
                             segments=segments)
 
                 if pipeline is not None:
-                    eval_object = pipeline.fit_transform(eval_object)
+                    eval_object = pipeline.transform(eval_object)
 
                 filename = file.replace(file.split(".")[-1], "json")
 
